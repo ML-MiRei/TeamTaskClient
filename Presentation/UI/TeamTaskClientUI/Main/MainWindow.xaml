@@ -1,0 +1,301 @@
+﻿<Window x:Class="TeamTaskClientUI.Main.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TeamTaskClientUI.Main"
+        d:DataContext="{d:DesignInstance Type=local:MainWindowVM}"
+        mc:Ignorable="d"
+        Height="450"
+        MinHeight="450"
+        MinWidth="850"
+        Width="850">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Style x:Key="OptionMarkFocusVisual">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Rectangle Margin="14,0,0,0"
+                                       StrokeDashArray="1 2"
+                                       Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                                       SnapsToDevicePixels="true"
+                                       StrokeThickness="1" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <SolidColorBrush x:Key="RadioButton.Static.Glyph"
+                             Color="#FF212121" />
+            <SolidColorBrush x:Key="RadioButton.MouseOver.Background"
+                             Color="#FFF3F9FF" />
+            <SolidColorBrush x:Key="RadioButton.MouseOver.Border"
+                             Color="#FF5593FF" />
+            <SolidColorBrush x:Key="RadioButton.MouseOver.Glyph"
+                             Color="#FF212121" />
+            <SolidColorBrush x:Key="RadioButton.Pressed.Background"
+                             Color="#FFD9ECFF" />
+            <SolidColorBrush x:Key="RadioButton.Pressed.Border"
+                             Color="#FF3C77DD" />
+            <SolidColorBrush x:Key="RadioButton.Pressed.Glyph"
+                             Color="#FF212121" />
+            <SolidColorBrush x:Key="RadioButton.Disabled.Background"
+                             Color="#FFE6E6E6" />
+            <SolidColorBrush x:Key="RadioButton.Disabled.Border"
+                             Color="#FFBCBCBC" />
+            <SolidColorBrush x:Key="RadioButton.Disabled.Glyph"
+                             Color="#FF707070" />
+            <ControlTemplate x:Key="RadioButtonTemplate1"
+                             TargetType="{x:Type RadioButton}">
+                <Grid x:Name="templateRoot"
+                      Background="Transparent"
+                      SnapsToDevicePixels="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0"
+                            SnapsToDevicePixels="true">
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Focusable="False"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="HasContent"
+                             Value="true">
+                        <Setter Property="FocusVisualStyle"
+                                Value="{StaticResource OptionMarkFocusVisual}" />
+                        <Setter Property="Padding"
+                                Value="4,-1,0,0" />
+                    </Trigger>
+                    <Trigger Property="IsMouseOver"
+                             Value="true">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsEnabled"
+                             Value="false">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsPressed"
+                             Value="true">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsChecked"
+                             Value="true">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsChecked"
+                             Value="{x:Null}">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    <Grid>
+
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="125" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+
+
+        <StackPanel Background="{StaticResource DarkGreen}">
+
+
+            <RadioButton    Style="{StaticResource {x:Type ToggleButton}}"
+                            Name="profileButton"
+                            Template="{DynamicResource RadioButtonTemplate1}"
+                            GroupName="navigation"
+                            Command="{Binding ProfileButton}"
+                            Background="Transparent"
+                            Foreground="White"
+                            Height="70"
+                            BorderBrush="Transparent">
+
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\profile.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="profile"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+
+
+            <RadioButton Command="{Binding ProjectsButton}"
+                         Template="{DynamicResource RadioButtonTemplate1}"
+                         Style="{StaticResource {x:Type ToggleButton}}"
+                         GroupName="navigation"
+                         Background="Transparent"
+                         Foreground="White"
+                         Height="70"
+                         BorderBrush="Transparent">
+
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\folder.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="projects"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+
+            <RadioButton Command="{Binding MessangerButton}"
+                         Template="{DynamicResource RadioButtonTemplate1}"
+                         Style="{StaticResource {x:Type ToggleButton}}"
+                         GroupName="navigation"
+                         Background="Transparent"
+                         Foreground="White"
+                         Height="70"
+                         BorderBrush="Transparent">
+
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\bubble-chat.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="chat"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+
+
+
+            <RadioButton Template="{DynamicResource RadioButtonTemplate1}"
+                         Command="{Binding TasksButton}"
+                         Background="Transparent"
+                         Style="{StaticResource {x:Type ToggleButton}}"
+                         GroupName="navigation"
+                         Foreground="White"
+                         Height="70"
+                         BorderBrush="Transparent">
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\checklist.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="tasks"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+            <RadioButton Command="{Binding CalendarButton}"
+                         Template="{DynamicResource RadioButtonTemplate1}"
+                         Style="{StaticResource {x:Type ToggleButton}}"
+                         GroupName="navigation"
+                         Background="Transparent"
+                         Foreground="White"
+                         Height="70"
+                         BorderBrush="Transparent">
+
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\calendar.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="calendar"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+        </StackPanel>
+
+
+
+        <Frame Grid.Column="1"
+               BorderThickness="0"
+               Background="{StaticResource BackgroundGreen}"
+               x:Name="frameLayuot"
+               NavigationUIVisibility="Hidden" />
+
+
+    </Grid>
+</Window>

@@ -1,0 +1,94 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+
+namespace TeamTaskClient.UI.UserControls
+{
+    public class WatermarkTextBox : TextBox
+    {
+        public Brush WatermarkForeground { get; set; }
+        private Brush _baseForeground;
+        public bool CanNull { get; set; } = false;
+
+
+        //public DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(WatermarkTextBox));
+        //public string WatermarkText
+        //{
+        //    get {  return (string)GetValue(WatermarkTextProperty);}
+        //    set { SetValue(WatermarkTextProperty, value);}
+        //}
+
+        private string _watermarkText;
+        public string WatermarkText
+        {
+            get { return _watermarkText; }
+            set { _watermarkText= value; }
+        }
+
+
+        public WatermarkTextBox()
+        {
+
+            VerticalContentAlignment = VerticalAlignment.Center;
+            _baseForeground = Foreground;
+        }
+
+        public override void EndInit()
+        {
+            base.EndInit();
+            Foreground = WatermarkForeground;
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                Keyboard.ClearFocus();
+                SetErrorInput();
+            }
+            base.OnKeyDown(e);
+        }
+
+
+        private void SetErrorInput()
+        {
+            if (string.IsNullOrEmpty(Text))
+            {
+                if (CanNull)
+                {
+                    Foreground = WatermarkForeground;
+                }
+                else
+                {
+                    Foreground = (Brush)new BrushConverter().ConvertFrom("#CA5454");
+                }
+                Text = WatermarkText;
+            }
+        }
+
+        protected override void OnGotFocus(RoutedEventArgs e)
+        {
+            base.OnGotFocus(e);
+            if (Text.Equals(WatermarkText))
+            {
+                Foreground = _baseForeground;
+                Text = string.Empty;
+            }
+        }
+
+
+        protected override void OnLostFocus(RoutedEventArgs e)
+        {
+            base.OnLostFocus(e);
+            SetErrorInput();
+        }
+
+    }
+}

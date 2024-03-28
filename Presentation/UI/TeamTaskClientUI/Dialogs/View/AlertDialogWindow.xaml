@@ -1,0 +1,75 @@
+﻿<Window x:Class="TeamTaskClient.UI.Dialogs.View.AlertDialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TeamTaskClient.UI.Dialogs.View"
+        xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Dialogs.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:AlertDialogVM}"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        BorderThickness="0"
+        Height="200"
+        Width="400">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+    
+    <Border BorderThickness="5"
+           
+            BorderBrush="{StaticResource BackgroundGreen}"
+            CornerRadius="10"
+            >
+        <Grid  Margin="-1"
+            Background="{StaticResource BackgroundGreen}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="2*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{Binding TextDialog, Mode=OneWay}"
+                       Grid.Row="1"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Style="{StaticResource GreenHeader}" />
+
+            <Grid Grid.Row="2"
+                  VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Button Margin="20,0,10,0"
+                        Grid.Column="0"
+                        Height="30"
+                        Command="{Binding PositiveAnswer}"
+                        Style="{StaticResource GreenButton}"
+                        Content="{Binding PositiveText, Mode=OneWay}" />
+
+                <Button Margin="10,0,20,0"
+                        Grid.Column="1"
+                        Height="30"
+                        Command="{Binding NegativeAnswer}"
+                        Style="{StaticResource RedButton}"
+                        Content="{Binding NegativeText, Mode=OneWay}" />
+
+
+            </Grid>
+
+        </Grid>
+    </Border>
+</Window>

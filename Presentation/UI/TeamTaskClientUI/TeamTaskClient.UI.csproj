@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Folder Include="Modules\Tasks\ViewModels\" />
+		<Folder Include="Modules\Tasks\View\" />
+		<Folder Include="Modules\Teams\ViewModels\" />
+		<Folder Include="Modules\Teams\View\" />
+		<Folder Include="UserControls\" />
+		<Folder Include="Dialogs\" />
+		<Folder Include="Common\" />
+		<Folder Include="Main\" />
+		<Folder Include="Common\Base" />
+		<Folder Include="Common\Converters" />
+		<Folder Include="UserControls\" />
+		<Folder Include="Dialogs\View" />
+		<Folder Include="Dialogs\ViewModels" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\ApplicationLayer\TeamTaskClient.ApplicationLayer\TeamTaskClient.ApplicationLayer.csproj" />
+	  <ProjectReference Include="..\..\..\Infrastructure\TeamTaskClientInfrastructure\TeamTaskClient.Infrastructure.csproj" />
+	</ItemGroup>
+
+<ItemGroup>
+	<ResourceCompile Include="https://localhost:7047/api" />
+</ItemGroup>
+	
+	
+</Project>

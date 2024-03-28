@@ -1,0 +1,55 @@
+﻿<Page x:Class="TeamTaskClient.UI.Modules.Messanger.View.ChatsListPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Messanger.View"
+      xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
+      xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Messanger.UserControls"
+      xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Messanger.ViewModels"
+      d:DataContext="{d:DesignInstance Type=viewmodels:ChatsListPageVM}"
+      mc:Ignorable="d"
+      d:DesignHeight="450"
+      d:DesignWidth="250">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid Margin="-1"
+          Background="White">
+
+        <ListBox ScrollViewer.CanContentScroll="True"
+                 BorderThickness="0"
+                 ItemsSource="{Binding Chats}"
+                 x:Name="ChatList"
+                 Background="Transparent"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 ScrollViewer.VerticalScrollBarVisibility="Hidden">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+
+                    <usercontrols1:ChatTemplate LastMessage="{Binding LastMessage}"
+                                                CreatorLastMessage="{Binding CreatorLastMessage}"
+                                                Image="{Binding Image}" />
+
+
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <Button Style="{StaticResource AddButton}"
+                Width="30"
+                Height="30"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="20,0,0,20" />
+
+    </Grid>
+</Page>
