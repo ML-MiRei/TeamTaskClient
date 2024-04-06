@@ -1,12 +1,13 @@
-﻿<Page x:Class="TeamTaskClient.UI.Modules.Messanger.View.MessagesPage"
+﻿<Page x:Class="TeamTaskClient.UI.Modules.Messanger.View.MessagePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Messanger.View"
       xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
       xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Messanger.UserControls"
       xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Messanger.ViewModels"
+      xmlns:converters="clr-namespace:TeamTaskClient.UI.Modules.Messanger.Converters"
       d:DataContext="{d:DesignInstance Type=viewmodels:MessagesPageVM}"
       mc:Ignorable="d"
       d:DesignHeight="450"
@@ -19,6 +20,7 @@
                 <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
                 <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:MessageHorizontalAligmentConverter x:Key="MessageHorizontalAligmentConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -33,6 +35,8 @@
         <ListBox Margin="10"
                  BorderThickness="0"
                  Background="Transparent"
+                 Name="ListMessages"
+                 ScrollViewer.CanContentScroll="False"
                  ItemsSource="{Binding Messages}"
                  ScrollViewer.HorizontalScrollBarVisibility="Hidden"
                  ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -40,15 +44,17 @@
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalAlignment"
-                            Value="Left" />
+                            Value="{Binding CreatorTag, Converter={StaticResource MessageHorizontalAligmentConverter}}" />
                 </Style>
             </ListBox.ItemContainerStyle>
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <usercontrols1:MessageTemplate TextMessage="{Binding TextMessage, Mode=OneWay}"
-                                                   Time="{Binding Time, Mode=OneWay}"
-                                                   UserName="{Binding UserName, Mode=OneWay}" />
+                    <usercontrols1:MessageTemplate Text="{Binding Text}"
+                                                   Margin="15,7,25,7"
+                                                   MouseDoubleClick="MessageTemplate_MouseDoubleClick"
+                                                   DateCreated="{Binding DateCreated}"
+                                                   UserNameCreator="{Binding UserNameCreator}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
 
@@ -58,7 +64,10 @@
 
 
         <Grid Grid.Row="1"
-              Margin="10">
+              Margin="10"
+              x:Name="InputPanel"
+              Visibility="Collapsed"
+              >
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="8*" />

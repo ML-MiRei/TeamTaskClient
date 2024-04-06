@@ -16,11 +16,6 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat
         {
             try
             {
-                int adminId = chatRepository.GetGroupChatAdmin(request.ChatId).Id;
-                if (adminId == request.UserId)
-                {
-                    throw new NotRuleException();
-                }
 
                 chatRepository.UpdateChat(new ChatDTO() { AdminId = request.AdminId, Name = request.ChatName });
                 return Task.CompletedTask;

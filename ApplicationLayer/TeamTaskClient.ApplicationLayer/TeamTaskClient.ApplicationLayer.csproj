@@ -16,4 +16,8 @@
 		<ProjectReference Include="..\..\Domain\TeamTaskClient.Domain\TeamTaskClient.Domain.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="CQRS\Message\Queries\" />
+	</ItemGroup>
+
 </Project>

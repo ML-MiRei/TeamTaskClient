@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.LeaveProject
 {
-    internal class LeaveProjectCommand : IRequest
+    public class LeaveProjectCommand : IRequest
     {
         public int ProjectId { get; set; }
         public int UserId { get; set; }

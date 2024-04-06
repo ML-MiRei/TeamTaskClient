@@ -12,19 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TeamTaskClient.UI.Modules.Messanger.ViewModels;
 
-namespace TeamTaskClient.UI.Modules.Messanger.View
+namespace TeamTaskClient.UI.Modules.Teams.View
 {
     /// <summary>
-    /// Логика взаимодействия для MessagesPage.xaml
+    /// Логика взаимодействия для TeamPage.xaml
     /// </summary>
-    public partial class MessagesPage : Page
+    public partial class TeamPage : Page
     {
-        public MessagesPage()
+        public TeamPage()
         {
             InitializeComponent();
-            DataContext = MessagesPageVM.Instance;
         }
     }
 }

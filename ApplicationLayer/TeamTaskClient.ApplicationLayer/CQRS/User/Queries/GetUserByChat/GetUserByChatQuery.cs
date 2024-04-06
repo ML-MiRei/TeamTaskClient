@@ -8,7 +8,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByChat
 {
-    internal class GetUserByChatQuery : IRequest<List<UserEntity>>
+    public class GetUserByChatQuery : IRequest<List<UserEntity>>
     {
         public int ChatId { get; set; }
     }

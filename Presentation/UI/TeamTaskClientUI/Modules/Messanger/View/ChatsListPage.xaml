@@ -18,6 +18,7 @@
                 <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
                 <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            
         </ResourceDictionary>
     </Page.Resources>
 
@@ -27,26 +28,40 @@
 
         <ListBox ScrollViewer.CanContentScroll="True"
                  BorderThickness="0"
-                 ItemsSource="{Binding Chats}"
+                 ItemsSource="{Binding Chats, Mode=OneTime}"
                  x:Name="ChatList"
                  Background="Transparent"
+                 HorizontalContentAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                 ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                 SelectionChanged="ChatList_SelectionChanged">
+
+
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel HorizontalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
             <ListBox.ItemTemplate>
                 <DataTemplate>
 
-                    <usercontrols1:ChatTemplate LastMessage="{Binding LastMessage}"
+                    <usercontrols1:ChatTemplate HorizontalAlignment="Stretch"
+                                                NameChat="{Binding NameChat, Mode=OneWay}"
+                                                LastMessage="{Binding LastMessage}"
                                                 CreatorLastMessage="{Binding CreatorLastMessage}"
                                                 Image="{Binding Image}" />
 
 
                 </DataTemplate>
             </ListBox.ItemTemplate>
+
         </ListBox>
 
         <Button Style="{StaticResource AddButton}"
                 Width="30"
                 Height="30"
+                Command="{Binding AddButton}"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Margin="20,0,0,20" />

@@ -15,7 +15,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.LeaveChat
         {
             try
             {
-                chatRepository.DeleteChat(userId: request.UserId, chatId: request.ChatId);
+                chatRepository.LeaveChat(userId: request.UserId, chatId: request.ChatId);
                 return Task.CompletedTask;
             }
             catch (Exception)

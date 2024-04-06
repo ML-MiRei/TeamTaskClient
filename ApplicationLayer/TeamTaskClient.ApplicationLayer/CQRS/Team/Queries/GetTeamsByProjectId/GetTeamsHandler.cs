@@ -6,14 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByUserId;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByProjectId
 {
-    internal class GetTeamsByProjectIdHandler(ITeamRepository teamRepository) : IRequestHandler<GetTeamsByProjectIdCommand, List<TeamEntity>>
+    public class GetTeamsByProjectIdHandler(ITeamRepository teamRepository) : IRequestHandler<GetTeamsByProjectIdCommand, List<TeamModel>>
     {
-        public Task<List<TeamEntity>> Handle(GetTeamsByProjectIdCommand request, CancellationToken cancellationToken)
+        public Task<List<TeamModel>> Handle(GetTeamsByProjectIdCommand request, CancellationToken cancellationToken)
         {
             try
             {

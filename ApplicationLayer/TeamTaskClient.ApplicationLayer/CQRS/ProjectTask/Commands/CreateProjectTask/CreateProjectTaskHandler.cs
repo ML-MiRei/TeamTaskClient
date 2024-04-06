@@ -10,7 +10,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask
 {
-    internal class CreateProjectTaskHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<CreateProjectTaskCommand, ProjectTaskEntity>
+    public class CreateProjectTaskHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<CreateProjectTaskCommand, ProjectTaskEntity>
     {
         public Task<ProjectTaskEntity> Handle(CreateProjectTaskCommand request, CancellationToken cancellationToken)
         {

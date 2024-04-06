@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,13 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
     /// </summary>
     public partial class MessangerPage : Page
     {
-        public MessangerPage()
+        public MessangerPage(IMediator mediator)
         {
             InitializeComponent();
+
+            ChatPageLayout.NavigationService.Navigate(new ChatsListPage(mediator));
+            MessagePageLayout.NavigationService.Navigate(new MessagePage(mediator));
+
         }
     }
 }

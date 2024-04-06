@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Notification.Commands.DeleteNotification
 {
-    internal class DeleteNotificationHandler(INotificationRepository notificationRepository) : IRequestHandler<DeleteNotificationCommand>
+    public class DeleteNotificationHandler(INotificationRepository notificationRepository) : IRequestHandler<DeleteNotificationCommand>
     {
         public Task Handle(DeleteNotificationCommand request, CancellationToken cancellationToken)
         {

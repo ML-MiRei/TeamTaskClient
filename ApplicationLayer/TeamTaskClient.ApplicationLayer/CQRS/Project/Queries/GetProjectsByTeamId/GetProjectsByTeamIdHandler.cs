@@ -10,7 +10,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Queries.GetProjectsByTeamId
 {
-    internal class GetProjectsByUserIdHandler(IProjectRepository projectRepository) : IRequestHandler<GetProjectsByUserIdQuery, List<ProjectEntity>>
+    public class GetProjectsByUserIdHandler(IProjectRepository projectRepository) : IRequestHandler<GetProjectsByUserIdQuery, List<ProjectEntity>>
     {
         public Task<List<ProjectEntity>> Handle(GetProjectsByUserIdQuery request, CancellationToken cancellationToken)
         {

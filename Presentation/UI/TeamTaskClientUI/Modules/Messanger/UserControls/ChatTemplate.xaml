@@ -7,7 +7,7 @@
              xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
              mc:Ignorable="d"
              d:DesignHeight="100"
-             d:DesignWidth="300">
+             d:DesignWidth="500">
 
 
     <UserControl.Resources>
@@ -22,13 +22,15 @@
 
     <Border BorderThickness="0,0,0,1"
             CornerRadius="5"
+            HorizontalAlignment="Stretch"
             BorderBrush="Black">
 
         <Border BorderBrush="White"
                 CornerRadius="5"
                 BorderThickness="5">
 
-            <Grid Margin="-1" Background="White">
+            <Grid Margin="-1"
+                  Background="White">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -45,6 +47,7 @@
 
 
                 <Grid Grid.Column="1"
+                      Margin="20,10,20,10"
                       VerticalAlignment="Center">
 
                     <Grid.RowDefinitions>
@@ -53,15 +56,30 @@
                     </Grid.RowDefinitions>
 
                     <TextBlock Grid.Row="0"
+                               FontSize="16"
                                TextTrimming="CharacterEllipsis"
                                Style="{StaticResource BlackHeader}"
-                               Text="{Binding CreatorLastMessage, FallbackValue=Name}" />
+                               Text="{Binding NameChat, FallbackValue=Name}" />
 
-                    <TextBlock Grid.Row="2"
-                               TextTrimming="CharacterEllipsis"
-                               Style="{StaticResource SimpleBlackText}"
-                               Text="{Binding LastMessage, FallbackValue=Message}" />
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock FontSize="14"
+                                   Grid.Column="0"
+                                   Margin="0,0,5,0"
+                                   TextTrimming="CharacterEllipsis"
+                                   Style="{StaticResource SimpleBlackText}"
+                                   Text="{Binding CreatorLastMessage, StringFormat={}{0}:, FallbackValue=Message}" />
 
+                        <TextBlock FontSize="14"
+                                   Grid.Column="1"
+                                   TextTrimming="CharacterEllipsis"
+                                   Style="{StaticResource SimpleBlackText}"
+                                   Text="{Binding LastMessage, FallbackValue=Message}" />
+                    </Grid>
 
 
                 </Grid>

@@ -10,7 +10,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByChat
 {
-    internal class GetUserByChatHandler(IUserRepository userRepository) : IRequestHandler<GetUserByChatQuery, List<UserEntity>>
+    public class GetUserByChatHandler(IUserRepository userRepository) : IRequestHandler<GetUserByChatQuery, List<UserEntity>>
     {
         public Task<List<UserEntity>> Handle(GetUserByChatQuery request, CancellationToken cancellationToken)
         {

@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.UpdateMessage
 {
-    internal class UpdateMessageHandler(IMessageRepository messageRepository) : IRequestHandler<UpdateMessageCommand>
+    public class UpdateMessageHandler(IMessageRepository messageRepository) : IRequestHandler<UpdateMessageCommand>
     {
         public Task Handle(UpdateMessageCommand request, CancellationToken cancellationToken)
         {

@@ -8,7 +8,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTeam
 {
-    internal class GetUserByTeamQuery : IRequest<List<UserEntity>>
+    public class GetUserByTeamQuery : IRequest<List<UserEntity>>
     {
         public int TeamId { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,12 +9,9 @@ using TeamTaskClient.Infrastructure.LocalDB.Models;
 
 namespace TeamTaskClient.Infrastructure.LocalDB.Context
 {
-    internal class SqlLiteDbContext : DbContext
+    internal class SqlLiteDbContext(DbContextOptions<SqlLiteDbContext> dbContextOptions) : DbContext
     {
-        public SqlLiteDbContext()
-        {
-            Database.EnsureCreated();
-        }
+
 
 
         public DbSet<User> Users { get; set; } 

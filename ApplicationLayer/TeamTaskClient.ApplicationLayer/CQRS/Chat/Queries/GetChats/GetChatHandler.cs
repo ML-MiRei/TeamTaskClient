@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Queries.GetChats
 {
-    public class GetChatHandler(IChatRepository chatRepository) : IRequestHandler<GetChatsQuery, List<ChatEntity>>
+    public class GetChatHandler(IChatRepository chatRepository) : IRequestHandler<GetChatsQuery, List<ChatModel>>
     {
-        public Task<List<ChatEntity>> Handle(GetChatsQuery request, CancellationToken cancellationToken)
+        public Task<List<ChatModel>> Handle(GetChatsQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -21,7 +22,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Queries.GetChats
             }
             catch (Exception)
             {
-                throw new NotFoundException();
+                return Task.FromResult(new List<ChatModel>());
             }
         }
     }

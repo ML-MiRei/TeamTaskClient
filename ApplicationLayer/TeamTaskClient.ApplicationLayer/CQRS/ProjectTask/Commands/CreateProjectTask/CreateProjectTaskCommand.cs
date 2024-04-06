@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask
 {
-    internal class CreateProjectTaskCommand : IRequest<ProjectTaskEntity>
+    public class CreateProjectTaskCommand : IRequest<ProjectTaskEntity>
     {
         public int ProjectId { get; set; }
         public string Title { get; set; }

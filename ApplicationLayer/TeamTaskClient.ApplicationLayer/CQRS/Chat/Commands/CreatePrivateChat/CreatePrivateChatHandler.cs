@@ -7,21 +7,21 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreatePrivateChat
 {
-    public class CreatePrivateChatHandler(IChatRepository chatRepository) : IRequestHandler<CreatePrivateChatCommand, ChatEntity>
+    public class CreatePrivateChatHandler(IChatRepository chatRepository) : IRequestHandler<CreatePrivateChatCommand, ChatModel>
     {
 
-        Task<ChatEntity> IRequestHandler<CreatePrivateChatCommand, ChatEntity>.Handle(CreatePrivateChatCommand request, CancellationToken cancellationToken)
+        Task<ChatModel> IRequestHandler<CreatePrivateChatCommand, ChatModel>.Handle(CreatePrivateChatCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                ChatDTO chatDTO = new() { AdminId = request.UserId, ChatType = (int)ChatTypeEnum.PRIVATE };
-                var chat = chatRepository.CreateChat(chatDTO).Result;
+                var chat = chatRepository.CreatePrivateChat(request.UserId, request.SecondUserTag).Result;
                 return Task.FromResult(chat);
             }
             catch (Exception)

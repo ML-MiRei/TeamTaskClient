@@ -24,5 +24,13 @@ namespace TeamTaskClient.UI.Modules.Profile.UserControls
         {
             InitializeComponent();
         }
+
+        public static DependencyProperty EditProfileProperty = DependencyProperty.Register("EditProfile", typeof(ICommand), typeof(UserInfoUC));
+
+        public ICommand EditProfile
+        {
+            get { return (ICommand)GetValue(EditProfileProperty); }
+            set { SetValue(EditProfileProperty, value);}
+        }
     }
 }

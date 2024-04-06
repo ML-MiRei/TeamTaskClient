@@ -12,8 +12,7 @@ namespace TeamTaskClient.Infrastructure.Services.Implementation
     {
         void IRemoveCash.RemoveCash()
         {
-            SqlLiteDbContext sqlLiteDbContext = new SqlLiteDbContext();
-            sqlLiteDbContext.Database.EnsureDeleted();
+
         }
     }
 }

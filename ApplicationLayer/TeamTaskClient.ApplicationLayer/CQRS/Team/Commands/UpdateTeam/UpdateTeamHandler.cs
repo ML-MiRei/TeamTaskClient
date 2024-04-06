@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.UpdateTeam
 {
-    internal class UpdateTeamHandler(ITeamRepository teamRepository) : IRequestHandler<UpdateTeamCommand>
+    public class UpdateTeamHandler(ITeamRepository teamRepository) : IRequestHandler<UpdateTeamCommand>
     {
         public Task Handle(UpdateTeamCommand request, CancellationToken cancellationToken)
         {

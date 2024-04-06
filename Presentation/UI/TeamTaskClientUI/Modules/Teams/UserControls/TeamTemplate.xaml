@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="TeamTaskClient.UI.Modules.Teams.UserControls.TeamTemplate"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Teams.UserControls"
+             mc:Ignorable="d"
+             Height="Auto"
+             d:DesignHeight="250"
+             d:DesignWidth="700">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+
+    <Border BorderThickness="0,0,0,5"
+            BorderBrush="Black"
+            CornerRadius="10">
+        <Border BorderThickness="10"
+                BorderBrush="White"
+                CornerRadius="10">
+            <Grid  Margin="-1"
+                   Background="White">
+
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+
+                <TextBlock Style="{StaticResource BlackHeader}"
+                           VerticalAlignment="Center"
+                           Text="{Binding TeamName, FallbackValue=TeamName}"
+                           Margin="10,20,20,20" />
+
+
+                <Grid Grid.Row="1">
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+
+                    <TextBlock Style="{StaticResource BlackHeader}"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               Text="Team lead:"
+                               Margin="10,0,20,0" />
+                    
+                    <TextBlock Style="{StaticResource SimpleBlackText}"
+                               Grid.Column="1"
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               Text="{Binding LeadName, FallbackValue=LeadName}"
+                               Margin="10,0,20,0" />
+
+
+                </Grid>
+
+
+
+                <TextBlock Style="{StaticResource BlackHeader}"
+                           VerticalAlignment="Center"
+                           Grid.Column="1"
+                           Text="Members"
+                           FontWeight="DemiBold"
+                           Margin="10,20,20,20" />
+
+
+
+            </Grid>
+        </Border>
+    </Border>
+</UserControl>

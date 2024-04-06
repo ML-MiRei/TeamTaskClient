@@ -13,7 +13,9 @@ namespace TeamTaskClient.ApplicationLayer
     {
         public static IServiceCollection AddApplication (this IServiceCollection services)
         {
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(cfg => {
+                cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            });
             return services;
         }
     }

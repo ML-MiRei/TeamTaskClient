@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.DeleteProject
 {
-    internal class DeleteProjectCommand : IRequest
+    public class DeleteProjectCommand : IRequest
     {
         public int ProjectId { get; set; }
     }

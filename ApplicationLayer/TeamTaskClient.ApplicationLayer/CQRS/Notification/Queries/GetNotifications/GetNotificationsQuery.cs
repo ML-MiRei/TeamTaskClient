@@ -8,7 +8,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Notification.Queries.GetNotifications
 {
-    internal class GetNotificationsQuery : IRequest<List<NotificationEntity>>
+    public class GetNotificationsQuery : IRequest<List<NotificationEntity>>
     {
         public int UserId {  get; set; }
     }

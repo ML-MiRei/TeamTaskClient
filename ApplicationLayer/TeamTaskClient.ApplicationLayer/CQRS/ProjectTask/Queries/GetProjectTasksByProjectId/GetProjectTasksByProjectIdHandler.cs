@@ -11,7 +11,7 @@ using TeamTaskClient.Domain.Exceptions;
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Queries.GetProjectTasksByProjectId
 {
 
-    internal class GetProjectTasksByProjectIdHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<GetProjectTasksByProjectIdQuery, List<ProjectTaskEntity>>
+    public class GetProjectTasksByProjectIdHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<GetProjectTasksByProjectIdQuery, List<ProjectTaskEntity>>
     {
         public Task<List<ProjectTaskEntity>> Handle(GetProjectTasksByProjectIdQuery request, CancellationToken cancellationToken)
         {

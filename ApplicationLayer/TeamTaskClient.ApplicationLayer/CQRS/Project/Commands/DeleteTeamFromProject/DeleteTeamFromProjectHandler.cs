@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.DeleteTeamFromProject
 {
-    internal class DeleteTeamFromProjectHandler(IProjectRepository projectRepository) : IRequestHandler<DeleteTeamFromProjectCommand>
+    public class DeleteTeamFromProjectHandler(IProjectRepository projectRepository) : IRequestHandler<DeleteTeamFromProjectCommand>
     {
         public Task Handle(DeleteTeamFromProjectCommand request, CancellationToken cancellationToken)
         {

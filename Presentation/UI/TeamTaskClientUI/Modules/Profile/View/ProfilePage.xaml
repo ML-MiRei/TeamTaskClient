@@ -49,8 +49,8 @@
                 <Grid Background="White"
                       Margin="-1">
 
-                    <usercontrols:UserInfoUC 
-                        DataContext="{Binding User}" />
+                    <usercontrols:UserInfoUC DataContext="{Binding User}"
+                                             EditProfile="{Binding EditProfile}" />
                 </Grid>
             </Border>
 
@@ -59,16 +59,15 @@
             <Button Style="{StaticResource RedButton}"
                     Grid.Row="1"
                     Command="{Binding Logout}"
-                    Margin="0,10,0,10"
-                    >
+                    Margin="0,10,0,10">
 
                 <Button.Content>
                     <Viewbox MaxHeight="70">
-                        <TextBlock Text="Log out" 
-                                   Margin="0,10,0,10"/>
+                        <TextBlock Text="Log out"
+                                   Margin="0,10,0,10" />
                     </Viewbox>
                 </Button.Content>
-                    </Button>
+            </Button>
 
 
 

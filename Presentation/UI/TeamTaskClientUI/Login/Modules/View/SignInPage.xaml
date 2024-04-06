@@ -1,0 +1,119 @@
+﻿<Page x:Class="TeamTaskClient.UI.Login.Modules.View.SignInPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:TeamTaskClient.UI.Login.Modules.View"
+      xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
+      xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Login.Modules.ViewModels"
+      d:DataContext="{d:DesignInstance Type=viewmodels:SigninPageVM}"
+      mc:Ignorable="d"
+      d:DesignHeight="400"
+      d:DesignWidth="350"
+      Title="SignInPage">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid Background="White"
+          VerticalAlignment="Center">
+
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="110" />
+            <RowDefinition Height="170" />
+            <RowDefinition Height="120" />
+        </Grid.RowDefinitions>
+
+
+
+
+        <TextBlock Text="Login"
+                   FontSize="26"
+                   Margin="0,0,0,10"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Bottom"
+                   Style="{StaticResource GreenHeader}" />
+
+
+
+        <StackPanel VerticalAlignment="Center"
+                    Grid.Row="1"
+                    Width="300">
+
+            <Border BorderThickness="1"
+                    CornerRadius="10"
+                    Margin="0,0,0,20"
+                    BorderBrush="{StaticResource LightGreen}">
+
+
+                <usercontrols:WatermarkTextBox Text="{Binding Email}"
+                                               FontSize="18"
+                                               Padding="5"
+                                               BorderThickness="0"
+                                               WatermarkForeground="{StaticResource Green}"
+                                               Height="40"
+                                               Background="Transparent"
+                                               WatermarkText="Enter E-mail" />
+
+            </Border>
+
+
+            <Border BorderThickness="1"
+                    CornerRadius="10"
+                    Margin="0,0,0,15"
+                    BorderBrush="{StaticResource LightGreen}">
+
+                <usercontrols:WatermarkTextBox Text="{Binding Password, Mode=TwoWay}"
+                                               FontSize="18"
+                                               Padding="5"
+                                               BorderThickness="0"
+                                               WatermarkForeground="{StaticResource Green}"
+                                               WatermarkText="Enter password"
+                                               Height="40"
+                                               Background="Transparent" />
+            </Border>
+
+            <TextBlock Margin="0,0,0,10"
+                       HorizontalAlignment="Center">
+                <Hyperlink Command="{Binding ForgotPassword}"
+                           Style="{StaticResource GreenHyperlink}">
+                 Forgot password?
+                </Hyperlink>
+            </TextBlock>
+
+
+        </StackPanel>
+
+
+        <StackPanel Grid.Row="2">
+
+            <Button  Content="Login"
+                     Height="40"
+                     Width="300"
+                     Margin="0,0,0,10"
+                     Command="{Binding SigninButton}"
+                     Style="{StaticResource GreenButton}" />
+
+
+            <TextBlock Style="{StaticResource SimpleBlackText}"
+                       HorizontalAlignment="Center">
+                 Don't have an account?
+                <Hyperlink Command="{Binding ToSignup}"
+                           Style="{StaticResource GreenHyperlink}">
+                 Signup now
+                </Hyperlink>
+            </TextBlock>
+
+        </StackPanel>
+
+    </Grid>
+</Page>

@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.UpdateProjectTask
 {
-    internal class UpdateProjectTaskCommand : IRequest
+    public class UpdateProjectTaskCommand : IRequest
     {
         public int ProjectTaskId { get; set; }
         public int ProjectId { get; set; }

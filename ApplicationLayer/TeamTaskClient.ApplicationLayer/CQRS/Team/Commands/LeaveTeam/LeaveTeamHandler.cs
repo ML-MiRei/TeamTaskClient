@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.LeaveTeam
 {
-    internal class LeaveTeamHandler(ITeamRepository teamRepository) : IRequestHandler<LeaveTeamCommand>
+    public class LeaveTeamHandler(ITeamRepository teamRepository) : IRequestHandler<LeaveTeamCommand>
     {
         public Task Handle(LeaveTeamCommand request, CancellationToken cancellationToken)
         {

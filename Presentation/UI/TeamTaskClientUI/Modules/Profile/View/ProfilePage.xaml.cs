@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Modules.Profile.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Profile.View
@@ -21,10 +23,10 @@ namespace TeamTaskClient.UI.Modules.Profile.View
     /// </summary>
     public partial class ProfilePage : Page
     {
-        public ProfilePage()
+        public ProfilePage(IMediator mediator, IRemoveCash removeCash)
         {
             InitializeComponent();
-            DataContext = new ProfileVM();
+            DataContext = new ProfileVM(mediator, removeCash);
         }
     }
 }

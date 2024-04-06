@@ -25,8 +25,57 @@ namespace TeamTaskClient.UI.Modules.Messanger.UserControls
             InitializeComponent();
         }
 
-        public string CreatorLastMessage { get; set; }
-        public string LastMessage { get; set; }
-        public string Image { get; set; }
+
+        public static DependencyProperty CreatorLastMessageProperty = DependencyProperty.Register(nameof(CreatorLastMessage), typeof(string), typeof(ChatTemplate));
+        public static DependencyProperty NameChatProperty = DependencyProperty.Register(nameof(NameChat), typeof(string), typeof(ChatTemplate));
+        public static DependencyProperty LastMessageProperty = DependencyProperty.Register(nameof(LastMessage), typeof(string), typeof(ChatTemplate));
+        public static DependencyProperty ImageProperty = DependencyProperty.Register(nameof(Image), typeof(string), typeof(ChatTemplate));
+
+
+        public string CreatorLastMessage
+        {
+            get
+            {
+               return (string)GetValue(CreatorLastMessageProperty);
+            }
+            set
+            {
+                SetValue(CreatorLastMessageProperty, value);
+            }
+        }
+
+        public string NameChat
+        {
+            get
+            {
+               return (string)GetValue(CreatorLastMessageProperty);
+            }
+            set
+            {
+                SetValue(CreatorLastMessageProperty, value);
+            }
+        }
+        public string LastMessage
+        {
+            get
+            {
+                return (string)GetValue(LastMessageProperty);
+            }
+            set
+            {
+                SetValue(LastMessageProperty, value);
+            }
+        }
+        public string Image
+        {
+            get
+            {
+                return (string)GetValue(ImageProperty);
+            }
+            set
+            {
+                SetValue(ImageProperty, value);
+            }
+        }
     }
 }

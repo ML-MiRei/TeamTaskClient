@@ -10,13 +10,13 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.DeleteUserFromTeam
 {
-    internal class DeleteUserFromTeamHandler(ITeamRepository teamRepository) : IRequestHandler<DeleteUserFromTeamCommand>
+    public class DeleteUserFromTeamHandler(ITeamRepository teamRepository) : IRequestHandler<DeleteUserFromTeamCommand>
     {
         public Task Handle(DeleteUserFromTeamCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                teamRepository.DeletUserFromTeam(request.Tag, request.TeamId);
+                teamRepository.DeleteUserFromTeam(request.Tag, request.TeamTag);
                 return Task.CompletedTask;
             }
             catch (Exception)

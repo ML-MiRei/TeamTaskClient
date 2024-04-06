@@ -6,13 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreatePrivateChat
 {
-    internal class CreatePrivateChatCommand : IRequest<ChatEntity>
+    public class CreatePrivateChatCommand : IRequest<ChatModel>
     {
         public int UserId { get; set; }
+        public string SecondUserTag { get; set; }
     }
 
 

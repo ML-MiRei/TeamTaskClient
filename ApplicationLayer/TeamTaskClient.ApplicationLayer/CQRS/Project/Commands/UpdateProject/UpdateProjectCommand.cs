@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.UpdateProject
 {
-    internal class UpdateProjectCommand : IRequest
+    public class UpdateProjectCommand : IRequest
     {
         public string? ProjectName { get; set;}
         public int ProjectId { get; set;}

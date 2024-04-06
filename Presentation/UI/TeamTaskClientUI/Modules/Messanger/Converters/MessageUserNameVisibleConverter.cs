@@ -18,7 +18,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.Converters
             if (value != null)
                 return null;
 
-            if (((MessageEntity)value).ID == int.Parse( ConfigurationManager.AppSettings["userId"]))
+            if (((MessageEntity)value).ID ==  Properties.Settings.Default.userId)
             {
                 return Visibility.Hidden;
             }

@@ -8,7 +8,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag
 {
-    internal class GetUserByIdQuery : IRequest<UserEntity>
+    public class GetUserByTagQuery : IRequest<UserEntity>
     {
         public string UserTag { get; set; }
     }

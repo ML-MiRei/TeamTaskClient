@@ -26,7 +26,15 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
         {
             public override void Execute(object? parameter)
             {
-                System.Windows.Application.Current.Windows.OfType<ErrorWindow>().First().DialogResult = false;
+                try
+                {
+                    App.Current.Windows.OfType<ErrorWindow>().First().DialogResult = false;
+                }
+                catch
+                {
+
+                    Programm.ErrorWindow.DialogResult = false;
+                }
             }
         }
 

@@ -10,9 +10,9 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag
 {
-    internal class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandler<GetUserByIdQuery, UserEntity>
+    public class GetUserByTagHandler(IUserRepository userRepository) : IRequestHandler<GetUserByTagQuery, UserEntity>
     {
-        public Task<UserEntity> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public Task<UserEntity> Handle(GetUserByTagQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -23,9 +23,9 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag
                 }
                 return user;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new NotFoundException();
+                throw ex;
             }
         }
     }

@@ -1,26 +1,37 @@
 ﻿
+using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
+using TeamTaskClient.UI.Dialogs.View;
+using TeamTaskClient.UI.Login;
 using TeamTaskClient.UI.Modules.Messanger.View;
 using TeamTaskClient.UI.Modules.Profile.View;
 using TeamTaskClient.UI.Modules.Projects.View;
+using TeamTaskClientUI.Main;
 
 namespace TeamTaskClient.UI.Main
 {
     internal class MainWindowVM : ViewModelBase
     {
 
-        public MainWindowVM()
+        public MainWindowVM(MainWindow mainWindow, IMediator mediator, IRemoveCash removeCash)
         {
 
-            ProfileButton = new NavigationCommand(new ProfilePage());
-            ProjectsButton = new NavigationCommand(new ProjectsPage());
-            MessangerButton = new NavigationCommand(new MessangerPage());
+            ProfileButton = new NavigationCommand(mainWindow, new ProfilePage(mediator, removeCash));
+            ProjectsButton = new NavigationCommand(mainWindow, new ProjectsPage());
+            MessangerButton = new NavigationCommand(mainWindow, new MessangerPage(mediator));
+            ToProjectTaskButton = new NavigationCommand(mainWindow, new ProjectTasksPage(mediator));
+
+
+
+
             //CalendarButton = new NavigationCommand(new CalendarPage());
             //TasksButton = new NavigationCommand(new TaskPage());
 
@@ -29,6 +40,9 @@ namespace TeamTaskClient.UI.Main
             //mainWindow.profileButton.IsChecked = true;
 
         }
+
+
+        public static ICommand ToProjectTaskButton { get; set; }
 
 
         public ICommand ProfileButton { get; }

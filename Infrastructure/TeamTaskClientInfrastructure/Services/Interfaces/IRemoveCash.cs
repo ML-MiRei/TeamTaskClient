@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.Infrastructure.Services.Interfaces
 {
-    internal interface IRemoveCash
+    public interface IRemoveCash
     {
         void RemoveCash();
     }

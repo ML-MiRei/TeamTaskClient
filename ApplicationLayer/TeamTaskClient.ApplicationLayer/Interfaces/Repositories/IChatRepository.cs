@@ -4,19 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.DTOs;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
 {
     public interface IChatRepository
     {
-        Task<UserEntity> AddUserGroupChatByTag(string tag, int idChat);
-        Task DeleteUserGroupChatByTag(string tag, int idChat);
-        Task<ChatEntity> CreateChat(ChatDTO chatEntity);
+        Task AddUserGroupChatByTag(string tag, int idChat);
+        Task DeleteUserFromChatByTag(string tag, int idChat);
+        Task<ChatModel> CreatePrivateChat(int userId, string secondUserTag);
+        Task<ChatModel> CreateGroupChat(int userId, string name);
         Task UpdateChat(ChatDTO chatEntity);
-        Task DeleteChat(int userId, int chatId);
-        Task<List<ChatEntity>> GetChatByIdUser(int userId);
-        Task<UserEntity> GetGroupChatAdmin(int chatId);
+        Task LeaveChat(int userId, int chatId);
+        Task<List<ChatModel>> GetChatByIdUser(int userId);
 
     }
 }

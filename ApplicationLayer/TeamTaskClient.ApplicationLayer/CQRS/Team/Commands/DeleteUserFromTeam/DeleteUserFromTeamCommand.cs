@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.DeleteUserFromTeam
 {
-    internal class DeleteUserFromTeamCommand : IRequest
+    public class DeleteUserFromTeamCommand : IRequest
     {
         public string Tag { get; set; }
-        public int TeamId { get; set; }
+        public string TeamTag { get; set; }
     }
 }

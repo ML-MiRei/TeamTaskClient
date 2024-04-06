@@ -15,10 +15,10 @@ namespace TeamTaskClient.UI.Modules.Messanger.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value == null)
                 return null;
 
-            if (((MessageEntity)value).ID == int.Parse( ConfigurationManager.AppSettings["userId"]))
+            if (((string)value) == Properties.Settings.Default.userTag)
             {
                 return HorizontalAlignment.Right;
             }

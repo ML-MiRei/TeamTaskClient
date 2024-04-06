@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.DeleteMessage
 {
-    internal class DeleteMessageCommand : IRequest
+    public class DeleteMessageCommand : IRequest
     {
         public int MessageId { get; set; }
         public int ChatId { get; set; }

@@ -11,22 +11,18 @@
 	<ItemGroup>
 		<Folder Include="Modules\Tasks\ViewModels\" />
 		<Folder Include="Modules\Tasks\View\" />
-		<Folder Include="Modules\Teams\ViewModels\" />
-		<Folder Include="Modules\Teams\View\" />
 		<Folder Include="UserControls\" />
-		<Folder Include="Dialogs\" />
 		<Folder Include="Common\" />
 		<Folder Include="Main\" />
 		<Folder Include="Common\Base" />
 		<Folder Include="Common\Converters" />
 		<Folder Include="UserControls\" />
-		<Folder Include="Dialogs\View" />
-		<Folder Include="Dialogs\ViewModels" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
 	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -36,6 +32,27 @@
 
 <ItemGroup>
 	<ResourceCompile Include="https://localhost:7047/api" />
+</ItemGroup>
+
+<ItemGroup>
+  <Compile Update="Dialogs\View\CreateSubjectDialogWindow.xaml.cs">
+    <SubType>Code</SubType>
+  </Compile>
+  <Compile Update="Dialogs\View\InputDialogWindow.xaml.cs">
+    <SubType>Code</SubType>
+  </Compile>
+  <Compile Update="Properties\Settings.Designer.cs">
+    <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    <AutoGen>True</AutoGen>
+    <DependentUpon>Settings.settings</DependentUpon>
+  </Compile>
+</ItemGroup>
+
+<ItemGroup>
+  <None Update="Properties\Settings.settings">
+    <Generator>SettingsSingleFileGenerator</Generator>
+    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+  </None>
 </ItemGroup>
 	
 	

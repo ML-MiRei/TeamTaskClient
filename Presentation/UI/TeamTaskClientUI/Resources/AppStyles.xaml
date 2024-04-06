@@ -330,4 +330,52 @@
                 Value="16" />
     </Style>
 
+    <!--TextBox -->
+
+    <Style x:Key="BaseTextBox"
+           TargetType="TextBox">
+        <!--<Setter Property="FontFamily"
+          Value="" />-->
+    </Style>
+
+
+
+    <Style x:Key="SimpleGreenTextBox"
+           BasedOn="{StaticResource BaseTextBox}"
+           TargetType="TextBox">
+        <Setter Property="Foreground"
+                Value="{StaticResource DarkGreen}" />
+        <Setter Property="FontWeight"
+                Value="Regular" />
+        <Setter Property="FontSize"
+                Value="16" />
+    </Style>
+
+
+    <!--Other-->
+
+    <Style TargetType="{x:Type Hyperlink}"
+           x:Key="GreenHyperlink">
+        <Setter Property="FocusVisualStyle"
+                Value="{x:Null}" />
+        <Setter Property="Foreground"
+                Value="{StaticResource Green}" />
+        <Setter Property="TextBlock.TextDecorations"
+                Value="{x:Null}" />
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver"
+                     Value="True">
+                <Setter Property="Cursor"
+                        Value="Hand" />
+                <Setter Property="Foreground"
+                        Value="{StaticResource DarkGreen}" />
+                <Setter Property="TextBlock.TextDecorations"
+                        Value="Underline" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+
+
+
 </ResourceDictionary>

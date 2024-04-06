@@ -22,23 +22,25 @@
     </UserControl.Resources>
 
 
-    <Border CornerRadius="10"
+    <Border CornerRadius="20"
             BorderThickness="5"
+            Background="White"
             BorderBrush="White">
         <StackPanel Background="White"
-                    Margin="-1">
+                    
+                    Margin="5">
 
-            <TextBlock Text="{Binding UserName, FallbackValue=UserName}"
+            <TextBlock Text="{Binding UserNameCreator, FallbackValue=UserName}"
                        Margin="20,10,20,10"
                        Style="{StaticResource BlackHeader}" />
-            <TextBlock Text="{Binding TextMessage, FallbackValue=TextMessage}"
+            <TextBlock Text="{Binding Text, FallbackValue=TextMessage}"
                        Margin="20,0,20,0"
                        Style="{StaticResource SimpleBlackText}" />
 
             <TextBlock HorizontalAlignment="Right"
                        Margin="0,5,20,10"
                        Foreground="Gray"
-                       Text="{Binding Time, Converter={StaticResource MessageTimeConverter}, FallbackValue=20:00}"
+                       Text="{Binding DateCreated, Converter={StaticResource MessageTimeConverter}, FallbackValue=20:00}"
                        Style="{StaticResource SimpleBlackText}" />
         </StackPanel>
     </Border>

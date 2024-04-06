@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Notification.Commands.DeleteNotification
 {
-    internal class DeleteNotificationCommand : IRequest
+    public class DeleteNotificationCommand : IRequest
     {
         public int NotificationId {  get; set; }
     }

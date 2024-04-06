@@ -10,9 +10,9 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById
 {
-    internal class GetUserByTeamHandler(IUserRepository userRepository) : IRequestHandler<GetUserByTeamQuery, UserEntity>
+    public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandler<GetUserByIdQuery, UserEntity>
     {
-        public Task<UserEntity> Handle(GetUserByTeamQuery request, CancellationToken cancellationToken)
+        public Task<UserEntity> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {

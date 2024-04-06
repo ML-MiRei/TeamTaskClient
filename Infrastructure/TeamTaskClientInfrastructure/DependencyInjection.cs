@@ -19,14 +19,16 @@ namespace TeamTaskClient.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string dbConnection)
         {
 
-            string dbConnection = configuration["DbConnection"];
             services.AddDbContext<SqlLiteDbContext>(opt =>
             {
                 opt.UseSqlite(dbConnection);
             });
+
+            services.AddSingleton<IHttpClient, TeamTaskSeverHttpClient>();
+
             services.AddScoped<SqlLiteDbContext>(prov =>
                 prov.GetService<SqlLiteDbContext>()
             );
@@ -38,7 +40,9 @@ namespace TeamTaskClient.Infrastructure
                                                 .AddTransient<INotificationRepository, NotificationRepositoryImplementation>()
                                                 .AddTransient<IProjectTaskRepository, ProjectTaskRepositoryImplementation>()
                                                 .AddTransient<IAuthorizationService, AuthorizationService>()
-                                                .AddTransient<IHttpClient, TeamTaskSeverHttpClient>();
+                                                .AddTransient<IRemoveCash, RemoveCash>()
+                                                .AddTransient<IHttpClient, TeamTaskSeverHttpClient>()
+                                                .AddTransient<IChatHubClient, ChatHubClient>();
             return services;
         }
     }

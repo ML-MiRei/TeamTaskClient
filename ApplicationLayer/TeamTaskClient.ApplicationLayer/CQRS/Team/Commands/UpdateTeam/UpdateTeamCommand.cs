@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.UpdateTeam
 {
-    internal class UpdateTeamCommand : IRequest
+    public class UpdateTeamCommand : IRequest
     {
         public string? Name { get; set; }
         public int TeamId { get; set; }

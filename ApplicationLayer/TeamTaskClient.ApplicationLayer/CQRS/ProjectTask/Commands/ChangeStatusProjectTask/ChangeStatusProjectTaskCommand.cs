@@ -8,7 +8,7 @@ using TeamTaskClient.Domain.Enums;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatusProjectTask
 {
-    internal class ChangeStatusProjectTaskCommand : IRequest
+    public class ChangeStatusProjectTaskCommand : IRequest
     {
         public int ProjectId { get; set; }
         public int ProjectTaskId { get; set; }

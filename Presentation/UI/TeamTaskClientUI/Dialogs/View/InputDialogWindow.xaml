@@ -1,0 +1,100 @@
+﻿<Window x:Class="TeamTaskClient.UI.Dialogs.View.InputDialogWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TeamTaskClient.UI.Dialogs.View"
+        xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Dialogs.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:InputDialogVM}"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        BorderThickness="0"
+        MinHeight="200"
+        MaxHeight="300"
+        Height="Auto"
+        Width="400">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+
+
+    <Border BorderThickness="5"
+            VerticalAlignment="Center"
+            BorderBrush="{StaticResource BackgroundGreen}"
+            CornerRadius="10">
+        <Grid  Margin="-1"
+               Background="{StaticResource BackgroundGreen}">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="{Binding TextDialog, Mode=OneWay}"
+                       Grid.Row="0"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Bottom"
+                       Margin="0,20,0,10"
+                       Style="{StaticResource GreenHeader}" />
+
+
+            <ItemsControl Grid.Row="1"
+                          Margin="20,0,20,0"
+                          VerticalAlignment="Center"
+                          ItemsSource="{Binding InputValues, Mode=TwoWay}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          HorizontalAlignment="Center">
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="10"
+                                Background="White"
+                                BorderThickness="5"
+                                Width="300"
+                                Margin="0,0,0,5"
+                                HorizontalAlignment="Center"
+                                BorderBrush="White">
+
+                            <TextBox HorizontalAlignment="Stretch"
+                                     VerticalAlignment="Center"
+                                     BorderThickness="0"
+                                     Text="{Binding Path=Text, Mode=TwoWay}"
+                                     Style="{StaticResource SimpleGreenTextBox}" />
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+
+
+            </ItemsControl>
+
+
+            <Button Style="{StaticResource GreenButton}"
+                    Content="{Binding ButtonContent}"
+                    Margin="20,10,20,20"
+                    Width="300"
+                    Padding="5"
+                    Grid.Row="2"
+                    Command="{Binding Save}" />
+
+            <Button Style="{StaticResource RedButton}"
+                    Width="30"
+                    Command="{Binding CloseWindow}"
+                    Height="30"
+                    Margin="0,5,5,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Content="x" />
+        </Grid>
+    </Border>
+</Window>

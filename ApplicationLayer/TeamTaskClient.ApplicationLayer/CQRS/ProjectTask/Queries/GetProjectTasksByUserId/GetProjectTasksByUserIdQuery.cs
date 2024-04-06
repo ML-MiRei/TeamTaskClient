@@ -8,7 +8,7 @@ using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Queries.GetProjectTasksByUserId
 {
-    internal class GetProjectTasksByUserIdQuery : IRequest<List<ProjectTaskEntity>>
+    public class GetProjectTasksByUserIdQuery : IRequest<List<ProjectTaskEntity>>
     {
         public int UserId { get; set; }
     }

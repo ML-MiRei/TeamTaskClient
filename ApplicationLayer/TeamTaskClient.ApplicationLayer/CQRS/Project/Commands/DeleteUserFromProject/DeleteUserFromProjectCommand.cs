@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.DeleteUserFromProject
 {
-    internal class DeleteUserFromProjectCommand : IRequest
+    public class DeleteUserFromProjectCommand : IRequest
     {
         public int ProjectId { get; set; }
         public string UserTag { get; set; }

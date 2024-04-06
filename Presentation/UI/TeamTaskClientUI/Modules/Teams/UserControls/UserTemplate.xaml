@@ -1,0 +1,36 @@
+﻿<UserControl x:Class="TeamTaskClient.UI.Modules.Teams.UserControls.UserTemplate"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Teams.UserControls"
+             xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="120" d:DesignWidth="100">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <StackPanel>
+
+            <usercontrols:CircleImage 
+                Height="100"
+                Width="100"
+                AvatarImage="{Binding AvatarImage}"
+                />
+
+            <TextBlock Text="{Binding UserName, FallbackValue=UserName}"
+                       Style="{StaticResource SimpleBlackText}" 
+                       HorizontalAlignment="Center"
+                       Margin="5"/>
+
+        </StackPanel>
+    </Grid>
+</UserControl>

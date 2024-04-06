@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.AddUserInTeam
 {
-    internal class AddUserInTeamCommand : IRequest
+    public class AddUserInTeamCommand : IRequest
     {
-        public int TeamId { get; set; }
+        public string TeamTag { get; set; }
         public string UserTag { get; set; }
     }
 }

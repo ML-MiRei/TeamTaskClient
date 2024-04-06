@@ -14,8 +14,8 @@
             <ColumnDefinition Width="4*" />
         </Grid.ColumnDefinitions>
 
-        <Frame Source="ChatsListPage.xaml" />
-        <Frame Source="MessagesPage.xaml"
+        <Frame Name="ChatPageLayout" />
+        <Frame Name="MessagePageLayout"
                Grid.Column="1" />
 
     </Grid>

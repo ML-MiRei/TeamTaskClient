@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.Domain.Exceptions;
@@ -13,14 +14,13 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreateGroupChat
 {
-    public class CreateGroupChatHandler(IChatRepository chatRepository) : IRequestHandler<CreateGroupChatCommand, ChatEntity>
+    public class CreateGroupChatHandler(IChatRepository chatRepository) : IRequestHandler<CreateGroupChatCommand, ChatModel>
     {
-        public Task<ChatEntity> Handle(CreateGroupChatCommand request, CancellationToken cancellationToken)
+        public Task<ChatModel> Handle(CreateGroupChatCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                ChatDTO chatDTO = new() { AdminId = request.UserId, Name = request.Name, ChatType = (int)ChatTypeEnum.GROUP };
-                var chat = chatRepository.CreateChat(chatDTO).Result;
+                var chat = chatRepository.CreateGroupChat(request.UserId, request.Name).Result;
                 return Task.FromResult(chat);
             }
             catch (Exception)
