@@ -5,25 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask
 {
-    public class CreateProjectTaskHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<CreateProjectTaskCommand, ProjectTaskEntity>
+    public class CreateProjectTaskHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<CreateProjectTaskCommand, ProjectTaskModel>
     {
-        public Task<ProjectTaskEntity> Handle(CreateProjectTaskCommand request, CancellationToken cancellationToken)
+        public Task<ProjectTaskModel> Handle(CreateProjectTaskCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var projectTask = projectTaskRepository.CreateProjectTask(new DTOs.ProjectTaskDTO()
+                var projectTask = projectTaskRepository.CreateProjectTask(new ProjectTaskEntity()
                 {
-                    DateEnd = request.DateEnd,
-                    DateStart = request.DateStart,
-                    StatusProjectTask = Domain.Enums.StatusProjectTaskEnum.STORIES,
                     Detail = request.Detail,
-                    IdProject = request.ProjectId,
-                    Title = request.Title
+                    Title = request.Title,
+                    SprintId = request.SprintId
                 });
 
                 return projectTask;

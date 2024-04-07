@@ -1,45 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
+using TeamTaskClient.Domain.Exceptions;
+using TeamTaskClient.Infrastructure.LocalDB.Models;
+using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class ProjectTaskRepositoryImplementation : IProjectTaskRepository
+    public class ProjectTaskRepositoryImplementation(IHttpClient client) : IProjectTaskRepository
     {
-        public Task ChangeStatusProjectTask(int projectId, int projectTaskId, StatusProjectTaskEnum status)
+        public async Task ChangeStatusProjectTask(int projectTaskId, StatusProjectTaskEnum status)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/change-status", JsonContent.Create((int)status));
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
 
-        public Task<ProjectTaskEntity> CreateProjectTask(ProjectTaskDTO entity)
+        public async Task<ProjectTaskModel> CreateProjectTask(ProjectTaskEntity entity)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/ProjectTask/create", JsonContent.Create(entity));
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return await httpReply.Content.ReadFromJsonAsync<ProjectTaskModel>();
+            }
+            throw new ConnectionException();
         }
 
-        public Task DeleteProjectTask(int projectId, int projectTaskId)
+        public async Task DeleteProjectTask(int projectId, int projectTaskId)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/delete");
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
 
-        public Task<List<ProjectTaskEntity>> GetProjectTasksByProjectId(int id)
+        public async Task SetExecutorProjectTask(int projectTaskId, string userTag)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/set-executor", JsonContent.Create(userTag));
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
 
-        public Task<List<ProjectTaskEntity>> GetProjectTasksByUserId(int id)
+        public async Task UpdateProjectTask(ProjectTaskEntity projectTask)
         {
-            throw new NotImplementedException();
-        }
+            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTask.ID}/update", JsonContent.Create(projectTask));
 
-        public Task UpdateProjectTask(ProjectTaskDTO projectTask)
-        {
-            throw new NotImplementedException();
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
     }
 }

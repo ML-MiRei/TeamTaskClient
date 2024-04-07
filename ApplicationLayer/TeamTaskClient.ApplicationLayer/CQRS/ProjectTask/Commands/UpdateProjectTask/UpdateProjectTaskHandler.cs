@@ -17,16 +17,11 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.UpdateProjec
         {
             try
             {
-                var projectTask = projectTaskRepository.UpdateProjectTask(new DTOs.ProjectTaskDTO()
+                var projectTask = projectTaskRepository.UpdateProjectTask(new ProjectTaskEntity()
                 {
-                    DateEnd = request.DateEnd,
-                    DateStart = request.DateStart,
-                    StatusProjectTask = Domain.Enums.StatusProjectTaskEnum.STORIES,
                     Detail = request.Detail,
-                    IdProject = request.ProjectId,
                     Title = request.Title,
-                    ID = request.ProjectTaskId,
-                    ExecutorProjectTask = request.executorProjectTask?.ID
+                    ID = request.ProjectTaskId
                 });
 
                 return projectTask;

@@ -16,7 +16,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.DeleteUserFromTeam
         {
             try
             {
-                teamRepository.DeleteUserFromTeam(request.Tag, request.TeamTag);
+                teamRepository.DeleteUserFromTeam(request.Tag, request.TeamId);
                 return Task.CompletedTask;
             }
             catch (Exception)

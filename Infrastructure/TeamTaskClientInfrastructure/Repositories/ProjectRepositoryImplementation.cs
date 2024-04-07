@@ -1,54 +1,99 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
+using TeamTaskClient.Domain.Exceptions;
+using TeamTaskClient.Infrastructure.LocalDB.Models;
+using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class ProjectRepositoryImplementation : IProjectRepository
+    public class ProjectRepositoryImplementation(IHttpClient client) : IProjectRepository
     {
-        public Task<ProjectEntity> CreateProject(ProjectDTO project)
+        public async Task<ProjectModel> CreateProject(string name)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/create", new StringContent(name));
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return await httpReply.Content.ReadFromJsonAsync<ProjectModel>();
+            }
+            throw new ConnectionException();
         }
 
-        public Task DeleteProject(int id)
+        public async Task DeleteProject(int projectId)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/delete");
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
 
-        public Task DeleteTeamFromProject(int projectId, string teamTag)
+
+        public async Task DeleteUserFromProject(int projectId, string userTag)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/delete-user/{userTag}");
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
 
-        public Task DeleteUserFromProject(int projectId, string userTag)
+
+
+        public async Task<List<ProjectModel>> GetProjectsByUserId(int id)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.GetAsync($"{client.ConnectionString}/Project/list");
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return await httpReply.Content.ReadFromJsonAsync<List<ProjectModel>>();
+            }
+            throw new ConnectionException();
         }
 
-        public Task<List<ProjectEntity>> GetProjectsByTeamId(int id)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<List<ProjectEntity>> GetProjectsByUserId(int id)
+        public async Task UpdateProject(ProjectEntity project)
         {
-            throw new NotImplementedException();
-        }
+            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/{project.ID}/update", JsonContent.Create(project));
 
-        public Task LeaveFromProject(int projectId, int userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateProject(ProjectDTO project)
-        {
-            throw new NotImplementedException();
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
     }
 }

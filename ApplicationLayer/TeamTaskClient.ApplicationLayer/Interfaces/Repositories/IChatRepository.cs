@@ -15,7 +15,7 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
         Task DeleteUserFromChatByTag(string tag, int idChat);
         Task<ChatModel> CreatePrivateChat(int userId, string secondUserTag);
         Task<ChatModel> CreateGroupChat(int userId, string name);
-        Task UpdateChat(ChatDTO chatEntity);
+        Task UpdateChat(ChatEntity chatEntity);
         Task LeaveChat(int userId, int chatId);
         Task<List<ChatModel>> GetChatByIdUser(int userId);
 

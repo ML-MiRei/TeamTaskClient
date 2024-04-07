@@ -11,9 +11,8 @@ namespace TeamTaskClient.Domain.Entities
     public class ProjectEntity : IBaseEntity
     {
         public int ID { get; set; }
-
-        [MaxLength(30)]
-        public string Name { get; set; }
-        public UserEntity Leader { get; set; }
+        public int ProjectLeadId { get; set; }
+        public string ProjectLeadTag { get; set; }
+        public string ProjectName { get; set; }
     }
 }

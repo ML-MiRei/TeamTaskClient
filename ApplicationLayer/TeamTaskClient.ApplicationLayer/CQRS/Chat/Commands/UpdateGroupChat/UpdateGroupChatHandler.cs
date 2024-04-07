@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat
@@ -17,7 +18,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat
             try
             {
 
-                chatRepository.UpdateChat(new ChatDTO() { AdminId = request.AdminId, Name = request.ChatName });
+                chatRepository.UpdateChat(new ChatEntity() { AdminId = request.AdminId, ChatName = request.ChatName });
                 return Task.CompletedTask;
 
             }

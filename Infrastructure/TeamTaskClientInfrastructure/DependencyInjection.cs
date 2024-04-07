@@ -41,7 +41,7 @@ namespace TeamTaskClient.Infrastructure
                                                 .AddTransient<IProjectTaskRepository, ProjectTaskRepositoryImplementation>()
                                                 .AddTransient<IAuthorizationService, AuthorizationService>()
                                                 .AddTransient<IRemoveCash, RemoveCash>()
-                                                .AddTransient<IHttpClient, TeamTaskSeverHttpClient>()
+                                                .AddTransient<IHttpClient, TeamTaskSeverHttpClient > ()
                                                 .AddTransient<IChatHubClient, ChatHubClient>();
             return services;
         }

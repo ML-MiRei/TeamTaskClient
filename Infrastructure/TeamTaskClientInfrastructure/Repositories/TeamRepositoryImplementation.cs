@@ -18,9 +18,9 @@ namespace TeamTaskClient.Infrastructure.Repositories
 {
     public class TeamRepositoryImplementation(IHttpClient httpClient) : ITeamRepository
     {
-        public async Task AddUserInTeamByTag(string teamTag, string userTag)
+        public async Task AddUserInTeamByTag(int teamId, string userTag)
         {
-            var httpReply = await httpClient.CurrentHttpClient.PostAsync($"{httpClient.ConnectionString}/Team/add-user/user-tag={userTag}&team-tag={teamTag}", new StringContent(""));
+            var httpReply = await httpClient.CurrentHttpClient.PostAsync($"{httpClient.ConnectionString}/Team/{teamId}/add-user", new StringContent(userTag));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -33,11 +33,11 @@ namespace TeamTaskClient.Infrastructure.Repositories
             throw new ConnectionException();
         }
 
-        public async Task<TeamModel> CreateTeam(TeamDTO teamData)
+        public async Task<TeamModel> CreateTeam(TeamEntity teamData)
         {
 
             var httpReply = await httpClient.CurrentHttpClient
-                                .PostAsync($"{httpClient.ConnectionString}/Team/create/user-tag={teamData.LeadTag}&team-name={teamData.Name}", new StringContent(""));
+                                .PostAsync($"{httpClient.ConnectionString}/Team/create", JsonContent.Create(teamData));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -45,16 +45,15 @@ namespace TeamTaskClient.Infrastructure.Repositories
             }
             else if (httpReply.IsSuccessStatusCode)
             {
-                var team =  await httpReply.Content.ReadFromJsonAsync<TeamModel>();
-                return team;
+                return await httpReply.Content.ReadFromJsonAsync<TeamModel>();
             }
             throw new ConnectionException();
         }
 
-        public async Task DeleteUserFromTeam(string userTag, string teamTag)
+        public async Task DeleteUserFromTeam(string userTag, int teamId)
         {
             var httpReply = await httpClient.CurrentHttpClient
-                                .DeleteAsync($"{httpClient.ConnectionString}/Team/delete-user-from-team/user-tag={userTag}&team-tag={teamTag}");
+                                .DeleteAsync($"{httpClient.ConnectionString}/Team/{teamId}/delete-user/{userTag}");
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -71,7 +70,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task<List<TeamModel>> GetTeamsByUserId(int userId)
         {
             var httpReply = await httpClient.CurrentHttpClient
-                      .GetAsync($"{httpClient.ConnectionString}/Team/list/user-id={userId}");
+                      .GetAsync($"{httpClient.ConnectionString}/Team/list");
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -79,8 +78,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
             }
             else if (httpReply.IsSuccessStatusCode)
             {
-                var teams = await httpReply.Content.ReadFromJsonAsync<List<TeamModel>>();
-                return teams;
+                return await httpReply.Content.ReadFromJsonAsync<List<TeamModel>>();
             }
             throw new ConnectionException();
         }
@@ -88,7 +86,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task LeaveTeam(int userId, int teamId)
         {
             var httpReply = await httpClient.CurrentHttpClient
-                                            .DeleteAsync($"{httpClient.ConnectionString}/Team/leave-from-team/user-id={userId}&team-id={teamId}");
+                                            .DeleteAsync($"{httpClient.ConnectionString}/Team/{teamId}/leave");
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -102,12 +100,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
         }
 
 
-
-        // attention: TeamDTO -- TeamModel: prokatit - horosho
-        public async Task UpdateTeam(TeamDTO teamData)
+        public async Task UpdateTeam(TeamEntity teamData)
         {
             var httpReply = await httpClient.CurrentHttpClient
-                    .PatchAsync($"{httpClient.ConnectionString}/Team/update/team={teamData}",  JsonContent.Create(teamData));
+                    .PatchAsync($"{httpClient.ConnectionString}/Team/{teamData.ID}/update",  JsonContent.Create(teamData));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Notification.Queries.GetNotifications
 {
-    public class GetNotificationsHandler(INotificationRepository notificationRepository) : IRequestHandler<GetNotificationsQuery, List<NotificationEntity>>
+    public class GetNotificationsHandler(INotificationRepository notificationRepository) : IRequestHandler<GetNotificationsQuery, List<NotificationModel>>
     {
-        public Task<List<NotificationEntity>> Handle(GetNotificationsQuery request, CancellationToken cancellationToken)
+        public Task<List<NotificationModel>> Handle(GetNotificationsQuery request, CancellationToken cancellationToken)
         {
             try
             {

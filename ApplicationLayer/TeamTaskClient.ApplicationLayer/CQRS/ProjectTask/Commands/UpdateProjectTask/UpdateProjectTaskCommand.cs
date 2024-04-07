@@ -12,12 +12,8 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.UpdateProjec
     public class UpdateProjectTaskCommand : IRequest
     {
         public int ProjectTaskId { get; set; }
-        public int ProjectId { get; set; }
         public string? Title { get; set; }
         public string? Detail { get; set; }
-        public DateTime? DateStart { get; set; }
-        public DateTime? DateEnd { get; set; }
-        public IExecutorProjectTask? executorProjectTask { get; set; }
 
     }
 }

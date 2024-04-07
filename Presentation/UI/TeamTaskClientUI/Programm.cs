@@ -16,6 +16,7 @@ using TeamTaskClient.UI.Main;
 using TeamTaskClient.UI.Dialogs.View;
 using System.Net.NetworkInformation;
 using System.Net;
+using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.UI
 {
@@ -65,6 +66,9 @@ namespace TeamTaskClient.UI
                 }
 
             }
+
+            IHttpClient httpClient = host.Services.GetService<IHttpClient>();
+            httpClient.TryConnection(Properties.Settings.Default.userId);
 
 
             var app = host.Services.GetService<App>();

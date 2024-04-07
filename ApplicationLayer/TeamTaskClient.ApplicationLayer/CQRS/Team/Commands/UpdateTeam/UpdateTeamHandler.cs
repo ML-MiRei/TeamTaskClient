@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.UpdateTeam
@@ -15,7 +16,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.UpdateTeam
         {
             try
             {
-                teamRepository.UpdateTeam(new DTOs.TeamDTO() { Name = request.Name, TeamId = request.TeamId, LeadTag = request.LeaderTag });
+                teamRepository.UpdateTeam(new TeamEntity() { Name = request.Name, ID = request.TeamId, TeamLeadTag = request.LeaderTag });
                 return Task.CompletedTask;
             }
             catch(Exception)

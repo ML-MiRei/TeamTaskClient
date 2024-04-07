@@ -9,7 +9,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.AddUserInTeam
 {
     public class AddUserInTeamCommand : IRequest
     {
-        public string TeamTag { get; set; }
+        public int TeamId { get; set; }
         public string UserTag { get; set; }
     }
 }

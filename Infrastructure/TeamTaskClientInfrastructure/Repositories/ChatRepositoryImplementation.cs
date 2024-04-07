@@ -20,7 +20,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task AddUserGroupChatByTag(string userTag, int chatId)
         {
             var httpReply = await client.CurrentHttpClient
-                         .PostAsync($"{client.ConnectionString}/Chat/add-user-in-chat/chat-id={chatId}&user-tag={userTag}", new StringContent(""));
+                         .PostAsync($"{client.ConnectionString}/Chat/{chatId}/add-user", new StringContent(userTag));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -37,7 +37,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task LeaveChat(int userId, int chatId)
         {
             var httpReply = await client.CurrentHttpClient
-              .DeleteAsync($"{client.ConnectionString}/Chat/leave-chat/chat-id={chatId}&user-id={userId}");
+              .DeleteAsync($"{client.ConnectionString}/Chat/{chatId}/leave");
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -53,7 +53,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task DeleteUserFromChatByTag(string userTag, int chatId)
         {
             var httpReply = await client.CurrentHttpClient
-               .DeleteAsync($"{client.ConnectionString}/Chat/delete-user-from-chat/chat-id={chatId}&user-tag={userTag}");
+               .DeleteAsync($"{client.ConnectionString}/Chat/{chatId}/delete-user/{userTag}");
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -68,7 +68,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task<List<ChatModel>> GetChatByIdUser(int userId)
         {
-            var httpReply = await client.CurrentHttpClient.GetAsync($"{client.ConnectionString}/Chat/get-chats/user-id={userId}");
+            var httpReply = await client.CurrentHttpClient.GetAsync($"{client.ConnectionString}/Chat/list");
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -83,10 +83,11 @@ namespace TeamTaskClient.Infrastructure.Repositories
         }
 
 
-        public async Task UpdateChat(ChatDTO chatData)
+        public async Task UpdateChat(ChatEntity chatData)
         {
+
             var httpReply = await client.CurrentHttpClient
-                .PatchAsync($"{client.ConnectionString}/Chat/update-chat/chat-id={chatData.ID}&name={chatData.Name}&admin-tag={chatData.AdminTag}", new StringContent(""));
+                .PatchAsync($"{client.ConnectionString}/Chat/update", JsonContent.Create(chatData));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -103,7 +104,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task<ChatModel> CreatePrivateChat(int userId, string secondUserTag)
         {
             var httpReply =  client.CurrentHttpClient
-               .PostAsync($"{client.ConnectionString}/Chat/create-private-chat/user-id={userId}&second-user-tag={secondUserTag}", new StringContent("create")).Result;
+               .PostAsync($"{client.ConnectionString}/Chat/private", new StringContent(secondUserTag)).Result;
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -120,7 +121,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task<ChatModel> CreateGroupChat(int userId, string name)
         {
             var httpReply = await client.CurrentHttpClient
-                .PostAsync($"{client.ConnectionString}/Chat/create-group-chat/user-id={userId}&group-chat-name={name}", new StringContent(""));
+                .PostAsync($"{client.ConnectionString}/Chat/group", new StringContent(name));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

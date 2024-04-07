@@ -18,6 +18,7 @@
 
 	<ItemGroup>
 	  <Folder Include="CQRS\Message\Queries\" />
+	  <Folder Include="CQRS\ProjectTask\Queries\" />
 	</ItemGroup>
 
 </Project>

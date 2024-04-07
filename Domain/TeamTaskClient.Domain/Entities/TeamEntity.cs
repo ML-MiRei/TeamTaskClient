@@ -8,15 +8,13 @@ using TeamTaskClient.Domain.Common;
 
 namespace TeamTaskClient.Domain.Entities
 {
-    public class TeamEntity : IBaseEntity, IExecutorProjectTask
+    public class TeamEntity : IBaseEntity
     {
         public int ID { get; set; }
-
-        [MaxLength(30)]
         public string Tag { get; set; }
         public string Name { get; set; }
-
-        public UserEntity Leader { get; set; }
+        public string TeamLeadTag { get; set; }
+        public int TeamLeadId { get; set; }
 
     }
 }

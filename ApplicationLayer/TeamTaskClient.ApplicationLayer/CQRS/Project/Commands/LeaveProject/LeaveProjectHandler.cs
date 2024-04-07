@@ -15,7 +15,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.LeaveProject
         {
             try
             {
-                projectRepository.LeaveFromProject(request.ProjectId, request.UserId);
+                projectRepository.LeaveFromProject(request.ProjectId);
                 return Task.CompletedTask;
             }
             catch (Exception)

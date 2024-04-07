@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Common;
 using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask
 {
-    public class CreateProjectTaskCommand : IRequest<ProjectTaskEntity>
+    public class CreateProjectTaskCommand : IRequest<ProjectTaskModel>
     {
-        public int ProjectId { get; set; }
+        public int SprintId { get; set; }
         public string Title { get; set; }
         public string Detail { get; set; }
-        public DateTime DateStart { get; set; }
-        public DateTime DateEnd { get; set; }
+
 
     }
 }

@@ -5,14 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Queries.GetProjectsByUserId
 {
-    public class GetProjectsByUserIdHandler(IProjectRepository projectRepository) : IRequestHandler<GetProjectsByUserIdQuery, List<ProjectEntity>>
+    public class GetProjectsByUserIdHandler(IProjectRepository projectRepository) : IRequestHandler<GetProjectsByUserIdQuery, List<ProjectModel>>
     {
-        public Task<List<ProjectEntity>> Handle(GetProjectsByUserIdQuery request, CancellationToken cancellationToken)
+        public Task<List<ProjectModel>> Handle(GetProjectsByUserIdQuery request, CancellationToken cancellationToken)
         {
             try
             {

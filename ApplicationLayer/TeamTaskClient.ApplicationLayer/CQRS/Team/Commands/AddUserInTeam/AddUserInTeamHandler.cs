@@ -15,7 +15,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.AddUserInTeam
         {
             try
             {
-                teamRepository.AddUserInTeamByTag(request.TeamTag, request.UserTag);
+                teamRepository.AddUserInTeamByTag(request.TeamId, request.UserTag);
                 return Task.CompletedTask;
             }
             catch (Exception)

@@ -15,7 +15,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.UpdateProject
         {
             try
             {
-                projectRepository.UpdateProject(new DTOs.ProjectDTO() { LeadTag = request.LeadTag, Name = request.ProjectName, ID = request.ProjectId});
+                projectRepository.UpdateProject(new Domain.Entities.ProjectEntity() { ProjectLeadTag = request.LeadTag, ProjectName = request.ProjectName, ID = request.ProjectId});
                 return Task.CompletedTask;
             }
             catch (Exception)

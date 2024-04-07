@@ -10,7 +10,6 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatus
 {
     public class ChangeStatusProjectTaskCommand : IRequest
     {
-        public int ProjectId { get; set; }
         public int ProjectTaskId { get; set; }
         public StatusProjectTaskEnum Status { get; set; }
     }

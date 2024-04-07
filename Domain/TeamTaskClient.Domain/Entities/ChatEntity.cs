@@ -11,9 +11,11 @@ namespace TeamTaskClient.Domain.Entities
     public class ChatEntity : IBaseEntity
     {
         public int ID { get; set; }
-        public string Name { get; set; }
-        public ChatTypeEnum ChatType { get; set; }
-        public UserEntity? Admin {  get; set; } 
+        public string ChatName { get; set; }
+        public int Type { get; set; }
+        public int? AdminId { get; set; }
+        public string? AdminTag { get; set; }
+        public string Image { get; set; }
 
     }
 }

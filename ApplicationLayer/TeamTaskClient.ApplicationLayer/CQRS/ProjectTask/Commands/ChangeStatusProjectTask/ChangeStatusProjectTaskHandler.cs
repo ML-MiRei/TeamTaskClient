@@ -15,7 +15,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatus
         {
             try
             {
-                projectTaskRepository.ChangeStatusProjectTask(request.ProjectId, request.ProjectTaskId, request.Status);
+                projectTaskRepository.ChangeStatusProjectTask(request.ProjectTaskId, request.Status);
                 return Task.CompletedTask;
             }
             catch(Exception)

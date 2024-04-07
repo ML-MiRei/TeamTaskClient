@@ -11,7 +11,30 @@ namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
     public class TeamTaskSeverHttpClient : IHttpClient
     {
         private static HttpClient _httpClient = new HttpClient();
-        public string ConnectionString => $"https://localhost:7130/api";
+
+        public string ConnectionString { get; set; }
         public HttpClient CurrentHttpClient => _httpClient;
+
+
+        public bool TryConnection(int userId)
+        {
+            try
+            {
+                var result = _httpClient.GetAsync($"https://localhost:7130/api/try-connection");
+                if (result.IsCompletedSuccessfully)
+                {
+                    ConnectionString = $"https://localhost:7130/{userId}/api";
+                    return true;
+                }
+                else
+                {
+                    return false;
+                };
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }
