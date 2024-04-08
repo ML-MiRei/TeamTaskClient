@@ -12,7 +12,7 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
     public interface IMessageRepository
     {
         Task DeleteMessage(int chatId, int messageId);
-        Task UpdateMessage(MessageDTO message);
+        Task UpdateMessage(MessageEntity message);
         void CreateMessage(MessageDTO message);
 
     }

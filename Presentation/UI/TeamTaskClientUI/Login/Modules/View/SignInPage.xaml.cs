@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using TeamTaskClient.Infrastructure.Services.Implementation;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Login.Modules.ViewModels;
 
 namespace TeamTaskClient.UI.Login.Modules.View
@@ -8,10 +10,10 @@ namespace TeamTaskClient.UI.Login.Modules.View
     /// </summary>
     public partial class SignInPage : Page
     {
-        public SignInPage()
+        public SignInPage(IAuthorizationService authorizationService)
         {
             InitializeComponent();
-            DataContext = SigninPageVM.Instance;
+            DataContext = SigninPageVM.GetInstance(authorizationService);
         }
 
     }

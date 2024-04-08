@@ -19,8 +19,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
     {
         public async Task AddUserGroupChatByTag(string userTag, int chatId)
         {
+            var content = JsonContent.Create(userTag);
+
             var httpReply = await client.CurrentHttpClient
-                         .PostAsync($"{client.ConnectionString}/Chat/{chatId}/add-user", new StringContent(userTag));
+                         .PostAsync($"{client.ConnectionString}/Chat/{chatId}/add-user", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -85,9 +87,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task UpdateChat(ChatEntity chatData)
         {
+            var content = JsonContent.Create(chatData);
 
             var httpReply = await client.CurrentHttpClient
-                .PatchAsync($"{client.ConnectionString}/Chat/update", JsonContent.Create(chatData));
+                .PatchAsync($"{client.ConnectionString}/Chat/update", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -103,8 +106,11 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task<ChatModel> CreatePrivateChat(int userId, string secondUserTag)
         {
+
+            var content = JsonContent.Create(secondUserTag);
+
             var httpReply =  client.CurrentHttpClient
-               .PostAsync($"{client.ConnectionString}/Chat/private", new StringContent(secondUserTag)).Result;
+               .PostAsync($"{client.ConnectionString}/Chat/private", content).Result;
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -120,8 +126,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task<ChatModel> CreateGroupChat(int userId, string name)
         {
+            var content = JsonContent.Create(name);
+
             var httpReply = await client.CurrentHttpClient
-                .PostAsync($"{client.ConnectionString}/Chat/group", new StringContent(name));
+                .PostAsync($"{client.ConnectionString}/Chat/group", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

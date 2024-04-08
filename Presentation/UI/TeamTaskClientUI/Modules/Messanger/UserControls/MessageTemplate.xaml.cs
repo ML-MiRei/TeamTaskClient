@@ -25,20 +25,20 @@ namespace TeamTaskClient.UI.Modules.Messanger.UserControls
             InitializeComponent();
         }
 
-        public static DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(MessageTemplate));
+        public static DependencyProperty TextMessageProperty = DependencyProperty.Register(nameof(TextMessage), typeof(string), typeof(MessageTemplate));
         public static DependencyProperty DateCreatedProperty = DependencyProperty.Register(nameof(DateCreated), typeof(DateTime), typeof(MessageTemplate));
         public static DependencyProperty UserNameCreatorProperty = DependencyProperty.Register(nameof(UserNameCreator), typeof(string), typeof(MessageTemplate));
 
 
-        public string Text {
+        public string TextMessage {
             get
             {
-                return (string)GetValue(TextProperty);
+                return (string)GetValue(TextMessageProperty);
             }
 
             set
             {
-                SetValue(TextProperty, value);
+                SetValue(TextMessageProperty, value);
             }
         }
         public DateTime DateCreated

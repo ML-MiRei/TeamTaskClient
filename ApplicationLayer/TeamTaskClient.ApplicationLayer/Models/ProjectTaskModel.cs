@@ -8,11 +8,13 @@ namespace TeamTaskClient.ApplicationLayer.Models
 {
     public class ProjectTaskModel
     {
-        public int ID { get; set; }
-        public string TaskName { get; set; }
-        public string Detail { get; set; }
+        public int ProjectTaskId { get; set; }
+        public string Title { get; set; }
+        public string Details { get; set; }
         public int Status { get; set; }
-        public string Executor {  get; set; }
+
+        public string ExcutorName { get; set; }
+        public bool IsUserExecutor { get; set; }
 
     }
 }

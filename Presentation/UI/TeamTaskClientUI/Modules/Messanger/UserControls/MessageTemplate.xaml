@@ -33,7 +33,7 @@
             <TextBlock Text="{Binding UserNameCreator, FallbackValue=UserName}"
                        Margin="20,10,20,10"
                        Style="{StaticResource BlackHeader}" />
-            <TextBlock Text="{Binding Text, FallbackValue=TextMessage}"
+            <TextBlock Text="{Binding TextMessage, FallbackValue=TextMessage}"
                        Margin="20,0,20,0"
                        Style="{StaticResource SimpleBlackText}" />
 

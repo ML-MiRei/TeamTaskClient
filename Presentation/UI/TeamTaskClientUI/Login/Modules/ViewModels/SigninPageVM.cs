@@ -9,26 +9,31 @@ using TeamTaskClient.UI.Login.Modules.View;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 using MediatR;
 using System.Configuration;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
 
 namespace TeamTaskClient.UI.Login.Modules.ViewModels
 {
     public class SigninPageVM : ViewModelBase
     {
+        private static IAuthorizationService _authorizationService;
+
 
         private static SigninPageVM _instance;
-        public static SigninPageVM Instance
+        public static SigninPageVM GetInstance(IAuthorizationService authorizationService)
         {
-            get
-            {
-                if (_instance == null)
-                    _instance = new SigninPageVM();
-                return _instance;
-            }
+
+            if (_instance == null)
+                _instance = new SigninPageVM(authorizationService);
+            return _instance;
+
         }
 
 
-        private SigninPageVM()
+        private SigninPageVM(IAuthorizationService authorizationService)
         {
+            _authorizationService = authorizationService;
+
+
             SigninButton = new SigninCommand();
             ToSignup = new ToSignupCommand();
             ForgotPassword = null;
@@ -64,20 +69,19 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
 
         public ICommand ForgotPassword { get; }
         public ICommand SigninButton { get; } = new SigninCommand();
-        public ICommand ToSignup { get; } 
+        public ICommand ToSignup { get; }
 
 
         private class SigninCommand : CommandBase
         {
             public async override void Execute(object parameter)
             {
-                
-                AuthorizationService authorizationService = new AuthorizationService();
-                var user = await authorizationService.Authorize(_email, _password);
+
+                var user = await _authorizationService.Authorize(_email, _password);
 
                 Properties.Settings.Default.userId = user.ID;
                 Properties.Settings.Default.userTag = user.Tag;
-                Properties.Settings.Default.Save();               
+                Properties.Settings.Default.Save();
 
                 Programm.LoginWindow.DialogResult = true;
 
@@ -88,8 +92,8 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
         {
             public override void Execute(object parameter)
             {
-                LoginWindow loginWindow = App.Current.Windows.OfType<LoginWindow>().First();
-                loginWindow.frameLayout.NavigationService.Navigate(new SignUpPage());
+                LoginWindow loginWindow = Programm.LoginWindow;
+                loginWindow.frameLayout.NavigationService.Navigate(new SignUpPage(_authorizationService));
             }
         }
 

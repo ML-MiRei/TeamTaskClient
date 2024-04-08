@@ -260,7 +260,7 @@
             </RadioButton>
 
 
-            <RadioButton Command="{Binding CalendarButton}"
+            <RadioButton Command="{Binding TeamsButton}"
                          Template="{DynamicResource RadioButtonTemplate1}"
                          Style="{StaticResource {x:Type ToggleButton}}"
                          GroupName="navigation"
@@ -276,7 +276,7 @@
                                    Width="20"
                                    VerticalAlignment="Center"
                                    Margin="5,0,15,0" />
-                            <TextBlock  Text="calendar"
+                            <TextBlock  Text="teams"
                                         VerticalAlignment="Center"
                                         Width="80" />
                         </StackPanel>

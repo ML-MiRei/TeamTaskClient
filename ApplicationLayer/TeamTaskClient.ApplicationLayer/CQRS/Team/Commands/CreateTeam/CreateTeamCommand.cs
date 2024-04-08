@@ -11,7 +11,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.CreateTeam
 {
     public class CreateTeamCommand : IRequest<TeamModel>
     {
-        public string UserTag { get; set; }
+        public int UserId { get; set; }
         public string Name { get; set; }
 
     }

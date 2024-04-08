@@ -59,7 +59,7 @@
                                FontSize="16"
                                TextTrimming="CharacterEllipsis"
                                Style="{StaticResource BlackHeader}"
-                               Text="{Binding NameChat, FallbackValue=Name}" />
+                               Text="{Binding ChatName, FallbackValue=Name}" />
 
                     <Grid Grid.Row="2">
                         <Grid.ColumnDefinitions>

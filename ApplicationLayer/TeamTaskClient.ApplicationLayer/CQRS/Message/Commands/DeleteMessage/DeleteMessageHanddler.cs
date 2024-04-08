@@ -9,7 +9,7 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.DeleteMessage
 {
-    public class DeleteMessageHanddler(IMessageRepository messageRepository) : IRequestHandler<DeleteMessageCommand>
+    public class DeleteMessageHandler(IMessageRepository messageRepository) : IRequestHandler<DeleteMessageCommand>
     {
         public Task Handle(DeleteMessageCommand request, CancellationToken cancellationToken)
         {

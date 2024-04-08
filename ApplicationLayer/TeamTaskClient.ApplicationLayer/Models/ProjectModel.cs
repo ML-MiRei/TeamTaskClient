@@ -8,14 +8,11 @@ namespace TeamTaskClient.ApplicationLayer.Models
 {
     public class ProjectModel
     {
-        public int ID { get; set; }
-        public string TagLeader { get; set; }
-        public string LeaderName { get; set; }
-        public string Name { get; set; }
+        public int ProjectId { get; set; }
+        public int UserRole { get; set; }
+        public string ProjectLeaderName { get; set; }
+        public string ProjectName { get; set; }
         public List<SprintModel> Sprints { get; set; }
         public List<UserModel> Users { get; set; }
-
-
-        
     }
 }

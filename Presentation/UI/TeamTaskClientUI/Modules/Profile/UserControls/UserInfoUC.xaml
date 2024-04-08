@@ -52,7 +52,7 @@
 
                                 <usercontrols:CircleImage  Grid.Column="0"
             
-                                                           AvatarImage="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AwatarExample.jpeg" />
+                                                           Image="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AwatarExample.jpeg" />
 
                             </Grid>
                         </Border>
@@ -75,11 +75,6 @@
                                            TextWrapping="Wrap"
                                            Margin="5,0,0,0"
                                            Text="{Binding FullName, FallbackValue=Name_LastName_SecondName}" />
-                                <usercontrols:SettingsButton VerticalAlignment="Center"
-                                                             Margin="15,5,25,0"
-                                                             Command="{Binding EditProfile}"
-                                                             Width="15"
-                                                             Height="15" />
 
                             </StackPanel>
                             <TextBlock Style="{StaticResource SimpleBlackText}"

@@ -14,6 +14,7 @@ using TeamTaskClient.UI.Login;
 using TeamTaskClient.UI.Modules.Messanger.View;
 using TeamTaskClient.UI.Modules.Profile.View;
 using TeamTaskClient.UI.Modules.Projects.View;
+using TeamTaskClient.UI.Modules.Teams.View;
 using TeamTaskClientUI.Main;
 
 namespace TeamTaskClient.UI.Main
@@ -28,11 +29,11 @@ namespace TeamTaskClient.UI.Main
             ProjectsButton = new NavigationCommand(mainWindow, new ProjectsPage());
             MessangerButton = new NavigationCommand(mainWindow, new MessangerPage(mediator));
             ToProjectTaskButton = new NavigationCommand(mainWindow, new ProjectTasksPage(mediator));
+            TeamsButton = new NavigationCommand(mainWindow, new TeamPage(mediator));
 
 
 
 
-            //CalendarButton = new NavigationCommand(new CalendarPage());
             //TasksButton = new NavigationCommand(new TaskPage());
 
             //MainWindow mainWindow = (MainWindow)App.Current.MainWindow;
@@ -49,7 +50,7 @@ namespace TeamTaskClient.UI.Main
         public ICommand ProjectsButton { get; }
         public ICommand MessangerButton { get; }
         public ICommand TasksButton { get; }
-        public ICommand CalendarButton { get; }
+        public ICommand TeamsButton { get; }
 
     }
 }

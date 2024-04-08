@@ -45,20 +45,11 @@ namespace TeamTaskClient.UI
                 .Build();
 
 
-            //HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create("https://localhost:7130");
-            //try
-            //{
-            //    var response = request.GetResponse();
-            //}
-            //catch(Exception)
-            //{
-            //    ErrorWindow = new ErrorWindow("The connection has not been established\r\n");
-            //    ErrorWindow.ShowDialog();
-            //}
+
 
             if (Properties.Settings.Default.userId == 0)
             {
-                LoginWindow = new LoginWindow();
+                LoginWindow = new LoginWindow(host.Services.GetService<IAuthorizationService>());
 
                 if (!LoginWindow.ShowDialog().Value)
                 {
@@ -69,6 +60,9 @@ namespace TeamTaskClient.UI
 
             IHttpClient httpClient = host.Services.GetService<IHttpClient>();
             httpClient.TryConnection(Properties.Settings.Default.userId);
+
+            ChatService chatService = ChatService.GetInstance(Properties.Settings.Default.userId);
+
 
 
             var app = host.Services.GetService<App>();

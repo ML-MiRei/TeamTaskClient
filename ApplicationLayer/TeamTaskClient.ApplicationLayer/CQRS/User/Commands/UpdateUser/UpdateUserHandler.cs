@@ -15,12 +15,12 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.User.Commands.UpdateUser
         {
             try
             {
-                userRepository.UpdateUser(new DTOs.UserDTO()
+                userRepository.UpdateUser(new Domain.Entities.UserEntity()
                 {
                     FirstName = request.FirstName,
                     LastName = request.LastName,
                     SecondName = request.SecondName,
-                    Phone = request.Phone,
+                    PhoneNumber = request.Phone,
                     ID = request.UserId
                 });
                 return Task.CompletedTask;

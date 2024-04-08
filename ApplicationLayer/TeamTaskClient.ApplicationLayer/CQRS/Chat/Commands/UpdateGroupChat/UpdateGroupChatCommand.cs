@@ -12,6 +12,6 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat
         public int ChatId { get; set;}
         public string ChatName { get; set;}
         public int UserId { get; set;}
-        public int AdminId { get; set;}
+        public string AdminTag { get; set;}
     }
 }

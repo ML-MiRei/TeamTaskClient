@@ -12,7 +12,9 @@ namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
     {
         private static HttpClient _httpClient = new HttpClient();
 
-        public string ConnectionString { get; set; }
+
+        private static string _connectionString;
+        public string ConnectionString { get => _connectionString; }
         public HttpClient CurrentHttpClient => _httpClient;
 
 
@@ -20,10 +22,10 @@ namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
         {
             try
             {
-                var result = _httpClient.GetAsync($"https://localhost:7130/api/try-connection");
-                if (result.IsCompletedSuccessfully)
+                var result = _httpClient.GetAsync($"https://localhost:7130/{userId}/api/try-connection").Result;
+                if (result.IsSuccessStatusCode)
                 {
-                    ConnectionString = $"https://localhost:7130/{userId}/api";
+                    _connectionString = $"https://localhost:7130/{userId}/api";
                     return true;
                 }
                 else

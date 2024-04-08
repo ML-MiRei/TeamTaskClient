@@ -27,7 +27,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.UserControls
 
 
         public static DependencyProperty CreatorLastMessageProperty = DependencyProperty.Register(nameof(CreatorLastMessage), typeof(string), typeof(ChatTemplate));
-        public static DependencyProperty NameChatProperty = DependencyProperty.Register(nameof(NameChat), typeof(string), typeof(ChatTemplate));
+        public static DependencyProperty ChatNameProperty = DependencyProperty.Register(nameof(ChatName), typeof(string), typeof(ChatTemplate));
         public static DependencyProperty LastMessageProperty = DependencyProperty.Register(nameof(LastMessage), typeof(string), typeof(ChatTemplate));
         public static DependencyProperty ImageProperty = DependencyProperty.Register(nameof(Image), typeof(string), typeof(ChatTemplate));
 
@@ -44,7 +44,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.UserControls
             }
         }
 
-        public string NameChat
+        public string ChatName
         {
             get
             {

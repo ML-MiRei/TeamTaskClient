@@ -21,13 +21,13 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByUserId
                 var teams = teamRepository.GetTeamsByUserId(request.UserId);
                 if (teams == null || teams.Result.Count == 0)
                 {
-                    throw new NotFoundException();
+                    return Task.FromResult( new List<TeamModel>());
                 }
                 return teams;
             }
             catch (Exception)
             {
-                throw new NotFoundException();
+                return Task.FromResult(new List<TeamModel>());
             }
         }
     }

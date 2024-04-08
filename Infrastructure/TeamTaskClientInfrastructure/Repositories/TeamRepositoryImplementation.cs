@@ -20,7 +20,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
     {
         public async Task AddUserInTeamByTag(int teamId, string userTag)
         {
-            var httpReply = await httpClient.CurrentHttpClient.PostAsync($"{httpClient.ConnectionString}/Team/{teamId}/add-user", new StringContent(userTag));
+            var httpReply = await httpClient.CurrentHttpClient.PostAsync($"{httpClient.ConnectionString}/Team/{teamId}/add-user", JsonContent.Create(userTag));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -36,9 +36,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task<TeamModel> CreateTeam(TeamEntity teamData)
         {
 
-            var httpReply = await httpClient.CurrentHttpClient
-                                .PostAsync($"{httpClient.ConnectionString}/Team/create", JsonContent.Create(teamData));
+            var httpReply = httpClient.CurrentHttpClient
+                                .PostAsync($"{httpClient.ConnectionString}/Team/create", JsonContent.Create(teamData.Name)).Result;
 
+            
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 throw new NotFoundException();

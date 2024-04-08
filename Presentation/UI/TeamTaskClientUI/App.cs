@@ -10,6 +10,9 @@ using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using System.Configuration;
 using TeamTaskClient.UI.Login;
 using TeamTaskClient.UI.Dialogs.View;
+using System.Net;
+using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
+using TeamTaskClient.Infrastructure.Services.Implementation;
 
 namespace TeamTaskClient.UI
 {

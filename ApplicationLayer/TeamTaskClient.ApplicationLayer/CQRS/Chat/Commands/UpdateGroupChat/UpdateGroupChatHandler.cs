@@ -18,7 +18,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat
             try
             {
 
-                chatRepository.UpdateChat(new ChatEntity() { AdminId = request.AdminId, ChatName = request.ChatName });
+                chatRepository.UpdateChat(new ChatEntity() { AdminTag = request.AdminTag, ChatName = request.ChatName });
                 return Task.CompletedTask;
 
             }

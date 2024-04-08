@@ -25,8 +25,7 @@
             <Image 
                 
                 Stretch="Fill"
-                   
-                   Source="{Binding AvatarImage}"/>
+                   Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AwatarExample.jpeg"/>
         </Border>
     </Grid>
 </UserControl>

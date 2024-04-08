@@ -18,7 +18,7 @@
                 <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
                 <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            
+
         </ResourceDictionary>
     </Page.Resources>
 
@@ -39,15 +39,16 @@
 
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel HorizontalAlignment="Stretch"/>
+                    <StackPanel HorizontalAlignment="Stretch" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
 
-                    <usercontrols1:ChatTemplate HorizontalAlignment="Stretch"
-                                                NameChat="{Binding NameChat, Mode=OneWay}"
+                    <usercontrols1:ChatTemplate MouseRightButtonDown="ChatTemplate_MouseRightButtonDown"
+                                                HorizontalAlignment="Stretch"
+                                                ChatName="{Binding ChatName, Mode=OneWay}"
                                                 LastMessage="{Binding LastMessage}"
                                                 CreatorLastMessage="{Binding CreatorLastMessage}"
                                                 Image="{Binding Image}" />

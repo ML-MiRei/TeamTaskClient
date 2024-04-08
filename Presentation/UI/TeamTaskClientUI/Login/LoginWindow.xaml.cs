@@ -2,6 +2,8 @@
 using System;
 using System.ComponentModel;
 using System.Windows;
+using TeamTaskClient.Infrastructure.Services.Implementation;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Login.Modules;
 using TeamTaskClient.UI.Login.Modules.View;
 
@@ -13,10 +15,10 @@ namespace TeamTaskClient.UI.Login
     /// </summary>
     public partial class LoginWindow : Window
     {
-        public LoginWindow()
+        public LoginWindow(IAuthorizationService authorizationService)
         {
             InitializeComponent();
-            frameLayout.NavigationService.Navigate(new SignInPage());
+            frameLayout.NavigationService.Navigate(new SignInPage(authorizationService));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

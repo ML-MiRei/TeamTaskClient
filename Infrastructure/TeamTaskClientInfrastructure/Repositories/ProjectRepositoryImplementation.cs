@@ -19,7 +19,9 @@ namespace TeamTaskClient.Infrastructure.Repositories
     {
         public async Task<ProjectModel> CreateProject(string name)
         {
-            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/create", new StringContent(name));
+            var content = JsonContent.Create(name);
+
+            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/create", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -80,10 +82,27 @@ namespace TeamTaskClient.Infrastructure.Repositories
             throw new ConnectionException();
         }
 
+        public async Task LeaveFromProject(int projectId)
+        {
+            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/leave");
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
+        }
 
         public async Task UpdateProject(ProjectEntity project)
         {
-            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/{project.ID}/update", JsonContent.Create(project));
+            var content = JsonContent.Create(project);
+
+
+            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/{project.ID}/update", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

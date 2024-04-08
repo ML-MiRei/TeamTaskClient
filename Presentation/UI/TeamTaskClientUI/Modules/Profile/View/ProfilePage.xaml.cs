@@ -23,10 +23,14 @@ namespace TeamTaskClient.UI.Modules.Profile.View
     /// </summary>
     public partial class ProfilePage : Page
     {
+        ProfileVM vm;
+
         public ProfilePage(IMediator mediator, IRemoveCash removeCash)
         {
+            vm = new ProfileVM(mediator, removeCash);
             InitializeComponent();
-            DataContext = new ProfileVM(mediator, removeCash);
+            DataContext = vm;
         }
+
     }
 }

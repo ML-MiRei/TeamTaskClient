@@ -27,15 +27,15 @@ namespace TeamTaskClient.UI.Modules.Teams.UserControls
         }
 
 
-        public static DependencyProperty UserNameProperty = DependencyProperty.Register("UserName", typeof(string), typeof(ProjectTemplate));
-        public static DependencyProperty ImageProperty = DependencyProperty.Register("Image", typeof(string), typeof(ProjectTemplate));
+        public static DependencyProperty FirstNameProperty = DependencyProperty.Register("FirstName", typeof(string), typeof(UserTemplate));
+        public static DependencyProperty ImageProperty = DependencyProperty.Register("Image", typeof(string), typeof(UserTemplate));
 
 
 
-        public string UserName
+        public string FirstName
         {
-            get { return (string)GetValue(UserNameProperty);}
-            set { SetValue(UserNameProperty, value); }
+            get { return (string)GetValue(FirstNameProperty);}
+            set { SetValue(FirstNameProperty, value); }
         }
 
         public string Image

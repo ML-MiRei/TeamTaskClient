@@ -20,7 +20,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
     {
         public async Task ChangeStatusProjectTask(int projectTaskId, StatusProjectTaskEnum status)
         {
-            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/change-status", JsonContent.Create((int)status));
+            var content = JsonContent.Create((int)status);
+
+
+            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/change-status", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -35,7 +38,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task<ProjectTaskModel> CreateProjectTask(ProjectTaskEntity entity)
         {
-            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/ProjectTask/create", JsonContent.Create(entity));
+            var content = JsonContent.Create(entity);
+
+
+            var httpReply = await client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/ProjectTask/create", content);
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

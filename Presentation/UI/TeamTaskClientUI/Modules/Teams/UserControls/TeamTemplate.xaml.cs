@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.UI.Modules.Profile.UserControls;
 
 namespace TeamTaskClient.UI.Modules.Teams.UserControls
 {
@@ -24,5 +26,29 @@ namespace TeamTaskClient.UI.Modules.Teams.UserControls
         {
             InitializeComponent();
         }
+
+        public static DependencyProperty TeamLeadNameProperty = DependencyProperty.Register("TeamLeadName", typeof(string), typeof(TeamTemplate));
+        public static DependencyProperty TeamNameProperty = DependencyProperty.Register("TeamName", typeof(string), typeof(TeamTemplate));
+        public static DependencyProperty UsersProperty = DependencyProperty.Register("Users", typeof(List<UserModel>), typeof(TeamTemplate));
+
+        public string TeamLeadName
+        {
+            get { return (string)GetValue(TeamLeadNameProperty); }
+            set { SetValue(TeamLeadNameProperty, value); }
+        }
+
+        public string TeamName
+        {
+            get { return (string)GetValue(TeamNameProperty); }
+            set { SetValue(TeamNameProperty, value); }
+        }
+
+        
+        public List<UserModel> Users
+        {
+            get { return (List<UserModel>)GetValue(UsersProperty); }
+            set { SetValue(UsersProperty, value); }
+        }
+
     }
 }

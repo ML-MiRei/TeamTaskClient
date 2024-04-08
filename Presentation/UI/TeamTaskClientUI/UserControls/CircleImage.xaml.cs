@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TeamTaskClient.UI.Modules.Teams.UserControls;
 
 namespace TeamTaskClient.UI.UserControls
 {
@@ -23,18 +24,18 @@ namespace TeamTaskClient.UI.UserControls
         public CircleImage()
         {
             InitializeComponent();
-            DataContext = this;
         }
 
 
-        public string _image;
-        public string AvatarImage
+        public static DependencyProperty ImageProperty = DependencyProperty.Register("Image", typeof(string), typeof(CircleImage));
+
+        public string Image
         {
-            get { return _image; }
-
-            set { _image = value; 
-            }
+            get { return (string)GetValue(ImageProperty); }
+            set { SetValue(ImageProperty, value); }
         }
+
+
 
     }
 }

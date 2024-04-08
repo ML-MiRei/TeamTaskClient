@@ -17,7 +17,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.CreateTeam
         {
             try
             {
-                var team = teamRepository.CreateTeam(new TeamEntity() { Name = request.Name, TeamLeadTag = request.UserTag});
+                var team = teamRepository.CreateTeam(new TeamEntity() { Name = request.Name, TeamLeadId = request.UserId});
                 return team;
             }
             catch (Exception)

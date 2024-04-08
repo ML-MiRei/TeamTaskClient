@@ -30,8 +30,16 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
 
             ChatService.OnMessageReceived += ChatService_OnMessageReceived;
+            ChatService.OnMessageDeleted += ChatService_OnMessageDeleted;
+
             _chats.CollectionChanged += _chats_CollectionChanged;
 
+        }
+
+        private void ChatService_OnMessageDeleted(object? sender, EventArgs e)
+        {
+            var chat = Chats.First(c => c.ChatId == SelectedChat);
+            chat.Messages.Remove(chat.Messages.First(m => m.MessageId == (int)sender));
         }
 
         private void _chats_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -41,14 +49,14 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
         private void ChatService_OnMessageReceived(object? sender, MessageModel e)
         {
-            Chats.First(c => c.ID == (int)sender).Messages.Add(e);
+            Chats.First(c => c.ChatId == (int)sender).Messages.Add(e);
         }
 
 
 
         public static event EventHandler OnChatSelected;
 
-        private ObservableCollection<ChatModel> _chats;
+        protected ObservableCollection<ChatModel> _chats;
         public ObservableCollection<ChatModel> Chats
         {
             get { return _chats; }

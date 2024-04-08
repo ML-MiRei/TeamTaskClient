@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
 using TeamTaskClient.UI.Modules.Messanger.View;
+using TeamTaskClient.UI.UserControls;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -23,7 +25,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
         private static IMediator _mediator;
 
-        public string WatermarkText { get => "Enter message.."; }
+        public static string WatermarkText { get => "Enter message.."; }
 
         public MessagesPageVM(IMediator mediator) : base(mediator)
         {
@@ -35,8 +37,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             DoubleClick = new DoubleClickCommand(this);
 
             ChatService.OnMessageReceived += ChatService_OnMessageReceived;
+            ChatService.OnMessageDeleted += ChatService_OnMessageDeleted;
+        }
 
-
+        private void ChatService_OnMessageDeleted(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Messages));
         }
 
         private void ChatService_OnMessageReceived(object? sender, MessageModel e)
@@ -44,9 +50,9 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             OnPropertyChanged(nameof(Messages));
         }
 
+
         private void MessagesPageVM_OnChatSelected(object? sender, EventArgs e)
         {
-            //Messages = new ObservableCollection<MessageModel>(Chats.First(c => c.ID == (int)sender).Messages);
             OnPropertyChanged(nameof(Messages));
 
         }
@@ -61,7 +67,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                 if (SelectedChat == null)
                     return new ObservableCollection<MessageModel>(); 
 
-                return new ObservableCollection<MessageModel>(Chats.First(c => c.ID == SelectedChat).Messages); 
+                return new ObservableCollection<MessageModel>(Chats.First(c => c.ChatId == SelectedChat).Messages); 
             }
  
         }
@@ -92,8 +98,6 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             public override void Execute(object? parameter)
             {
 
-
-
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", new List<string> { "Update", "Delete" });
                 if (selectActionsDialogWindow.ShowDialog().Value)
                 {
@@ -101,12 +105,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                     {
                         case "Update":
 
-                            InputDialogWindow updatePropertiesDialogWindow = new InputDialogWindow("Update message", "Save", new List<string> { ((MessageModel)parameter).Text });
+                            InputDialogWindow updatePropertiesDialogWindow = new InputDialogWindow("Update message", "Save", new List<string> { ((MessageModel)parameter).TextMessage });
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var newTextMessage = updatePropertiesDialogWindow.GetInputValue()[0];
-                                _mediator.Send(new UpdateMessageCommand { ChatId = _selectedChat.Value, MessageId = ((MessageModel)parameter).ID, TextMessage = newTextMessage });
-                                vm.Messages.First(m => m.ID == ((MessageModel)parameter).ID).Text = newTextMessage;
+                                _mediator.Send(new UpdateMessageCommand { ChatId = _selectedChat.Value, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
+                                vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId).TextMessage = newTextMessage;
                                 vm.OnPropertyChanged(nameof(Messages));
                             }
 
@@ -115,8 +119,8 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         case "Delete":
                             try
                             {
-                                _mediator.Send(new DeleteMessageCommand() { ChatId = _selectedChat.Value, MessageId = ((MessageModel)parameter).ID });
-                                vm.Messages.Remove(vm.Messages.First(m => m.ID == ((MessageModel)parameter).ID));
+                                _mediator.Send(new DeleteMessageCommand() { ChatId = _selectedChat.Value, MessageId = ((MessageModel)parameter).MessageId });
+                                vm.Messages.Remove(vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId));
                             }
                             catch (Exception)
                             {
@@ -134,14 +138,18 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
         {
             public override async void Execute(object? parameter)
             {
-               await _mediator.Send(new SendMessageCommand
+                if(_inputMessage != "" && _inputMessage != WatermarkText)
                 {
-                    ChatId = _selectedChat.Value,
-                    TextMessage = _inputMessage.Trim(),
-                    UderId = Properties.Settings.Default.userId
-                });
-             //   messagesPageVM.Messages.Add(new MessageModel { ID = message.ID, Text = message.Text, UserNameCreator = message.UserNameCreator, CreatorTag = message.CreatorTag });
-                messagesPageVM.InputMessage = "Enter message..";
+                    await _mediator.Send(new SendMessageCommand
+                    {
+                        ChatId = _selectedChat.Value,
+                        TextMessage = _inputMessage.Trim(),
+                        UderId = Properties.Settings.Default.userId
+                    });
+                    messagesPageVM.InputMessage = "Enter message..";
+                }
+
+              
             }
         }
     }

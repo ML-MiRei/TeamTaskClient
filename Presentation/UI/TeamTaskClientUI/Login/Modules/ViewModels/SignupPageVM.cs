@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.Infrastructure.Services.Implementation;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Login.Modules.View;
 
@@ -13,21 +15,24 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
 {
     public class SignupPageVM : ViewModelBase
     {
+        private static IAuthorizationService _authorizationService;
+
 
         private static SignupPageVM _instance;
-        public static SignupPageVM Instance
+        public static SignupPageVM GetInstance(IAuthorizationService authorizationService)
         {
-            get
-            {
-                if( _instance == null )
-                    _instance = new SignupPageVM();
-                return _instance;
-            }
-        }
-        
 
-        private SignupPageVM()
+            if (_instance == null)
+                _instance = new SignupPageVM(authorizationService);
+            return _instance;
+
+        }
+
+
+        private SignupPageVM(IAuthorizationService authorizationService)
         {
+
+            _authorizationService = authorizationService;
             SignupButton = new SignupCommand(); ;
             ToSignin = new ToSigninCommand();
 
@@ -151,8 +156,8 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
             public override void Execute(object parameter)
             {
 
-                LoginWindow loginWindow = (LoginWindow)App.Current.MainWindow;
-                loginWindow.frameLayout.NavigationService.Navigate(new SignUpTwoPage());
+                LoginWindow loginWindow = Programm.LoginWindow;
+                loginWindow.frameLayout.NavigationService.Navigate(new SignUpTwoPage(_authorizationService));
 
             }
         }
@@ -160,8 +165,8 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
         {
             public override void Execute(object parameter)
             {
-                LoginWindow loginWindow = App.Current.Windows.OfType<LoginWindow>().First();
-                loginWindow.frameLayout.NavigationService.Navigate(new SignInPage());
+                LoginWindow loginWindow = Programm.LoginWindow;
+                loginWindow.frameLayout.NavigationService.Navigate(new SignInPage(_authorizationService));
             }
         }
 
@@ -170,8 +175,8 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
         {
             public override void Execute(object parameter)
             {
-                LoginWindow loginWindow = App.Current.Windows.OfType<LoginWindow>().First();
-                loginWindow.frameLayout.NavigationService.Navigate(new SignUpPage());
+                LoginWindow loginWindow = Programm.LoginWindow; ;
+                loginWindow.frameLayout.NavigationService.Navigate(new SignUpPage(_authorizationService));
             }
         }
 
@@ -181,8 +186,17 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
             public override void Execute(object parameter)
             {
 
+                _authorizationService.Register(new Domain.Entities.UserEntity
+                {
+                    Email = _email,
+                    Password = _password,
+                    FirstName = _firstName,
+                    LastName = _lastName,
+                    PhoneNumber = _phone,
+                    SecondName = _secondName != "Enter second name" ? _secondName : ""
 
-                App.Current.Windows.OfType<LoginWindow>().First().DialogResult = true;
+                });
+                Programm.LoginWindow.DialogResult = true;
                 return;
 
 

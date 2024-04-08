@@ -2,13 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
 {
-    internal class ChatHubClient : IChatHubClient, IDisposable
+    public class ChatHubClient : IChatHubClient, IDisposable
     {
 
         private static HubConnection _hubConnection;
@@ -29,8 +31,8 @@ namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
         private ChatHubClient()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7130/chat")
-                .Build();
+                .WithUrl("https://localhost:7130/online-chat")
+            .Build();
 
             _hubConnection.StartAsync();
         }

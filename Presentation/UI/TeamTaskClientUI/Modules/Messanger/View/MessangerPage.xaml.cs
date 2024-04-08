@@ -27,7 +27,6 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
 
             ChatPageLayout.NavigationService.Navigate(new ChatsListPage(mediator));
             MessagePageLayout.NavigationService.Navigate(new MessagePage(mediator));
-
         }
     }
 }

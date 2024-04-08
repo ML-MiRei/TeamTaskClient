@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
@@ -24,11 +25,13 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
     public partial class ChatsListPage : Page
     {
         MessengerVM messengerVM;
+        ChatsListPageVM chatListPageVM;
 
         public ChatsListPage(IMediator mediator)
         {
             InitializeComponent();
-            DataContext = new ChatsListPageVM(mediator);
+            chatListPageVM = new ChatsListPageVM(mediator);
+            DataContext = chatListPageVM;
             messengerVM = MessengerVM.GetInstance(mediator);
             messengerVM.Chats.CollectionChanged += Chats_CollectionChanged;
         }
@@ -40,7 +43,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
 
         private void ChatList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            messengerVM.SelectedChat = (((ListBox)sender).SelectedItem as ChatModel).ID;
+            messengerVM.SelectedChat = (((ListBox)sender).SelectedItem as ChatModel).ChatId;
+        }
+
+        private void ChatTemplate_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            chatListPageVM.SettingsChatOpen(((ChatTemplate)sender).DataContext as ChatModel);
         }
     }
 }
