@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
@@ -17,7 +12,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.CreateTeam
         {
             try
             {
-                var team = teamRepository.CreateTeam(new TeamEntity() { Name = request.Name, TeamLeadId = request.UserId});
+                var team = teamRepository.CreateTeam(new TeamEntity() { Name = request.Name, TeamLeadId = request.UserId });
                 return team;
             }
             catch (Exception)

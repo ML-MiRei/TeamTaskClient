@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.ApplicationLayer.DTOs;
+﻿using System.Net.Http.Json;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.LocalDB.Models;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
@@ -128,8 +120,8 @@ namespace TeamTaskClient.Infrastructure.Repositories
         {
             var content = JsonContent.Create(name);
 
-            var httpReply = await client.CurrentHttpClient
-                .PostAsync($"{client.ConnectionString}/Chat/group", content);
+            var httpReply = client.CurrentHttpClient
+                .PostAsync($"{client.ConnectionString}/Chat/group", content).Result;
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

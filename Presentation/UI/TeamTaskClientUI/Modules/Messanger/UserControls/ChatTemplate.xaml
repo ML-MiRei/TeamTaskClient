@@ -38,11 +38,11 @@
                 </Grid.ColumnDefinitions>
 
 
-                <!--Image binding-->
                 <usercontrols:CircleImage Grid.Column="0"
                                           HorizontalAlignment="Center"
                                           VerticalAlignment="Center"
                                           Width="40"
+                                          Lit="{Binding Lit}"
                                           Height="40" />
 
 

@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.Domain.Exceptions;
 
@@ -15,10 +10,10 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatus
         {
             try
             {
-                projectTaskRepository.ChangeStatusProjectTask(request.ProjectTaskId, request.Status);
+                projectTaskRepository.ChangeStatusProjectTask(request.ProjectId ,request.ProjectTaskId, request.Status);
                 return Task.CompletedTask;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw new UpdateException();
             }

@@ -1,17 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
 using TeamTaskClient.UI.Dialogs.ViewModels;
+using TeamTaskClientUI.Main;
 
 namespace TeamTaskClient.UI.Dialogs.View
 {
@@ -24,6 +13,9 @@ namespace TeamTaskClient.UI.Dialogs.View
         {
             InitializeComponent();
             DataContext = new AlertDialogVM(textDialog, positiveText, negativeText);
+
+            HorizontalAlignment = HorizontalAlignment.Center;
+            VerticalAlignment = VerticalAlignment.Center;
         }
     }
 }

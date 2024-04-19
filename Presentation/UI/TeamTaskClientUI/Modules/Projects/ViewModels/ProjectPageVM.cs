@@ -1,63 +1,82 @@
 ﻿using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.UpdateProject;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Common.Base;
-using TeamTaskClient.UI.Main;
-using TeamTaskClientUI.Main;
+using TeamTaskClient.UI.Dialogs.View;
+using TeamTaskClient.UI.Modules.Projects.Storage;
+using TeamTaskClient.UI.Modules.Projects.View;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
-    internal class ProjectPageVM : ViewModelBase
+    public class ProjectPageVM : ViewModelBase
     {
+
         private static IMediator _mediator;
-        public string WatermarkText { get => "Project name.."; }
-
         private static ProjectPageVM _instance;
-        public static ProjectPageVM Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = new ProjectPageVM(_mediator);
-                return _instance;
-            }
-        }
 
 
-        private string _inputSearchString;
-        public string InputSearchString
+
+
+        public static ProjectPageVM GetInstance(IMediator mediator)
         {
-            get { return _inputSearchString; }
-            set
-            {
-                _inputSearchString = value;
-                OnPropertyChanged(nameof(InputSearchString));
-            }
+            if (_instance == null)
+                _instance = new ProjectPageVM(mediator);
+            return _instance;
         }
+
 
         private ProjectPageVM(IMediator mediator)
         {
             _mediator = mediator;
-            InputSearchString = WatermarkText;
 
+            EditProjectName = new EditProjectNameCommand(this);
+            ProjectsStorage.SelectedProjectChanged += OnSelectedProjectChanged;
+        }
+
+        private void OnSelectedProjectChanged(object? sender, ProjectModel e)
+        {
+            OnPropertyChanged(nameof(ProjectName));
         }
 
 
-        public ICommand SearchProject { get; }
-        public ICommand ViewButton { get; }
+        public int UserRole => ProjectsStorage.SelectedProject.UserRole;
+
+        public string ProjectName { get => ProjectsStorage.SelectedProject.ProjectName; }
 
 
+        public ICommand EditProjectName { get; } 
 
-        private class ViewProject : CommandBase
+        private class EditProjectNameCommand(ProjectPageVM vm) : CommandBase
         {
             public override void Execute(object? parameter)
             {
-                MainWindowVM.ToProjectTaskButton.Execute(parameter);
+                InputDialogWindow inputDialog = new InputDialogWindow("Edit project", "Save", new List<string> { ProjectsStorage.SelectedProject.ProjectName });
+                if (inputDialog.ShowDialog().Value)
+                {
+                    try
+                    {
+                        _mediator.Send(new UpdateProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, ProjectName = inputDialog.GetInputValue()[0] });
+                        ProjectsStorage.SelectedProject.ProjectName = inputDialog.GetInputValue()[0];
+                        ProjectsStorage.Projects.First(p => p.ProjectId == ProjectsStorage.SelectedProject.ProjectId).ProjectName = inputDialog.GetInputValue()[0];
+                        vm.OnPropertyChanged(nameof(ProjectName));
+                    }
+                    catch
+                    {
+                        ErrorWindow.Show("Edit project error");
+
+
+                    }
+                }
             }
         }
+
+
     }
 }

@@ -1,0 +1,313 @@
+﻿<Page x:Class="TeamTaskClient.UI.Modules.Projects.View.TasksPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Projects.View"
+      xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.Modules.Projects.UserControls"
+      xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.UserControls"
+      xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
+      d:DataContext="{d:DesignInstance Type=viewmodels:TasksVM}"
+      mc:Ignorable="d"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      Title="TasksPage">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid Background="{StaticResource BackgroundGreen}">
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+
+        <StackPanel Orientation="Horizontal"
+                    VerticalAlignment="Center"
+                    Margin="10,10,0,10">
+
+
+
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center">
+
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="Sprint: "
+                           Margin="10,0,0,0" />
+
+
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="{Binding SprintNumber, FallbackValue=4}"
+                           Margin="5,0,0,0" />
+
+                <Button Style="{StaticResource GreenButton}"
+                        Content="..."
+                        Width="20"
+                        Margin="20,0,0,0"
+                        Command="{Binding SelectSprint}" />
+
+
+
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="{Binding DateStart, FallbackValue=24.04.2024}"
+                           Margin="40,0,0,0" />
+
+
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="-"
+                           Margin="10,0,0,0" />
+
+
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="{Binding DateEnd, FallbackValue=24.04.2024}"
+                           Margin="10,0,0,0" />
+
+            </StackPanel>
+
+
+
+        </StackPanel>
+
+        <Button Style="{StaticResource GreenButton}"
+                Content="Add sprint"
+                Margin="10"
+                Padding="20,5,20,5"
+                HorizontalAlignment="Right"
+                Command="{Binding AddSprint}" />
+
+
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="2*" />
+            </Grid.ColumnDefinitions>
+
+
+            <Border CornerRadius="10"
+                    Margin="10, 0, 5, 10"
+                    BorderThickness="10"
+                    Grid.Column="0"
+                    Drop="TaskDropTodo"
+                    AllowDrop="True"
+                    Background="White"
+                    BorderBrush="White">
+
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              CanContentScroll="False">
+                    <StackPanel>
+
+                        <TextBlock Style="{StaticResource BlackHeader}"
+                                   Text="Todo"
+                                   Margin="0,0,0,5"
+                                   HorizontalAlignment="Center" />
+
+                        <Button Style="{StaticResource GreenButton}"
+                                HorizontalAlignment="Stretch"
+                                Margin="10"
+                                Height="30"
+                                Content="Add task"
+                                Command="{Binding AddProjectTaskTodo}" />
+
+                        <ItemsControl x:Name="TasksTodo"
+                                      BorderThickness="0"
+                                      ItemsSource="{Binding ProjectTasksTodo}"
+                                      Margin="-1">
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <usercontrols:ProjectTaskTemplate Margin="5,0,5,10"
+                                                                      MouseDown="ProjectTaskTemplate_MouseDown"
+                                                                      HorizontalAlignment="Stretch"
+                                                                      Details="{Binding Details}"
+                                                                      Title="{Binding Title}"
+                                                                      ExecutorName="{Binding ExecutorName}" />
+
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Border CornerRadius="10"
+                    Margin="10, 0, 5, 10"
+                    BorderThickness="10"
+                    Grid.Column="1"
+                    Background="White"
+                    Drop="TaskDropInProgress"
+                    AllowDrop="True"
+                    BorderBrush="White">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              CanContentScroll="False">
+
+                    <StackPanel>
+
+                        <TextBlock Style="{StaticResource BlackHeader}"
+                                   Text="In progress"
+                                   Margin="0,0,0,5"
+                                   HorizontalAlignment="Center" />
+
+                        <Button Style="{StaticResource GreenButton}"
+                                HorizontalAlignment="Stretch"
+                                Margin="10"
+                                Height="30"
+                                Content="Add task"
+                                Command="{Binding AddProjectTaskInProcess}" />
+
+                        <ItemsControl x:Name="TasksInProgress"
+                                      ScrollViewer.CanContentScroll="False"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      BorderThickness="0"
+                                      ItemsSource="{Binding ProjectTasksInProcess}"
+                                      Margin="-1">
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <usercontrols:ProjectTaskTemplate Margin="0,0,0,10"
+                                                                      MouseDown="ProjectTaskTemplate_MouseDown"
+                                                                      Details="{Binding Details}"
+                                                                      Title="{Binding Title}"
+                                                                      ExecutorName="{Binding ExecutorName}" />
+
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+
+            <Border CornerRadius="10"
+                    Margin="10, 0, 5, 10"
+                    BorderThickness="10"
+                    Grid.Column="2"
+                    Drop="TaskDropTesting"
+                    AllowDrop="True"
+                    Background="White"
+                    BorderBrush="White">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              CanContentScroll="False">
+
+                    <StackPanel>
+
+                        <TextBlock Style="{StaticResource BlackHeader}"
+                                   Text="Testing"
+                                   Margin="0,0,0,5"
+                                   HorizontalAlignment="Center" />
+
+
+
+                        <Button Style="{StaticResource GreenButton}"
+                                HorizontalAlignment="Stretch"
+                                Margin="10"
+                                Height="30"
+                                Content="Add task"
+                                Command="{Binding AddProjectTaskTesting}" />
+
+
+                        <ItemsControl x:Name="TasksTesting"
+                                      BorderThickness="0"
+                                      ScrollViewer.CanContentScroll="False"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      ItemsSource="{Binding ProjectTasksTesting}"
+                                      Margin="-1">
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <usercontrols:ProjectTaskTemplate Margin="0,0,0,10"
+                                                                      MouseDown="ProjectTaskTemplate_MouseDown"
+                                                                      Details="{Binding Details}"
+                                                                      Title="{Binding Title}"
+                                                                      ExecutorName="{Binding ExecutorName}" />
+
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Border CornerRadius="10"
+                    Margin="10, 0, 10, 10"
+                    BorderThickness="10"
+                    Grid.Column="3"
+                    Drop="TaskDropDone"
+                    AllowDrop="True"
+                    Background="White"
+                    BorderBrush="White">
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              CanContentScroll="False">
+
+                    <StackPanel>
+
+                        <TextBlock Style="{StaticResource BlackHeader}"
+                                   Text="Done"
+                                   AllowDrop="True"
+                                   Margin="0,0,0,5"
+                                   HorizontalAlignment="Center" />
+
+
+                        <Button Style="{StaticResource GreenButton}"
+                                HorizontalAlignment="Stretch"
+                                Margin="10"
+                                Height="30"
+                                Content="Add task"
+                                Command="{Binding AddProjectTaskDone}" />
+
+
+                        <ItemsControl x:Name="TasksDone"
+                                      ScrollViewer.CanContentScroll="False"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      BorderThickness="0"
+                                      ItemsSource="{Binding ProjectTasksDone}"
+                                      Margin="-1">
+
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <usercontrols:ProjectTaskTemplate Margin="0,0,0,10"
+                                                                      MouseDown="ProjectTaskTemplate_MouseDown"
+                                                                      Details="{Binding Details}"
+                                                                      Title="{Binding Title}"
+                                                                      ExecutorName="{Binding ExecutorName}" />
+
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+        </Grid>
+    </Grid>
+</Page>

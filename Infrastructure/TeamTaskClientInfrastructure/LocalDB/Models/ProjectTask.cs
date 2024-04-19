@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.Domain.Common;
-using TeamTaskClient.Domain.Enums;
-
-namespace TeamTaskClient.Infrastructure.LocalDB.Models
+﻿namespace TeamTaskClient.Infrastructure.LocalDB.Models
 {
     internal class ProjectTask
     {
@@ -18,7 +10,7 @@ namespace TeamTaskClient.Infrastructure.LocalDB.Models
         public int StatusProjectTask { get; set; }
         public string? ExecutorProjectTaskTag { get; set; }
         public string? ExecutorProjectTaskType { get; set; }
-        
+
         // 0 - User
         // 1 - Team
 

@@ -1,9 +1,4 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
@@ -21,7 +16,9 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjec
                 {
                     Detail = request.Detail,
                     Title = request.Title,
-                    SprintId = request.SprintId
+                    SprintId = request.SprintId,
+                    ProjectId = request.ProjectId,
+                    Status = request.Status.Value
                 });
 
                 return projectTask;

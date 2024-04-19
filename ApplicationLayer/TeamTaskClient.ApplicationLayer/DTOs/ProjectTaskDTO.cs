@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.Domain.Common;
-using TeamTaskClient.Domain.Enums;
+﻿using TeamTaskClient.Domain.Enums;
 
 namespace TeamTaskClient.ApplicationLayer.DTOs
 {

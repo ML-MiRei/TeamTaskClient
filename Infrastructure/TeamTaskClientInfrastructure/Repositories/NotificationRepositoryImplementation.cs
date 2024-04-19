@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.Http.Json;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
-using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
-using TeamTaskClient.UI;
+﻿using System.Windows.Input;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 

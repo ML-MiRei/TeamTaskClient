@@ -8,10 +8,21 @@ namespace TeamTaskClient.UI.Dialogs.View
     /// </summary>
     public partial class ErrorWindow : Window
     {
-        public ErrorWindow(string textError)
+        private ErrorWindow(string textError)
         {
             InitializeComponent();
             DataContext = new ErrorVM(textError);
+
+
+            HorizontalAlignment = HorizontalAlignment.Center;
+            VerticalAlignment = VerticalAlignment.Center;
+        }
+
+        public static void Show(string textError)
+        {
+            ErrorWindow errorWindow = new ErrorWindow(textError);
+            errorWindow.ShowDialog();
+
         }
     }
 }

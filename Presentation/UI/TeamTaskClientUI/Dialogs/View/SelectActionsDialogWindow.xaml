@@ -7,12 +7,13 @@
         xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Dialogs.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:SelectActionsDialogVM}"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
         BorderThickness="0"
         MinHeight="200"
-        MaxHeight="300"
+        MaxHeight="350"
         Height="Auto"
         Width="400">
 
@@ -36,7 +37,7 @@
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
@@ -48,36 +49,43 @@
                        Style="{StaticResource GreenHeader}" />
 
 
-            <ListBox Grid.Row="1"
-                     Margin="20,0,20,0"
-                     VerticalAlignment="Center"
-                     ItemsSource="{Binding Actions}"
-                     Background="Transparent"
-                     BorderThickness="0"
-                     SelectionChanged="ListBox_SelectionChanged"
-                     HorizontalAlignment="Center">
-
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Border CornerRadius="10"
-                                Background="White"
-                                BorderThickness="5"
-                                Width="300"
-                                Margin="0,0,0,5"
-                                HorizontalAlignment="Center"
-                                BorderBrush="White">
-
-                            <TextBlock HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"
-                                       Text="{Binding}"
-                                       Style="{StaticResource SimpleGreenText}" />
-                        </Border>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
+            <ScrollViewer Grid.Row="1"
+                          Margin="20,0,20,0"
+                          ScrollViewer.CanContentScroll="False"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
 
 
-            </ListBox>
 
+                <ListBox VerticalAlignment="Center"
+                         ItemsSource="{Binding Actions}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         SelectionChanged="ListBox_SelectionChanged"
+                         HorizontalAlignment="Center">
+
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="10"
+                                    Background="White"
+                                    BorderThickness="5"
+                                    Width="300"
+                                    Margin="0,0,0,5"
+                                    HorizontalAlignment="Center"
+                                    BorderBrush="White">
+
+                                <TextBlock HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding}"
+                                           Style="{StaticResource SimpleGreenText}" />
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+
+
+                </ListBox>
+
+
+            </ScrollViewer>
 
             <Button Style="{StaticResource GreenButton}"
                     Content="Continue"

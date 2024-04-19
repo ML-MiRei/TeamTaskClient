@@ -23,7 +23,7 @@
 
             <usercontrols:CircleImage Height="60"
                                       Width="60"
-                                     />
+                                      Lit="{Binding Lit}" />
 
             <TextBlock Text="{Binding FirstName, FallbackValue=FirstName}"
                        Style="{StaticResource SimpleBlackText}"

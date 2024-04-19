@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using TeamTaskClient.UI.Common.Base;
-using TeamTaskClientUI;
 using TeamTaskClient.UI.Dialogs.View;
-using System.Collections.ObjectModel;
 
 namespace TeamTaskClient.UI.Dialogs.ViewModels
 {
@@ -18,7 +11,7 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
             public string Text { get; set; }
         }
 
-        public string ButtonContent {  get; set; }
+        public string ButtonContent { get; set; }
 
 
         public InputDialogVM(string textDialog, string contentButton, List<string> updatingProperties)

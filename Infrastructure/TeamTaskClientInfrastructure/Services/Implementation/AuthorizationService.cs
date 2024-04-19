@@ -1,16 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Net.Http.Json;
-
-
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.ApplicationLayer.DTOs;
+﻿using System.Net.Http.Json;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Services.Implementation
@@ -35,7 +25,7 @@ namespace TeamTaskClient.Infrastructure.Services.Implementation
             {
 
                 var content = JsonContent.Create(userData);
-                var httpReply = await client.PostAsync($"https://localhost:7130/api/Authentication/registration", content);
+                var httpReply =  client.PostAsync($"https://localhost:7130/api/Authentication/registration", content).Result;
 
                 if (httpReply.StatusCode == System.Net.HttpStatusCode.OK)
                 {

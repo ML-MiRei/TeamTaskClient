@@ -1,12 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.Infrastructure.LocalDB.Context;
 using TeamTaskClient.Infrastructure.Repositories;
@@ -34,14 +27,19 @@ namespace TeamTaskClient.Infrastructure
             );
             services.AddTransient<IChatRepository, ChatRepositoryImplementation>()
                                                 .AddTransient<IMessageRepository, MessageRepositoryImplementation>()
+
                                                 .AddTransient<IProjectRepository, ProjectRepositoryImplementation>()
+                                                .AddTransient<ISprintRepositoryInterface, SprintRepositoryImplementation>()
+                                                .AddTransient<IProjectTaskRepository, ProjectTaskRepositoryImplementation>()
+                                                
                                                 .AddTransient<IUserRepository, UserRepositoryImplementation>()
                                                 .AddTransient<ITeamRepository, TeamRepositoryImplementation>()
                                                 .AddTransient<INotificationRepository, NotificationRepositoryImplementation>()
-                                                .AddTransient<IProjectTaskRepository, ProjectTaskRepositoryImplementation>()
+
                                                 .AddTransient<IAuthorizationService, AuthorizationService>()
                                                 .AddTransient<IRemoveCash, RemoveCash>()
-                                                .AddTransient<IHttpClient, TeamTaskSeverHttpClient > ()
+
+                                                .AddTransient<IHttpClient, TeamTaskSeverHttpClient>()
                                                 .AddTransient<IChatHubClient, ChatHubClient>();
             return services;
         }

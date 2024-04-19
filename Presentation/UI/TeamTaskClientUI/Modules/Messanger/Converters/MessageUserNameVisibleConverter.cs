@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using TeamTaskClient.Domain.Entities;
@@ -18,7 +12,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.Converters
             if (value != null)
                 return null;
 
-            if (((MessageEntity)value).ID ==  Properties.Settings.Default.userId)
+            if (((MessageEntity)value).ID == Properties.Settings.Default.userId)
             {
                 return Visibility.Hidden;
             }

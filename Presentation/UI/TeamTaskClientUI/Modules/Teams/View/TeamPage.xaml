@@ -57,10 +57,10 @@
 
 
             <Button Style="{StaticResource GreenButton}"
-                    Command="{Binding SearchTeam}"
                     Grid.Column="1"
                     Padding="20"
-                    Margin="10,0,0,0">
+                    Margin="10,0,0,0"
+                    Click="Button_Click">
                 <Button.Content>
                     <Image Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\send-message.png" />
 
@@ -81,6 +81,7 @@
 
         <ListBox Grid.Row="1"
                  Background="White"
+                 Name="TeamList"
                  BorderThickness="0"
                  HorizontalContentAlignment="Stretch"
                  ScrollViewer.CanContentScroll="False"
@@ -89,11 +90,13 @@
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <usercontrols1:TeamTemplate   MouseLeftButtonDown="TeamTemplate_MouseLeftButtonDown"
-                                                  HorizontalAlignment="Stretch"
-                                                  TeamLeadName="{Binding TeamLeadName}"
-                                                  TeamName="{Binding TeamName}"
-                                                  Users="{Binding Users}" />
+                    <usercontrols1:TeamTemplate MouseEnter="TeamTemplate_MouseEnter"
+                                                MouseLeave="TeamTemplate_MouseLeave"
+                                                MouseLeftButtonDown="TeamTemplate_MouseLeftButtonDown"
+                                                HorizontalAlignment="Stretch"
+                                                TeamLeadName="{Binding TeamLeadName}"
+                                                TeamName="{Binding TeamName}"
+                                                Users="{Binding Users}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
 

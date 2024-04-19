@@ -1,16 +1,10 @@
-﻿using AutoMapper;
-using MediatR;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MediatR;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Commands.DeleteUser;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Commands.UpdateUser;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
@@ -30,12 +24,12 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
             _mediator = mediator;
             var user = mediator.Send(new GetUserByIdQuery() { UserId = Convert.ToInt32(Properties.Settings.Default.userId) }).Result;
 
-            User = new UserModel();
+            User = new ApplicationLayer.Models.UserModel();
             User.FirstName = user.FirstName;
             User.LastName = user.LastName;
             User.PhoneNumber = user.PhoneNumber;
             User.Email = user.Email;
-            User.Tag = user.Tag;
+            User.UserTag = user.Tag;
             User.SecondName = user.SecondName;
 
             Logout = new LogoutCommand(removeCash);
@@ -43,8 +37,9 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
             EditProfile = new EditProfileCommand(this);
         }
 
+        public string Lit => User.Lit;
 
-        public UserModel User { get; set; }
+        public ApplicationLayer.Models.UserModel User { get; set; }
 
 
         public ICommand Logout { get; }
@@ -52,7 +47,20 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
         public ICommand EditProfile { get; }
 
 
+        public ObservableCollection<NotificationModel> Notifications
+        {
+            get
+            {
+                return new ObservableCollection<NotificationModel>()
+                {
+                    new NotificationModel() {Details = "You have been added to the team", Title = "Add team"},
+                    new NotificationModel() {Details = "You were kicked out of the team", Title = "Delete team"},
+                    new NotificationModel() {Details = "The name of the project has been changed", Title = "Change name"}
 
+
+                };
+            }
+        }
 
 
 
@@ -75,14 +83,14 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
                         UserId = Properties.Settings.Default.userId
                     });
 
-                    profileVM.User = new UserModel()
-                    {
-                        FirstName = userModel.InputValues[0].Text,
-                        SecondName = userModel.InputValues[1].Text,
-                        LastName = userModel.InputValues[2].Text,
-                        PhoneNumber = userModel.InputValues[3].Text,
-                        Email = profileVM.User.Email
-                    };
+
+                    profileVM.User.FirstName = userModel.InputValues[0].Text;
+                    profileVM.User.SecondName = userModel.InputValues[1].Text;
+                    profileVM.User.LastName = userModel.InputValues[2].Text;
+                    profileVM.User.PhoneNumber = userModel.InputValues[3].Text;
+                    profileVM.User.Email = profileVM.User.Email;
+
+
 
                     profileVM.OnPropertyChanged(nameof(User));
                 }
@@ -109,7 +117,7 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
         {
             public override void Execute(object? parameter)
             {
-                AlertDialogWindow alertDialog = new AlertDialogWindow("All your data will be deleted. Are you sure you want to delete your account?", "Delete", "Cancel");
+                AlertDialogWindow alertDialog = new AlertDialogWindow("All your data will be deleted. \nAre you sure you want to delete your account?", "Delete", "Cancel");
                 if (alertDialog.ShowDialog().Value)
                 {
                     try
@@ -125,8 +133,7 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
                     }
                     catch
                     {
-                        ErrorWindow errorWindow = new ErrorWindow("Account deletion error");
-                        errorWindow.ShowDialog();
+                        ErrorWindow.Show("Account deletion error");
                     }
 
 

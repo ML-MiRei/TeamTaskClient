@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
-using TeamTaskClient.Infrastructure.Services.Implementation;
+﻿using System.Windows.Input;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Login.Modules.View;
@@ -183,10 +175,10 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
 
         private class CompleteRegisterCommand : CommandBase
         {
-            public override void Execute(object parameter)
+            public override async void Execute(object parameter)
             {
 
-                _authorizationService.Register(new Domain.Entities.UserEntity
+                var user = _authorizationService.Register(new Domain.Entities.UserEntity
                 {
                     Email = _email,
                     Password = _password,
@@ -195,7 +187,14 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
                     PhoneNumber = _phone,
                     SecondName = _secondName != "Enter second name" ? _secondName : ""
 
-                });
+                }).Result;
+
+
+
+                Properties.Settings.Default.userId = user.ID;
+                Properties.Settings.Default.userTag = user.Tag;
+                Properties.Settings.Default.Save();
+
                 Programm.LoginWindow.DialogResult = true;
                 return;
 

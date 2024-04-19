@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -29,7 +23,7 @@ namespace TeamTaskClient.UI.UserControls
         public string WatermarkText
         {
             get { return _watermarkText; }
-            set { _watermarkText= value; }
+            set { _watermarkText = value; }
         }
 
 

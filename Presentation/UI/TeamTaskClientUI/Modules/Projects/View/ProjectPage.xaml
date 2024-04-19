@@ -1,0 +1,253 @@
+﻿<Page x:Class="TeamTaskClient.UI.Modules.Projects.View.ProjectPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Projects.View"
+      xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.Modules.Projects.UserControls"
+      xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
+      xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.UserControls"
+      xmlns:converters="clr-namespace:TeamTaskClient.UI.Modules.Projects.Converters"
+      d:DataContext="{d:DesignInstance Type=viewmodels:ProjectPageVM}"
+      mc:Ignorable="d"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      Title="ProjectTasksPage">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:VisibilityByUserRoleConverter x:Key="VisibilityByUserRoleConverter"/>
+            <Style x:Key="OptionMarkFocusVisual">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Rectangle Margin="14,0,0,0"
+                                       StrokeDashArray="1 2"
+                                       Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                                       SnapsToDevicePixels="true"
+                                       StrokeThickness="1" />
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <SolidColorBrush x:Key="RadioButton.Static.Glyph"
+                             Color="#FF212121" />
+            <SolidColorBrush x:Key="RadioButton.MouseOver.Background"
+                             Color="#FFF3F9FF" />
+            <SolidColorBrush x:Key="RadioButton.MouseOver.Border"
+                             Color="#FF5593FF" />
+            <SolidColorBrush x:Key="RadioButton.MouseOver.Glyph"
+                             Color="#FF212121" />
+            <SolidColorBrush x:Key="RadioButton.Pressed.Background"
+                             Color="#FFD9ECFF" />
+            <SolidColorBrush x:Key="RadioButton.Pressed.Border"
+                             Color="#FF3C77DD" />
+            <SolidColorBrush x:Key="RadioButton.Pressed.Glyph"
+                             Color="#FF212121" />
+            <SolidColorBrush x:Key="RadioButton.Disabled.Background"
+                             Color="#FFE6E6E6" />
+            <SolidColorBrush x:Key="RadioButton.Disabled.Border"
+                             Color="#FFBCBCBC" />
+            <SolidColorBrush x:Key="RadioButton.Disabled.Glyph"
+                             Color="#FF707070" />
+            <ControlTemplate x:Key="RadioButtonTemplate1"
+                             TargetType="{x:Type RadioButton}">
+                <Grid x:Name="templateRoot"
+                      Background="Transparent"
+                      SnapsToDevicePixels="True">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="0"
+                            SnapsToDevicePixels="true">
+                        <ContentPresenter x:Name="contentPresenter"
+                                          Focusable="False"
+                                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                          Margin="{TemplateBinding Padding}"
+                                          RecognizesAccessKey="True"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Border>
+
+                </Grid>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="HasContent"
+                             Value="true">
+                        <Setter Property="FocusVisualStyle"
+                                Value="{StaticResource OptionMarkFocusVisual}" />
+                        <Setter Property="Padding"
+                                Value="4,-1,0,0" />
+                    </Trigger>
+                    <Trigger Property="IsMouseOver"
+                             Value="true">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsEnabled"
+                             Value="false">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsPressed"
+                             Value="true">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsChecked"
+                             Value="true">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0.4" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                    <Trigger Property="IsChecked"
+                             Value="{x:Null}">
+                        <Setter Property="Background"
+                                TargetName="border">
+                            <Setter.Value>
+                                <SolidColorBrush Color="Black"
+                                                 Opacity="0" />
+                            </Setter.Value>
+                        </Setter>
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+    <Grid Background="{StaticResource BackgroundGreen}">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="7*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+
+        <StackPanel Grid.Column="1"
+                    Margin="0,0,0,20">
+            <StackPanel Orientation="Horizontal">
+
+                <usercontrols1:SettingsButton Width="15"
+                                              Visibility="{Binding UserRole, Converter={StaticResource VisibilityByUserRoleConverter}}"
+                                              Command="{Binding EditProjectName}"
+                                              Margin="30,24,0,0"
+                                              Height="15" />
+                
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="{Binding ProjectName, FallbackValue=ProjectName}"
+                           Margin="10,20,0,0" />
+
+
+            </StackPanel>
+
+
+        </StackPanel>
+
+
+        <Frame x:Name="frameLayuot"
+            Grid.Column="1"
+            Grid.Row="1"
+            />
+
+
+
+
+        <StackPanel Grid.RowSpan="2" Background="{StaticResource DarkGreen}">
+
+            <RadioButton x:Name="ToBacklogButton"
+                         Template="{DynamicResource RadioButtonTemplate1}"
+                         Style="{StaticResource {x:Type ToggleButton}}"
+                         GroupName="navigationProject"
+                         Background="Transparent"
+                         HorizontalAlignment="Stretch"
+                         Foreground="White"
+                         Height="70"
+                         BorderBrush="Transparent"
+                         Checked="ToBacklog">
+
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\folder.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="backlog"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+
+            <RadioButton 
+                         Template="{DynamicResource RadioButtonTemplate1}"
+                         Style="{StaticResource {x:Type ToggleButton}}"
+                         GroupName="navigationProject"
+                         Background="Transparent"
+                         Foreground="White"
+                         Height="70"
+                         HorizontalAlignment="Stretch"
+                         BorderBrush="Transparent"
+                         Checked="ToSprints">
+
+                <ToggleButton.Content>
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\folder.png"
+                                   Width="20"
+                                   VerticalAlignment="Center"
+                                   Margin="5,0,15,0" />
+                            <TextBlock  Text="sprints"
+                                        VerticalAlignment="Center"
+                                        Width="80" />
+                        </StackPanel>
+
+                    </Grid>
+                </ToggleButton.Content>
+            </RadioButton>
+
+
+
+
+
+        </StackPanel>
+        
+        
+
+    </Grid>
+</Page>

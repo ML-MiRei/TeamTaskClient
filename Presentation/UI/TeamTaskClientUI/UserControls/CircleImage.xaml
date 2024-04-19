@@ -1,31 +1,36 @@
 ﻿<UserControl x:Class="TeamTaskClient.UI.UserControls.CircleImage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:TeamTaskClient.UI.UserControls"
-             mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="100">
-    <Grid >
-        <Border 
-                HorizontalAlignment="Center"
-                Width="60"
-                Height="60"
->
-            <Border.OpacityMask>
-                <VisualBrush>
-                    <VisualBrush.Visual>
-                        <Border CornerRadius="1"
-                                Width="1"
-                                Height="1"
-                                Background="White" />
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </Border.OpacityMask>
-            <Image 
-                
-                Stretch="Fill"
-                   Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AwatarExample.jpeg"/>
+             mc:Ignorable="d"
+             d:DesignHeight="100"
+             d:DesignWidth="100">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <local:RandomColorConverter x:Key="RandomColorConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Border HorizontalAlignment="Stretch"
+                Width="Auto"
+                Height="Auto">
+
+            <Grid>
+                <Ellipse
+                  
+                    
+                         Fill="{Binding Lit, Converter={StaticResource RandomColorConverter}}" />
+
+                <TextBlock VerticalAlignment="Center"
+                           Foreground="White"
+                           FontSize="20"
+                           HorizontalAlignment="Stretch"
+                           TextAlignment="Center"
+                           Text="{Binding Lit, FallbackValue=U}" />
+            </Grid>
         </Border>
     </Grid>
 </UserControl>

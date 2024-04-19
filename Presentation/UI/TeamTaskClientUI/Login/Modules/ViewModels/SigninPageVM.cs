@@ -1,15 +1,7 @@
-﻿
-using System.Windows;
-using System.Windows.Input;
-using System.Linq;
-using System.Diagnostics.Metrics;
-using TeamTaskClient.UI.Common.Base;
-using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
-using TeamTaskClient.UI.Login.Modules.View;
-using TeamTaskClient.Infrastructure.Services.Implementation;
-using MediatR;
-using System.Configuration;
+﻿using System.Windows.Input;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
+using TeamTaskClient.UI.Common.Base;
+using TeamTaskClient.UI.Login.Modules.View;
 
 namespace TeamTaskClient.UI.Login.Modules.ViewModels
 {

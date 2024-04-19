@@ -1,4 +1,4 @@
-﻿<Page x:Class="TeamTaskClient.UI.Modules.Projects.View.ProjectsPage"
+﻿<Page x:Class="TeamTaskClient.UI.Modules.Projects.View.ObserveProjectsPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,7 +7,7 @@
       xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
       xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
       xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Projects.UserControls"
-      d:DataContext="{d:DesignInstance Type=viewmodels:ProjectPageVM}"
+      d:DataContext="{d:DesignInstance Type=viewmodels:ObserverProjectPageVM}"
       mc:Ignorable="d"
       d:DesignHeight="450"
       d:DesignWidth="800"
@@ -35,9 +35,11 @@
               Margin="10">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="8*" />
+                <ColumnDefinition Width="6*" />
+                <ColumnDefinition Width="1*" />
                 <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
+
 
             <Border CornerRadius="5"
                     BorderThickness="10"
@@ -55,40 +57,53 @@
             </Border>
 
 
+
             <Button Style="{StaticResource GreenButton}"
-                    Command="{Binding SearchProjectsPageProject}"
                     Grid.Column="1"
                     Padding="20"
-                    Margin="20,0,0,0">
+                    Margin="10,0,0,0"
+                    Click="Button_Click">
                 <Button.Content>
                     <Image Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\send-message.png" />
 
                 </Button.Content>
             </Button>
 
+            <Button Style="{StaticResource GreenButton}"
+                    Command="{Binding CreateProject}"
+                    Grid.Column="3"
+                    Padding="20"
+                    Content="Create project"
+                    Margin="10,0,0,0">
+
+            </Button>
+
         </Grid>
 
 
+        <ScrollViewer Grid.Row="1" CanContentScroll="False">
+            <ItemsControl x:Name="ListProjects"
+                          ItemsSource="{Binding Projects}"
+                          Margin="0,0,0,10">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel ScrollViewer.CanContentScroll="False"
+                                   ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                   Orientation="Horizontal"
+                                   HorizontalAlignment="Stretch" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
 
-        <ItemsControl Grid.Row="1">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <usercontrols1:ProjectTemplate Margin="10"
+                                                       MouseLeftButtonDown="ProjectTemplate_MouseLeftButtonDown"/>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
 
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <usercontrols1:ProjectTemplate 
-                        
-                        ViewButton="{Binding ViewButton}"
-                        />
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-        </ItemsControl>
-
-
+        </ScrollViewer>
 
     </Grid>
 </Page>

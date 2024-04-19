@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using TeamTaskClient.ApplicationLayer.Models;
 
 namespace TeamTaskClient.UI.Modules.Projects.UserControls
 {
@@ -25,47 +15,50 @@ namespace TeamTaskClient.UI.Modules.Projects.UserControls
             InitializeComponent();
         }
 
-        public static DependencyProperty LeaderNameProperty = DependencyProperty.Register("LeaderName", typeof(string), typeof(ProjectTemplate));
-        public static DependencyProperty NumberOfTasksProperty = DependencyProperty.Register("NumberOfTasks", typeof(string), typeof(ProjectTemplate));
-        public static DependencyProperty SprintProperty = DependencyProperty.Register("Sprint", typeof(string), typeof(ProjectTemplate));
-        public static DependencyProperty MyRoleProperty = DependencyProperty.Register("MyRole", typeof(string), typeof(ProjectTemplate));
-        public static DependencyProperty ViewButtonProperty = DependencyProperty.Register("ViewButton", typeof(ICommand), typeof(ProjectTemplate));
 
 
-
-        public string LeaderName
-        {
-            get { return (string)GetValue(LeaderNameProperty); }
-            set { SetValue(LeaderNameProperty, value); }
-        }
-
-        public string NumberOfTasks
-        {
-            get { return (string)GetValue(NumberOfTasksProperty); }
-            set { SetValue(NumberOfTasksProperty, value); }
-        }
+        public static DependencyProperty ProjectLeaderNameProperty = DependencyProperty.Register("ProjectLeaderName", typeof(string), typeof(ProjectTemplate));
+        public static DependencyProperty ProjectNameProperty = DependencyProperty.Register("ProjectName", typeof(string), typeof(ProjectTemplate));
+        public static DependencyProperty SprintsProperty = DependencyProperty.Register("Sprints", typeof(List<SprintModel>), typeof(ProjectTemplate));
+        public static DependencyProperty UserRoleProperty = DependencyProperty.Register("UserRole", typeof(int), typeof(ProjectTemplate));
+        public static DependencyProperty AmountTasksProperty = DependencyProperty.Register("AmountTasks", typeof(int), typeof(ProjectTemplate));
 
         
-        public string Sprint
+
+        public string ProjectLeaderName
         {
-            get { return (string)GetValue(SprintProperty); }
-            set { SetValue(SprintProperty, value); }
+            get { return (string)GetValue(ProjectLeaderNameProperty); }
+            set { SetValue(ProjectLeaderNameProperty, value); }
+        }
+        
+
+        public string ProjectName
+        {
+            get { return (string)GetValue(ProjectNameProperty); }
+            set { SetValue(ProjectNameProperty, value); }
         }
 
-                
-        public string MyRole
+        public List<SprintModel> Sprints
         {
-            get { return (string)GetValue(MyRoleProperty); }
-            set { SetValue(MyRoleProperty, value); }
+            get { return (List<SprintModel>)GetValue(SprintsProperty); }
+            set { SetValue(SprintsProperty, value); }
         }
 
 
-
-        public ICommand ViewButton
+        public int UserRole
         {
-            get { return (ICommand)GetValue(ViewButtonProperty); }
-            set { SetValue(ViewButtonProperty, value);}
+            get { return (int)GetValue(UserRoleProperty); }
+            set { SetValue(UserRoleProperty, value); }
         }
+
+
+        
+        public int AmountTasks
+        {
+            get { return (int)GetValue(AmountTasksProperty); }
+            set { SetValue(AmountTasksProperty, value); }
+        }
+
 
 
     }

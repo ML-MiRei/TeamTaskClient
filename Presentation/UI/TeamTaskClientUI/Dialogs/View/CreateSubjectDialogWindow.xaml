@@ -9,6 +9,7 @@
         d:DataContext="{d:DesignInstance Type=viewmodels:CreateSubjectDialogVM}"
         mc:Ignorable="d"
         WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         Background="Transparent"
         BorderThickness="0"

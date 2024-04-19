@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using TeamTaskClient.ApplicationLayer.DTOs;
+﻿using System.Net.Http.Json;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.LocalDB.Models;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
@@ -39,7 +30,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
             var httpReply = httpClient.CurrentHttpClient
                                 .PostAsync($"{httpClient.ConnectionString}/Team/create", JsonContent.Create(teamData.Name)).Result;
 
-            
+
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
                 throw new NotFoundException();
@@ -104,7 +95,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         public async Task UpdateTeam(TeamEntity teamData)
         {
             var httpReply = await httpClient.CurrentHttpClient
-                    .PatchAsync($"{httpClient.ConnectionString}/Team/{teamData.ID}/update",  JsonContent.Create(teamData));
+                    .PatchAsync($"{httpClient.ConnectionString}/Team/{teamData.ID}/update", JsonContent.Create(teamData));
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {

@@ -48,6 +48,10 @@
 
                     <usercontrols1:ChatTemplate MouseRightButtonDown="ChatTemplate_MouseRightButtonDown"
                                                 HorizontalAlignment="Stretch"
+                                                
+                                                MouseEnter="ChatTemplate_MouseEnter"
+                                                MouseLeave="ChatTemplate_MouseLeave"
+                                                
                                                 ChatName="{Binding ChatName, Mode=OneWay}"
                                                 LastMessage="{Binding LastMessage}"
                                                 CreatorLastMessage="{Binding CreatorLastMessage}"

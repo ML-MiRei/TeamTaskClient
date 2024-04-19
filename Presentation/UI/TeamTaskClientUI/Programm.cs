@@ -1,22 +1,13 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using TeamTaskClientUI.Main;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TeamTaskClient.ApplicationLayer;
 using TeamTaskClient.Infrastructure;
-using System.Configuration;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById;
-using MediatR;
-using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
-using TeamTaskClient.Infrastructure.Services.Interfaces;
-using TeamTaskClient.Infrastructure.Services.Implementation;
-using System.Windows;
-using TeamTaskClient.UI.Login;
-using TeamTaskClient.UI.Main;
-using TeamTaskClient.UI.Dialogs.View;
-using System.Net.NetworkInformation;
-using System.Net;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
+using TeamTaskClient.Infrastructure.Services.Implementation;
+using TeamTaskClient.Infrastructure.Services.Interfaces;
+using TeamTaskClient.UI.Dialogs.View;
+using TeamTaskClient.UI.Login;
+using TeamTaskClientUI.Main;
 
 namespace TeamTaskClient.UI
 {
@@ -31,6 +22,7 @@ namespace TeamTaskClient.UI
         [STAThread]
         public static void Main()
         {
+
 
 
             var host = Host.CreateDefaultBuilder()
@@ -59,23 +51,22 @@ namespace TeamTaskClient.UI
             }
 
             IHttpClient httpClient = host.Services.GetService<IHttpClient>();
-            httpClient.TryConnection(Properties.Settings.Default.userId);
-
-            ChatService chatService = ChatService.GetInstance(Properties.Settings.Default.userId);
 
 
 
-            var app = host.Services.GetService<App>();
+            var canConnection = httpClient.TryConnection(Properties.Settings.Default.userId);
+            if (canConnection)
+            {
+                ChatService chatService = ChatService.GetInstance(Properties.Settings.Default.userId);
+                var app = host.Services.GetService<App>();
+                app?.Run();
+            }
+            else
+            {
+                ErrorWindow.Show("No connection");
+            }
 
 
-
-
-           // IMediator mediator = host.Services.GetService<IMediator>();
-
-
-
-
-            app?.Run();
         }
     }
 }

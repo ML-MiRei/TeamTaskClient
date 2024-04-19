@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.RegularExpressions;
 
 namespace TeamTaskClient.UI.Modules.Profile.Models
 {
@@ -16,8 +12,11 @@ namespace TeamTaskClient.UI.Modules.Profile.Models
         public string Image { get; set; }
         public string Tag { get; set; }
 
-        public string FullName => FirstName + " " + SecondName + " " + LastName;
-        public string FormatPhoneNumber => PhoneNumber;
+        public string FullName => FirstName + " " + SecondName;
+        public string Lit => FirstName[0] + "";
+
+        public string FormatedPhoneNumber => Regex.Replace(PhoneNumber, @"(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})", "+$1-($2)-$3-$4-$5");
+
 
     }
 }

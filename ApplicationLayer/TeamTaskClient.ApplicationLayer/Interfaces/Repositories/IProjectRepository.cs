@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.ApplicationLayer.DTOs;
-using TeamTaskClient.ApplicationLayer.Models;
+﻿using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 
 namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
@@ -15,6 +9,8 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
         Task<ProjectModel> CreateProject(string name);
         Task DeleteProject(int projectId);
         Task LeaveFromProject(int projectId);
+        Task AddUserInProject(int projectId, string userTag);
+        Task AddTeamInProject(int projectId, string teamTag);
         Task UpdateProject(ProjectEntity project);
         Task DeleteUserFromProject(int projectId, string userTag);
 

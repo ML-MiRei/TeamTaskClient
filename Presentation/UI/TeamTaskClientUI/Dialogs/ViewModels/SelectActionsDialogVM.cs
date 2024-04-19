@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using TeamTaskClient.UI.Common.Base;
-using TeamTaskClientUI;
 using TeamTaskClient.UI.Dialogs.View;
 
 namespace TeamTaskClient.UI.Dialogs.ViewModels
@@ -14,7 +8,7 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
     {
 
 
-        public SelectActionsDialogVM(string textDialog, List<string> actions )
+        public SelectActionsDialogVM(string textDialog, List<string> actions)
         {
             TextDialog = textDialog;
             Actions = actions;
@@ -24,7 +18,7 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
         public string TextDialog { get; set; }
         public List<string> Actions { get; set; }
 
-        public static string SelectedAction {  get; set; }
+        public static string SelectedAction { get; set; }
 
         public ICommand CloseWindow { get; } = new CloseWindowCommand();
         public ICommand Continue { get; } = new ContinueCommand();

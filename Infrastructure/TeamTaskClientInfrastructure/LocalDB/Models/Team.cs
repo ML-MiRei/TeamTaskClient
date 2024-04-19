@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TeamTaskClient.Infrastructure.LocalDB.Models
 {
@@ -20,7 +14,7 @@ namespace TeamTaskClient.Infrastructure.LocalDB.Models
         public DateTime DateCreated { get; set; }
 
         public List<User> Users { get; set; }
-        public List<Project> Projects {  get; set; }
+        public List<Project> Projects { get; set; }
 
     }
 }

@@ -52,7 +52,7 @@
 
                                 <usercontrols:CircleImage  Grid.Column="0"
             
-                                                           Image="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AwatarExample.jpeg" />
+                                                          Lit="{Binding User.Lit}" />
 
                             </Grid>
                         </Border>

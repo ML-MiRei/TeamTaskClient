@@ -1,11 +1,5 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.DeleteMessage;
 using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.UpdateMessage;
@@ -15,61 +9,68 @@ using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
-using TeamTaskClient.UI.Modules.Messanger.View;
-using TeamTaskClient.UI.UserControls;
+using TeamTaskClient.UI.Modules.Messanger.Storage;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
-    internal class MessagesPageVM : MessengerVM
+    internal class MessagesPageVM : ViewModelBase
     {
 
         private static IMediator _mediator;
 
         public static string WatermarkText { get => "Enter message.."; }
 
-        public MessagesPageVM(IMediator mediator) : base(mediator)
+        public MessagesPageVM(IMediator mediator) 
         {
 
             _mediator = mediator;
             InputMessage = WatermarkText;
-            OnChatSelected += MessagesPageVM_OnChatSelected;
             SendMessage = new SendMessageButton(this);
             DoubleClick = new DoubleClickCommand(this);
 
+
+            MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
             ChatService.OnMessageReceived += ChatService_OnMessageReceived;
             ChatService.OnMessageDeleted += ChatService_OnMessageDeleted;
+            ChatService.OnMessageUpdated += ChatService_OnMessageUpdated;
+        }
+
+        private void ChatService_OnMessageUpdated(object? sender, string e)
+        {
+           App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.First(m => m.MessageId == (int)sender).TextMessage = e);
+            OnPropertyChanged(nameof(Messages));
+        }
+
+        private void OnSelectedChatChanged(object? sender, ChatModel e)
+        {
+            OnPropertyChanged(nameof(Messages));
         }
 
         private void ChatService_OnMessageDeleted(object? sender, EventArgs e)
         {
+            App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.Remove(MessengerStorage.Messages.First(m => m.MessageId == (int)sender)));
             OnPropertyChanged(nameof(Messages));
         }
 
         private void ChatService_OnMessageReceived(object? sender, MessageModel e)
         {
+            App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.Add(e));
             OnPropertyChanged(nameof(Messages));
         }
 
 
-        private void MessagesPageVM_OnChatSelected(object? sender, EventArgs e)
-        {
-            OnPropertyChanged(nameof(Messages));
-
-        }
 
 
-        
+
 
         public ObservableCollection<MessageModel> Messages
         {
-            get {
+            get
+            {
 
-                if (SelectedChat == null)
-                    return new ObservableCollection<MessageModel>(); 
-
-                return new ObservableCollection<MessageModel>(Chats.First(c => c.ChatId == SelectedChat).Messages); 
+                return MessengerStorage.Messages;
             }
- 
+
         }
 
 
@@ -109,7 +110,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var newTextMessage = updatePropertiesDialogWindow.GetInputValue()[0];
-                                _mediator.Send(new UpdateMessageCommand { ChatId = _selectedChat.Value, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
+                                _mediator.Send(new UpdateMessageCommand { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
                                 vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId).TextMessage = newTextMessage;
                                 vm.OnPropertyChanged(nameof(Messages));
                             }
@@ -119,13 +120,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         case "Delete":
                             try
                             {
-                                _mediator.Send(new DeleteMessageCommand() { ChatId = _selectedChat.Value, MessageId = ((MessageModel)parameter).MessageId });
+                                _mediator.Send(new DeleteMessageCommand() { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
                                 vm.Messages.Remove(vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId));
                             }
                             catch (Exception)
                             {
-                                ErrorWindow errorWindow = new ErrorWindow("Error delete message");
-                                errorWindow.ShowDialog();
+                                ErrorWindow.Show("Error delete message");
                             }
                             break;
                     }
@@ -138,18 +138,18 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
         {
             public override async void Execute(object? parameter)
             {
-                if(_inputMessage != "" && _inputMessage != WatermarkText)
+                if (_inputMessage != "" && _inputMessage != WatermarkText)
                 {
                     await _mediator.Send(new SendMessageCommand
                     {
-                        ChatId = _selectedChat.Value,
+                        ChatId = MessengerStorage.SelectedChat.ChatId,
                         TextMessage = _inputMessage.Trim(),
                         UderId = Properties.Settings.Default.userId
                     });
                     messagesPageVM.InputMessage = "Enter message..";
                 }
 
-              
+
             }
         }
     }

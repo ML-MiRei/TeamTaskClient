@@ -82,15 +82,7 @@
                                                Background="Transparent" />
             </Border>
 
-            <TextBlock Margin="0,0,0,10"
-                       HorizontalAlignment="Center">
-                <Hyperlink Command="{Binding ForgotPassword}"
-                           Style="{StaticResource GreenHyperlink}">
-                 Forgot password?
-                </Hyperlink>
-            </TextBlock>
-
-
+         
         </StackPanel>
 
 

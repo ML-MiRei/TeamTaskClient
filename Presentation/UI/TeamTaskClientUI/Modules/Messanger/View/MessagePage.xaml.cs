@@ -1,21 +1,10 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.UI.Modules.Messanger.Storage;
 using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
 
@@ -36,9 +25,18 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
             DataContext = vm;
 
 
-            MessengerVM.OnChatSelected += MessengerVM_OnChatSelected;
+            MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
 
             ((INotifyCollectionChanged)ListMessages.Items).CollectionChanged += ChatMessagePage_CollectionChanged;
+
+        }
+
+        private void OnSelectedChatChanged(object? sender, ChatModel e)
+        {
+            if(MessengerStorage.SelectedChat == null)
+                InputPanel.Visibility = Visibility.Hidden;
+            else
+                InputPanel.Visibility = Visibility.Visible;
 
         }
 
@@ -50,7 +48,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
             }
         }
 
-        private void MessengerVM_OnChatSelected(object? sender, EventArgs e)
+        private void OnSelectedChatChanged(object? sender, EventArgs e)
         {
             InputPanel.Visibility = Visibility.Visible;
         }
@@ -79,6 +77,17 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
             if (message.CreatorTag == Properties.Settings.Default.userTag)
                 vm.DoubleClick.Execute(((MessageTemplate)sender).DataContext);
 
+        }
+
+        private void MessageTemplate_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if ((((MessageTemplate)sender).DataContext as MessageModel).CreatorTag == Properties.Settings.Default.userTag)
+                Cursor = Cursors.Hand;
+        }
+
+        private void MessageTemplate_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
         }
     }
 }

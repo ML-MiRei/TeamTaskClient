@@ -1,13 +1,6 @@
 ﻿using MediatR;
-using System;
-using System.Collections.Generic;
+
 using System.Collections.ObjectModel;
-using System.Data.Common;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.AddUserInGroupChat;
 using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreateGroupChat;
@@ -15,27 +8,34 @@ using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreatePrivateChat;
 using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.LeaveChat;
 using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat;
 using TeamTaskClient.ApplicationLayer.CQRS.Chat.Queries.GetChats;
-using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.DeleteMessage;
-using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.UpdateMessage;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
-using TeamTaskClient.UI.Modules.Messanger.View;
+using TeamTaskClient.UI.Modules.Messanger.Storage;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
-    internal class ChatsListPageVM : MessengerVM
+    internal class ChatsListPageVM : ViewModelBase
     {
 
         private static IMediator _mediator;
 
-        public ChatsListPageVM(IMediator mediator) : base(mediator)
+        public ChatsListPageVM(IMediator mediator)
         {
             _mediator = mediator;
+            MessengerStorage.Chats = new ObservableCollection<ChatModel>(mediator.Send(new GetChatsQuery() { UserId = Properties.Settings.Default.userId }).Result.ToList());
+
         }
+
+
+        public ObservableCollection<ChatModel> Chats
+        {
+            get { return MessengerStorage.Chats; }
+        }
+
 
 
         public ICommand AddButton { get; set; } = new AddChatCommand();
@@ -55,12 +55,13 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         if (alertDialogWindow.ShowDialog().Value)
                         {
                             _mediator.Send(new LeaveChatCommand { ChatId = chatModel.ChatId, UserId = Properties.Settings.Default.userId });
+                            MessengerStorage.Chats.Remove(chatModel);
                         }
                     }
                     catch (Exception)
                     {
-                        ErrorWindow errorWindow = new ErrorWindow("Error leave chat");
-                        errorWindow.ShowDialog();
+                        ErrorWindow.Show("Error leave chat");
+
                     }
                 }
             }
@@ -90,7 +91,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
                                 var newUser = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
 
-                                Chats.First(c => c.ChatId == chatModel.ChatId).Users.Add(new UserModel
+                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Add(new UserModel
                                 {
                                     Email = newUser.Email,
                                     UserTag = newUser.Tag,
@@ -110,12 +111,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                                 if (alertDialogWindow.ShowDialog().Value)
                                 {
                                     _mediator.Send(new LeaveChatCommand { ChatId = chatModel.ChatId, UserId = Properties.Settings.Default.userId });
+                                    MessengerStorage.Chats.Remove(Chats.First(c => c.ChatId == chatModel.ChatId));
                                 }
                             }
                             catch (Exception)
                             {
-                                ErrorWindow errorWindow = new ErrorWindow("Error leave chat");
-                                errorWindow.ShowDialog();
+                                ErrorWindow.Show("Error leave chat");
                             }
                             break;
 
@@ -128,7 +129,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
                                 _mediator.Send(new UpdateGroupChatCommand { ChatId = chatModel.ChatId, ChatName = name });
 
-                                Chats.First(c => c.ChatId == chatModel.ChatId).ChatName = name;
+                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).ChatName = name;
                             }
                             break;
 
@@ -141,7 +142,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
                                 _mediator.Send(new UpdateGroupChatCommand { ChatId = chatModel.ChatId, AdminTag = tag });
 
-                                Chats.First(c => c.ChatId == chatModel.ChatId).UserRole = (int)UserRole.EMPLOYEE;
+                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).UserRole = (int)UserRole.EMPLOYEE;
                             }
                             break;
                     }
@@ -169,6 +170,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             {
                                 string userTag = window.GetInputValue()[0];
 
+                                if(MessengerStorage.Chats.Any(c => c.Type == (int)ChatTypeEnum.PRIVATE && c.Users.Any(u => u.UserTag == userTag))){
+
+                                    ErrorWindow.Show("There is already such a chat");
+                                    return;
+                                }
+
                                 try
                                 {
                                     var user = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
@@ -178,21 +185,20 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                                         try
                                         {
                                             var chat = _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId }).Result;
-                                            MessengerVM messengerVM = MessengerVM.GetInstance(_mediator);
-                                            messengerVM.Chats.Add(chat);
+                                            MessengerStorage.Chats.Add(chat);
 
                                         }
                                         catch
                                         {
-                                            ErrorWindow errorWindow = new ErrorWindow("Error creating private chat");
+                                            ErrorWindow.Show("Error creating private chat");
                                         }
                                     }
 
                                 }
                                 catch
                                 {
-                                    ErrorWindow errorWindow = new ErrorWindow("User not found");
-                                    errorWindow.ShowDialog();
+                                    ErrorWindow.Show("User not found");
+
                                 }
 
                             }
@@ -210,13 +216,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                                 try
                                 {
                                     var chat = _mediator.Send(new CreateGroupChatCommand { Name = nameGroup, UserId = Properties.Settings.Default.userId }).Result;
-                                    MessengerVM messengerVM = MessengerVM.GetInstance(_mediator);
-                                    messengerVM.Chats.Add(chat);
+                                    MessengerStorage.Chats.Add(chat);
 
                                 }
                                 catch
                                 {
-                                    ErrorWindow errorWindow = new ErrorWindow("Error creating group chat");
+                                    ErrorWindow.Show("Error creating group chat");
                                 }
 
 

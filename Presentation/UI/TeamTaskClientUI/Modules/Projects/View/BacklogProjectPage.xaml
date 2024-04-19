@@ -1,0 +1,183 @@
+﻿<Page x:Class="TeamTaskClient.UI.Modules.Projects.View.BacklogProjectPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Projects.View"
+      xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.Modules.Projects.UserControls"
+      xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
+      xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Teams.UserControls"
+      xmlns:converters="clr-namespace:TeamTaskClient.UI.Modules.Projects.Converters"
+      d:DataContext="{d:DesignInstance Type=viewmodels:BacklogProjectPageVM}"
+      mc:Ignorable="d"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      Title="BacklogProjectPage">
+
+
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
+                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <converters:VisibilityByUserRoleConverter x:Key="VisibilityByUserRoleConverter" />
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+
+        <Border CornerRadius="10"
+                Margin="10, 0, 10, 10"
+                BorderThickness="10"
+                Grid.Row="1"
+                Grid.Column="0"
+                Background="White"
+                BorderBrush="White">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Style="{StaticResource BlackHeader}"
+                           Text="Backlog"
+                           Margin="0,0,0,5"
+                           HorizontalAlignment="Center" />
+
+                <Button Style="{StaticResource GreenButton}"
+                        HorizontalAlignment="Stretch"
+                        Margin="5"
+                        Grid.Row="1"
+                        Height="25"
+                        Visibility="{Binding UserRole, Converter={StaticResource VisibilityByUserRoleConverter}}"
+                        Content="Add task"
+                        Command="{Binding AddProjectTaskInBacklog}" />
+
+                <ScrollViewer  Margin="-1"
+                               CanContentScroll="False"
+                               VerticalScrollBarVisibility="Auto"
+                               Grid.Row="2">
+
+                    <Grid>
+
+                        <ItemsControl x:Name="TasksStories"
+                                      BorderThickness="0"
+                                      ItemsSource="{Binding BacklogProjectTasks}">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ScrollViewer.CanContentScroll="False"
+                                               ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                               Orientation="Horizontal"
+                                               HorizontalAlignment="Stretch" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <usercontrols:ProjectTaskTemplate MouseEnter="ProjectTaskTemplate_MouseEnter"
+                                                                      MouseLeave="ProjectTaskTemplate_MouseLeave"
+                                                                      MouseLeftButtonDown="UsersProject_MouseLeftButtonDown"
+                                                                      Margin="7"
+                                                                      Details="{Binding Details}"
+                                                                      Title="{Binding Title}"
+                                                                      ExecutorName="{Binding ExecutorName}" />
+
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+
+        <Border CornerRadius="10"
+                Margin="10, 0, 10, 10"
+                BorderThickness="10"
+                Grid.Row="1"
+                Grid.Column="1"
+                Background="White"
+                BorderBrush="White">
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Style="{StaticResource BlackHeader}"
+                           Text="Users"
+                           Margin="0,0,0,5"
+                           HorizontalAlignment="Center" />
+
+                <Button Style="{StaticResource GreenButton}"
+                        HorizontalAlignment="Stretch"
+                        Margin="5"
+                        Visibility="{Binding UserRole, Converter={StaticResource VisibilityByUserRoleConverter}}"
+                        Grid.Row="1"
+                        Height="25"
+                        Content="Add user"
+                        Command="{Binding AddUser}" />
+                <ScrollViewer  Margin="-1"
+                               CanContentScroll="False"
+                               VerticalScrollBarVisibility="Auto"
+                               Grid.Row="2">
+
+                    <Grid>
+
+                        <ItemsControl x:Name="UsersProject"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                      BorderThickness="0"
+                                      ItemsSource="{Binding Users}"
+                                      Margin="-1">
+
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel ScrollViewer.CanContentScroll="False"
+                                               ScrollViewer.VerticalScrollBarVisibility="Visible"
+                                               Orientation="Horizontal"
+                                               HorizontalAlignment="Stretch" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+
+                                    <usercontrols1:UserTemplate Margin="6"
+                                                                MouseEnter="ProjectTaskTemplate_MouseEnter"
+                                                                MouseLeave="ProjectTaskTemplate_MouseLeave"
+                                                                MouseLeftButtonDown="UserTemplate_MouseLeftButtonDown"
+                                                                FirstName="{Binding FirstName}" />
+
+
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+
+                        </ItemsControl>
+
+                    </Grid>
+                </ScrollViewer>
+            </Grid>
+        </Border>
+
+
+    </Grid>
+</Page>

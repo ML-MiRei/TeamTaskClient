@@ -274,6 +274,70 @@
     </ControlTemplate>
 
 
+    <!--OnlyReadTextBox-->
+
+    <Style x:Key="BaseOnlyReadTextBox"
+           TargetType="TextBox">
+        <Setter Property="IsReadOnly"
+                Value="True" />
+        <Setter Property="BorderThickness"
+                Value="0" />
+        <!--<Setter Property="FontFamily"
+             Value="" />-->
+    </Style>
+
+
+    <Style x:Key="GreenHeaderOnlyReadTextBox"
+           BasedOn="{StaticResource BaseOnlyReadTextBox}"
+           TargetType="TextBox">
+        <Setter Property="Foreground"
+                Value="{StaticResource DarkGreen}" />
+        <Setter Property="FontWeight"
+                Value="Medium" />
+        <Setter Property="FontSize"
+                Value="20" />
+    </Style>
+
+    <Style x:Key="BlackHeaderOnlyReadTextBox"
+           BasedOn="{StaticResource BaseOnlyReadTextBox}"
+           TargetType="TextBox">
+        <Setter Property="Foreground"
+                Value="Black" />
+        <Setter Property="FontWeight"
+                Value="Medium" />
+        <Setter Property="FontSize"
+                Value="20" />
+    </Style>
+
+
+    <Style x:Key="SimpleBlackOnlyReadTextBox"
+           BasedOn="{StaticResource BaseOnlyReadTextBox}"
+           TargetType="TextBox">
+        <Setter Property="Foreground"
+                Value="Black" />
+        <Setter Property="FontWeight"
+                Value="Regular" />
+        <Setter Property="FontSize"
+                Value="16" />
+    </Style>
+
+    <Style x:Key="SimpleGreenOnlyReadTextBox"
+           BasedOn="{StaticResource BaseOnlyReadTextBox}"
+           TargetType="TextBox">
+        <Setter Property="Foreground"
+                Value="{StaticResource DarkGreen}" />
+        <Setter Property="FontWeight"
+                Value="Regular" />
+        <Setter Property="FontSize"
+                Value="16" />
+    </Style>
+    
+    
+    <!---->
+
+
+
+
 
     <!--TextBlocks-->
 

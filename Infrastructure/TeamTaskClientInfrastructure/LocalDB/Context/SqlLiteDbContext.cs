@@ -1,10 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TeamTaskClient.Infrastructure.LocalDB.Models;
 
 namespace TeamTaskClient.Infrastructure.LocalDB.Context
@@ -14,7 +8,7 @@ namespace TeamTaskClient.Infrastructure.LocalDB.Context
 
 
 
-        public DbSet<User> Users { get; set; } 
+        public DbSet<User> Users { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectTask> ProjectTasks { get; set; }
         public DbSet<Notification> Notifications { get; set; }

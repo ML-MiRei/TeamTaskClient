@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TeamTaskClient.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace TeamTaskClient.Infrastructure.LocalDB.Models
 {
@@ -17,6 +11,6 @@ namespace TeamTaskClient.Infrastructure.LocalDB.Models
         public DateTime? LastModified { get; set; }
         public DateTime DateCreated { get; set; }
 
-        public List<Message> Messages { get; set; } 
+        public List<Message> Messages { get; set; }
     }
 }

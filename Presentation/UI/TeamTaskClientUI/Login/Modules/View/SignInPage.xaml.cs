@@ -1,5 +1,4 @@
 ﻿using System.Windows.Controls;
-using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Login.Modules.ViewModels;
 

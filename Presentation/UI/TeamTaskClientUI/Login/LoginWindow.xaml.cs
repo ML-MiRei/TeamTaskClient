@@ -1,10 +1,5 @@
-﻿
-using System;
-using System.ComponentModel;
-using System.Windows;
-using TeamTaskClient.Infrastructure.Services.Implementation;
+﻿using System.Windows;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
-using TeamTaskClient.UI.Login.Modules;
 using TeamTaskClient.UI.Login.Modules.View;
 
 

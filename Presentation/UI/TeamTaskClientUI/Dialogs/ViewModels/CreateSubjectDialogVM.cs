@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using TeamTaskClient.UI.Common.Base;
-using TeamTaskClientUI;
 using TeamTaskClient.UI.Dialogs.View;
-using System.Collections.ObjectModel;
 
 namespace TeamTaskClient.UI.Dialogs.ViewModels
 {
@@ -63,8 +56,7 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
                     System.Windows.Application.Current.Windows.OfType<CreateSubjectDialogWindow>().First().DialogResult = true;
                 else
                 {
-                    ErrorWindow errrorWindow = new ErrorWindow("Enter all the data");
-                    errrorWindow.ShowDialog();
+                    ErrorWindow.Show("Enter all the data");
                 }
 
 
@@ -75,7 +67,7 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
         {
             public override void Execute(object? parameter)
             {
-                System.Windows.Application.Current.Windows.OfType<SelectActionsDialogWindow>().First().DialogResult = false;
+                System.Windows.Application.Current.Windows.OfType<CreateSubjectDialogWindow>().First().DialogResult = false;
             }
         }
     }

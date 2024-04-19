@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:TeamTaskClient.UI.Main"
         d:DataContext="{d:DesignInstance Type=local:MainWindowVM}"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Height="450"
         MinHeight="450"
         MinWidth="850"
@@ -141,10 +142,16 @@
     <Grid>
 
 
+      
+
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="125" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
+
+
+     
 
 
 
@@ -234,32 +241,6 @@
 
 
 
-
-
-            <RadioButton Template="{DynamicResource RadioButtonTemplate1}"
-                         Command="{Binding TasksButton}"
-                         Background="Transparent"
-                         Style="{StaticResource {x:Type ToggleButton}}"
-                         GroupName="navigation"
-                         Foreground="White"
-                         Height="70"
-                         BorderBrush="Transparent">
-                <ToggleButton.Content>
-                    <Grid>
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\checklist.png"
-                                   Width="20"
-                                   VerticalAlignment="Center"
-                                   Margin="5,0,15,0" />
-                            <TextBlock  Text="tasks"
-                                        VerticalAlignment="Center"
-                                        Width="80" />
-                        </StackPanel>
-                    </Grid>
-                </ToggleButton.Content>
-            </RadioButton>
-
-
             <RadioButton Command="{Binding TeamsButton}"
                          Template="{DynamicResource RadioButtonTemplate1}"
                          Style="{StaticResource {x:Type ToggleButton}}"
@@ -272,7 +253,7 @@
                 <ToggleButton.Content>
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\calendar.png"
+                            <Image Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\group.png"
                                    Width="20"
                                    VerticalAlignment="Center"
                                    Margin="5,0,15,0" />
@@ -296,6 +277,14 @@
                x:Name="frameLayuot"
                NavigationUIVisibility="Hidden" />
 
+
+        <Rectangle HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   Grid.ColumnSpan="2"
+                   Fill="Black"
+                   Opacity="0.5"
+                   Visibility="Collapsed"
+                   Name="Deactivated" />
 
     </Grid>
 </Window>

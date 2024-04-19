@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TeamTaskClient.ApplicationLayer.Models
+﻿namespace TeamTaskClient.ApplicationLayer.Models
 {
     public class ChatModel
     {
@@ -16,6 +10,7 @@ namespace TeamTaskClient.ApplicationLayer.Models
         public List<UserModel> Users { get; set; }
         public List<MessageModel> Messages { get; set; }
 
+        public string Lit => ChatName[0] + "";
 
         public string LastMessage
         {
@@ -28,7 +23,7 @@ namespace TeamTaskClient.ApplicationLayer.Models
 
             }
         }
-        
+
         public string CreatorLastMessage
         {
 

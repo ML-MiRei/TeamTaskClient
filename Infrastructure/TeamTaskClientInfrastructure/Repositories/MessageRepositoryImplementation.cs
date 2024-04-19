@@ -1,19 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Net.Mime;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
-using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
-using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.LocalDB.Context;
-using TeamTaskClient.Infrastructure.LocalDB.Models;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 

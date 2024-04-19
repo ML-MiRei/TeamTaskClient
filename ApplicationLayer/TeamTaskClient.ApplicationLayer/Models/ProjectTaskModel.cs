@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TeamTaskClient.ApplicationLayer.Models
+﻿namespace TeamTaskClient.ApplicationLayer.Models
 {
     public class ProjectTaskModel
     {
@@ -13,7 +7,7 @@ namespace TeamTaskClient.ApplicationLayer.Models
         public string Details { get; set; }
         public int Status { get; set; }
 
-        public string ExcutorName { get; set; }
+        public string ExecutorName { get; set; }
         public bool IsUserExecutor { get; set; }
 
     }
