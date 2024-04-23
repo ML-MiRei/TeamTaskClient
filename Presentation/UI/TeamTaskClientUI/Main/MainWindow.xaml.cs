@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using System.Windows;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
+using TeamTaskClient.UI;
 using TeamTaskClient.UI.Main;
 using TeamTaskClient.UI.Modules.Profile.View;
 
@@ -12,19 +13,17 @@ namespace TeamTaskClientUI.Main
     public partial class MainWindow : Window
     {
         private static IMediator m;
-        private static IRemoveCash r;
 
-        public MainWindow(IMediator mediator, IRemoveCash removeCash)
+        public MainWindow(IMediator mediator)
         {
             InitializeComponent();
             m = mediator;
-            r = removeCash;
 
-            DataContext = new MainWindowVM(this, mediator, removeCash);
+            DataContext = new MainWindowVM(this, mediator);
 
             profileButton.IsChecked = true;
 
-            frameLayuot.NavigationService.Navigate(new ProfilePage(mediator, removeCash));
+            frameLayuot.NavigationService.Navigate(new ProfilePage(mediator));
 
         }
 
@@ -41,6 +40,13 @@ namespace TeamTaskClientUI.Main
         {
             Deactivated.Visibility = Visibility.Collapsed;
             base.OnActivated(e);
+        }
+
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            App.Current.Shutdown();
         }
     }
 }

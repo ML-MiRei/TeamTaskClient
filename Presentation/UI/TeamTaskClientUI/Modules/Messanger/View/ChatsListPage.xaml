@@ -15,8 +15,8 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
@@ -46,18 +46,20 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
 
-                    <usercontrols1:ChatTemplate MouseRightButtonDown="ChatTemplate_MouseRightButtonDown"
-                                                HorizontalAlignment="Stretch"
-                                                
-                                                MouseEnter="ChatTemplate_MouseEnter"
-                                                MouseLeave="ChatTemplate_MouseLeave"
-                                                
-                                                ChatName="{Binding ChatName, Mode=OneWay}"
-                                                LastMessage="{Binding LastMessage}"
-                                                CreatorLastMessage="{Binding CreatorLastMessage}"
-                                                Image="{Binding Image}" />
+                    <Grid>
 
+                     
 
+                        <usercontrols1:ChatTemplate MouseRightButtonDown="ChatTemplate_MouseRightButtonDown"
+                                                    HorizontalAlignment="Stretch"
+                                                    MouseEnter="ChatTemplate_MouseEnter"
+                                                    MouseLeave="ChatTemplate_MouseLeave"
+                                                    ChatName="{Binding ChatName, Mode=OneWay}"
+                                                    LastMessage="{Binding LastMessage}"
+                                                    CreatorLastMessage="{Binding CreatorLastMessage}"
+                                                    Image="{Binding Image}" />
+
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
 

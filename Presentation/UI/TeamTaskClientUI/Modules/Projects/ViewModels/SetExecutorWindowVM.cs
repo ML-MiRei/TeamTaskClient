@@ -13,7 +13,7 @@ using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
-using TeamTaskClient.UI.Modules.Projects.Storage;
+using TeamTaskClient.UI.Storages;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {

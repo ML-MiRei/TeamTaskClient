@@ -16,8 +16,8 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
@@ -64,7 +64,7 @@
                     Margin="10,0,0,0"
                     Click="Button_Click">
                 <Button.Content>
-                    <Image Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\send-message.png" />
+                    <Image Source="/TeamTaskClient.UI;component/Resources/send-message.png" />
 
                 </Button.Content>
             </Button>
@@ -81,7 +81,8 @@
         </Grid>
 
 
-        <ScrollViewer Grid.Row="1" CanContentScroll="False">
+        <ScrollViewer Grid.Row="1"
+                      CanContentScroll="False">
             <ItemsControl x:Name="ListProjects"
                           ItemsSource="{Binding Projects}"
                           Margin="0,0,0,10">
@@ -96,8 +97,11 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <usercontrols1:ProjectTemplate Margin="10"
-                                                       MouseLeftButtonDown="ProjectTemplate_MouseLeftButtonDown"/>
+                        <usercontrols1:ProjectTemplate MouseRightButtonDown="ProjectTemplate_MouseRightButtonDown"
+                                                       Margin="10"
+                                                       MouseEnter="ProjectTemplate_MouseEnter"
+                                                       MouseLeave="ProjectTemplate_MouseLeave"
+                                                       MouseLeftButtonDown="ProjectTemplate_MouseLeftButtonDown" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
 

@@ -8,9 +8,19 @@ namespace TeamTaskClient.Infrastructure.Repositories
 {
     public class NotificationRepositoryImplementation(IHttpClient client) : INotificationRepository
     {
-        public Task DeleteNotification(int id)
+        public async Task DeleteNotification(int id)
         {
-            throw new NotImplementedException();
+            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Notification/{id}");
+
+            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                throw new NotFoundException();
+            }
+            else if (httpReply.IsSuccessStatusCode)
+            {
+                return;
+            }
+            throw new ConnectionException();
         }
 
         public async Task<List<NotificationModel>> GetNotificationsByUserId(int id)

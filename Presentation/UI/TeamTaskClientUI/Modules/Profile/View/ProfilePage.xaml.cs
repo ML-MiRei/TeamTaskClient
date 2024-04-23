@@ -1,6 +1,9 @@
 ﻿using MediatR;
 using System.Windows.Controls;
+using System.Windows.Input;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
+using TeamTaskClient.UI.Modules.Profile.UserControls;
 using TeamTaskClient.UI.Modules.Profile.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Profile.View
@@ -12,12 +15,26 @@ namespace TeamTaskClient.UI.Modules.Profile.View
     {
         ProfileVM vm;
 
-        public ProfilePage(IMediator mediator, IRemoveCash removeCash)
+        public ProfilePage(IMediator mediator)
         {
-            vm = new ProfileVM(mediator, removeCash);
+            vm = new ProfileVM(mediator);
             InitializeComponent();
             DataContext = vm;
         }
 
+        private void Border_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void Border_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
+        }
+
+        private void Border_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            vm.DeleteNotification((NotificationModel)((NotificationTemplate)sender).DataContext);
+        }
     }
 }

@@ -6,14 +6,14 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.CreateTeam
 {
-    public class CreateTeamHandler(ITeamRepository teamRepository) : IRequestHandler<CreateTeamCommand, TeamModel>
+    public class CreateTeamHandler(ITeamRepository teamRepository) : IRequestHandler<CreateTeamCommand>
     {
-        public Task<TeamModel> Handle(CreateTeamCommand request, CancellationToken cancellationToken)
+        public Task Handle(CreateTeamCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var team = teamRepository.CreateTeam(new TeamEntity() { Name = request.Name, TeamLeadId = request.UserId });
-                return team;
+                teamRepository.CreateTeam(new TeamEntity() { Name = request.Name, TeamLeadId = request.UserId });
+                return Task.CompletedTask;
             }
             catch (Exception)
             {

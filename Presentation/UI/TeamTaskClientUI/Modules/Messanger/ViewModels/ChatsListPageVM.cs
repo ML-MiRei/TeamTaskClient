@@ -11,10 +11,10 @@ using TeamTaskClient.ApplicationLayer.CQRS.Chat.Queries.GetChats;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
-using TeamTaskClient.UI.Modules.Messanger.Storage;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -41,7 +41,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
         public ICommand AddButton { get; set; } = new AddChatCommand();
 
 
-        public void SettingsChatOpen(ChatModel chatModel)
+        public async void SettingsChatOpen(ChatModel chatModel)
         {
 
             if (chatModel.Type == (int)ChatTypeEnum.PRIVATE)
@@ -87,19 +87,11 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
-                                _mediator.Send(new AddUserInGroupChatCommand { ChatId = chatModel.ChatId, UserTag = userTag });
+                                await _mediator.Send(new AddUserInGroupChatCommand { ChatId = chatModel.ChatId, UserTag = userTag });
 
-                                var newUser = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
+                                var newUser = await _mediator.Send(new GetUserByTagQuery { UserTag = userTag });
 
-                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Add(new UserModel
-                                {
-                                    Email = newUser.Email,
-                                    UserTag = newUser.Tag,
-                                    SecondName = newUser.SecondName,
-                                    FirstName = newUser.FirstName,
-                                    LastName = newUser.LastName,
-                                    PhoneNumber = newUser.PhoneNumber
-                                });
+                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Add(newUser);
                             }
 
 
@@ -156,7 +148,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
         private class AddChatCommand : CommandBase
         {
-            public override void Execute(object? parameter)
+            public async override void Execute(object? parameter)
             {
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", new List<string> { "Create private chat", "Create group chat" });
                 if (selectActionsDialogWindow.ShowDialog().Value)
@@ -184,8 +176,9 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                                     {
                                         try
                                         {
-                                            var chat = _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId }).Result;
-                                            MessengerStorage.Chats.Add(chat);
+                                            //var chat = await _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId });
+                                             await _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId });
+                                           // MessengerStorage.Chats.Add(chat);
 
                                         }
                                         catch
@@ -208,15 +201,15 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         case "Create group chat":
 
 
-                            InputDialogWindow windowGroup = new InputDialogWindow("Enter group name", "Create", new List<string> { "Name" });
+                            CreateSubjectDialogWindow windowGroup = new CreateSubjectDialogWindow("Enter group name", new List<string> { "Name" });
                             if (windowGroup.ShowDialog().Value)
                             {
-                                string nameGroup = windowGroup.GetInputValue()[0];
+                                string nameGroup = windowGroup.GetCreatingProperties()[0];
 
                                 try
                                 {
                                     var chat = _mediator.Send(new CreateGroupChatCommand { Name = nameGroup, UserId = Properties.Settings.Default.userId }).Result;
-                                    MessengerStorage.Chats.Add(chat);
+                                    MessengerStorage.AddChat(chat);
 
                                 }
                                 catch

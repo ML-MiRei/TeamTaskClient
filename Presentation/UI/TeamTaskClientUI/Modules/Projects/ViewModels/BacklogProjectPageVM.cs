@@ -18,17 +18,16 @@ using TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByProjectId;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
-using TeamTaskClient.UI.Modules.Projects.Storage;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
     public class BacklogProjectPageVM : ViewModelBase
     {
         private static IMediator _mediator;
-        //   private static ProjectModel _project;
 
 
         public BacklogProjectPageVM(IMediator mediator)
@@ -56,7 +55,6 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
             get { return ProjectsStorage.BacklogTasks; }
         }
 
-        private ObservableCollection<UserModel> _user;
         public ObservableCollection<UserModel> Users
         {
             get { return ProjectsStorage.Users; }
@@ -91,72 +89,100 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         public async void ChangeTask(ProjectTaskModel projectTask)
         {
-            SelectActionsDialogWindow window = new SelectActionsDialogWindow("Select action", new List<string> { "Change info", "Set executor", "Delete" });
-            if (window.ShowDialog().Value)
+            if (projectTask.Status != (int)StatusProjectTaskEnum.DONE)
             {
-                var action = window.GetSelectedAction();
-                if (action == "Delete")
+                SelectActionsDialogWindow window = new SelectActionsDialogWindow("Select action", new List<string> { "Change info", "Set executor", "Delete" });
+                if (window.ShowDialog().Value)
                 {
-                    AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Cancel", "Delete");
-                    if (alertDialogWindow.ShowDialog().Value)
+                    var action = window.GetSelectedAction();
+                    if (action == "Delete")
                     {
+                        AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Delete", "Cancel");
+                        if (alertDialogWindow.ShowDialog().Value)
+                        {
 
-                        try
-                        {
-                            await _mediator.Send(new DeleteProjectTaskCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, ProjectTaskId = projectTask.ProjectTaskId });
-                            ProjectsStorage.RemoveBacklogTasks(projectTask);
-                        }
-                        catch
-                        {
-                            ErrorWindow.Show("Error project task delete");
-                        }
-
-                    }
-                }
-                else if (action == "Change info")
-                {
-                    InputDialogWindow inputDialogWindow = new InputDialogWindow("Enter new info", "Save", new List<string> { projectTask.Title, projectTask.Details });
-                    if (inputDialogWindow.ShowDialog().Value)
-                    {
-                        var title = inputDialogWindow.GetInputValue()[0];
-                        var details = inputDialogWindow.GetInputValue()[1];
-
-                        try
-                        {
-                            await _mediator.Send(new UpdateProjectTaskCommand { Detail = details, Title = title });
-                            ProjectsStorage.BacklogTasks.First(p => p.ProjectTaskId == projectTask.ProjectTaskId).Title = title;
-                            ProjectsStorage.BacklogTasks.First(p => p.ProjectTaskId == projectTask.ProjectTaskId).Details = details;
-
-                            OnPropertyChanged(nameof(BacklogProjectTasks));
-                        }
-                        catch
-                        {
-                            ErrorWindow.Show("Error project task update");
-                        }
-                    }
-                }
-                else
-                {
-                    SelectUserWindow setExecutorWindow = new SelectUserWindow();
-                    if (setExecutorWindow.ShowDialog().Value)
-                    {
-                        var executor = setExecutorWindow.GetExecutor();
-                        if (executor != null)
-                        {
                             try
                             {
-                                await _mediator.Send(new SetExecutorProjectTaskCommand { ProjectTaskId = projectTask.ProjectTaskId, User = executor });
-
-                                projectTask.ExecutorName = executor.FirstName;
-                                ProjectsStorage.UpdateProjectTask(projectTask);
+                                await _mediator.Send(new DeleteProjectTaskCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, ProjectTaskId = projectTask.ProjectTaskId });
+                                ProjectsStorage.RemoveBacklogTasks(projectTask);
                             }
                             catch
                             {
-                                ErrorWindow.Show("Error set executor");
+                                ErrorWindow.Show("Error project task delete");
+                            }
+
+                        }
+                    }
+                    else if (action == "Change info")
+                    {
+                        InputDialogWindow inputDialogWindow = new InputDialogWindow("Enter new info", "Save", new List<string> { projectTask.Title, projectTask.Details });
+                        if (inputDialogWindow.ShowDialog().Value)
+                        {
+                            var title = inputDialogWindow.GetInputValue()[0];
+                            var details = inputDialogWindow.GetInputValue()[1];
+                            try
+                            {
+
+                                if (!String.IsNullOrEmpty(title))
+                                {
+                                    if (!String.IsNullOrEmpty(details))
+                                    {
+                                        await _mediator.Send(new UpdateProjectTaskCommand { Detail = details, Title = title, ProjectTaskId = projectTask.ProjectTaskId });
+                                        projectTask.Details = details;
+                                        projectTask.Title = title;
+                                        ProjectsStorage.UpdateProjectTask(projectTask);
+
+                                        OnPropertyChanged(nameof(BacklogProjectTasks));
+                                    }
+                                    else
+                                    {
+
+                                        await _mediator.Send(new UpdateProjectTaskCommand { Title = title, Detail = projectTask.Details, ProjectTaskId = projectTask.ProjectTaskId });
+                                        projectTask.Title = title;
+                                        ProjectsStorage.UpdateProjectTask(projectTask);
+                                    }
+
+                                }
+                                else if (!String.IsNullOrEmpty(details))
+                                {
+                                    if (!String.IsNullOrEmpty(details))
+                                    {
+                                        await _mediator.Send(new UpdateProjectTaskCommand { Detail = details, Title = projectTask.Title, ProjectTaskId = projectTask.ProjectTaskId });
+                                        projectTask.Details = details;
+                                        ProjectsStorage.UpdateProjectTask(projectTask);
+                                    }
+                                }
+                            }
+                            catch
+                            {
+                                ErrorWindow.Show("Error project task update");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        SelectUserWindow setExecutorWindow = new SelectUserWindow();
+                        if (setExecutorWindow.ShowDialog().Value)
+                        {
+                            var executor = setExecutorWindow.GetExecutor();
+                            if (executor != null)
+                            {
+                                try
+                                {
+                                    await _mediator.Send(new SetExecutorProjectTaskCommand { ProjectTaskId = projectTask.ProjectTaskId, User = executor });
+
+                                    projectTask.ExecutorName = executor.FirstName;
+                                    ProjectsStorage.UpdateProjectTask(projectTask);
+                                }
+                                catch
+                                {
+                                    ErrorWindow.Show("Error set executor");
+                                }
                             }
                         }
                     }
                 }
+
 
             }
 
@@ -169,7 +195,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         private class AddProjectTaskInBacklogCommand(BacklogProjectPageVM vm) : CommandBase
         {
-            public override void Execute(object? parameter)
+            public async override void Execute(object? parameter)
             {
 
                 CreateSubjectDialogWindow createSubject = new CreateSubjectDialogWindow("Input task data", new List<string> { "Title: ", "Details: " });
@@ -179,7 +205,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                     try
                     {
-                        var projectTask = _mediator.Send(new CreateProjectTaskCommand
+                       await _mediator.Send(new CreateProjectTaskCommand
                         {
                             Detail = inputData[1],
                             Title = inputData[0],
@@ -187,9 +213,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                             Status = (int)StatusProjectTaskEnum.STORIES
 
 
-                        }).Result;
-
-                        ProjectsStorage.AddBacklogTasks(projectTask);
+                        });
                     }
                     catch
                     {

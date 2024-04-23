@@ -17,8 +17,8 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:MessageHorizontalAligmentConverter x:Key="MessageHorizontalAligmentConverter" />
             <converters:EditorMessageConverter x:Key="EditorMessageConverter" />
@@ -28,7 +28,7 @@
     <Grid>
 
         <Grid.Background>
-            <ImageBrush ImageSource="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\WPF (1).png" />
+            <ImageBrush ImageSource="/Resources/back-messenger.png" />
         </Grid.Background>
         
         <Grid.RowDefinitions>
@@ -57,14 +57,6 @@
                                         SnapsToDevicePixels="true">
                                     <ContentPresenter />
                                 </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver"
-                                             Value="true">
-
-                                        <Setter Property="Cursor"
-                                                Value="Hand" />
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
@@ -126,7 +118,7 @@
                     Padding="20"
                     Margin="20,0,0,0">
                 <Button.Content>
-                    <Image Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\send-message.png" />
+                    <Image Source="/TeamTaskClient.UI;component/Resources/send-message.png" />
 
                 </Button.Content>
             </Button>

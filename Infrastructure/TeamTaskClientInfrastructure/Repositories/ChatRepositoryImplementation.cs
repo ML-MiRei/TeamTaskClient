@@ -1,63 +1,41 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Net.Http.Json;
+using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
+using TeamTaskClient.Infrastructure.LocalDB.Models;
+using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
     public class ChatRepositoryImplementation(IHttpClient client) : IChatRepository
     {
+
+        private HubConnection HubClient = ChatHubConnection.Instance.GetClient();
+
         public async Task AddUserGroupChatByTag(string userTag, int chatId)
         {
-            var content = JsonContent.Create(userTag);
 
-            var httpReply = await client.CurrentHttpClient
-                         .PostAsync($"{client.ConnectionString}/Chat/{chatId}/add-user", content);
+            await HubClient.SendAsync("AddUserInChat", chatId, userTag);
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
         }
 
 
         public async Task LeaveChat(int userId, int chatId)
         {
-            var httpReply = await client.CurrentHttpClient
-              .DeleteAsync($"{client.ConnectionString}/Chat/{chatId}/leave");
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("LeaveChat", chatId, userId);
+
         }
 
         public async Task DeleteUserFromChatByTag(string userTag, int chatId)
         {
-            var httpReply = await client.CurrentHttpClient
-               .DeleteAsync($"{client.ConnectionString}/Chat/{chatId}/delete-user/{userTag}");
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("DeleteUserFromChat", chatId, userTag);
+
         }
 
         public async Task<List<ChatModel>> GetChatByIdUser(int userId)
@@ -79,42 +57,18 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task UpdateChat(ChatEntity chatData)
         {
-            var content = JsonContent.Create(chatData);
-
-            var httpReply = await client.CurrentHttpClient
-                .PatchAsync($"{client.ConnectionString}/Chat/update", content);
-
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("UpdateChat", chatData);
 
         }
 
-        public async Task<ChatModel> CreatePrivateChat(int userId, string secondUserTag)
+
+        public async void CreatePrivateChat(int userId, string secondUserTag)
         {
 
-            var content = JsonContent.Create(secondUserTag);
+            await HubClient.SendAsync("CreatePrivateChat", userId, secondUserTag);
 
-            var httpReply =  client.CurrentHttpClient
-               .PostAsync($"{client.ConnectionString}/Chat/private", content).Result;
-
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                var chat = await httpReply.Content.ReadFromJsonAsync<ChatModel>();
-                return chat;
-            }
-            throw new ConnectionException();
         }
+
 
         public async Task<ChatModel> CreateGroupChat(int userId, string name)
         {

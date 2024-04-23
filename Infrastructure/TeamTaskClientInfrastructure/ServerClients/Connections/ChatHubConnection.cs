@@ -1,27 +1,27 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
-namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
+namespace TeamTaskClient.Infrastructure.ServerClients.Connections
 {
-    public class ChatHubClient : IChatHubClient, IDisposable
+    public class ChatHubConnection : IDisposable
     {
 
         private static HubConnection _hubConnection;
 
-        private static ChatHubClient _instance;
-        public static ChatHubClient Instance
+        private static ChatHubConnection _instance;
+        public static ChatHubConnection Instance
         {
             get
             {
                 if (_instance == null)
-                    _instance = new ChatHubClient();
+                    _instance = new ChatHubConnection();
 
                 return _instance;
             }
         }
 
 
-        private ChatHubClient()
+        private ChatHubConnection()
         {
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl("https://localhost:7130/online-chat")

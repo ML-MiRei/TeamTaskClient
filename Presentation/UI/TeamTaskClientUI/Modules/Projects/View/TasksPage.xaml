@@ -7,6 +7,7 @@
       xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.Modules.Projects.UserControls"
       xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.UserControls"
       xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
+      xmlns:converters="clr-namespace:TeamTaskClient.UI.Modules.Projects.Converters"
       d:DataContext="{d:DesignInstance Type=viewmodels:TasksVM}"
       mc:Ignorable="d"
       d:DesignHeight="450"
@@ -16,9 +17,10 @@
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:VisibilityByUserRoleConverter x:Key="VisibilityByUserRoleConverter" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -80,6 +82,7 @@
 
         <Button Style="{StaticResource GreenButton}"
                 Content="Add sprint"
+                Visibility="{Binding UserRole, Converter={StaticResource VisibilityByUserRoleConverter}}"
                 Margin="10"
                 Padding="20,5,20,5"
                 HorizontalAlignment="Right"
@@ -115,12 +118,12 @@
                                    Margin="0,0,0,5"
                                    HorizontalAlignment="Center" />
 
-                        <Button Style="{StaticResource GreenButton}"
+                        <!--<Button Style="{StaticResource GreenButton}"
                                 HorizontalAlignment="Stretch"
                                 Margin="10"
                                 Height="30"
                                 Content="Add task"
-                                Command="{Binding AddProjectTaskTodo}" />
+                                Command="{Binding AddProjectTaskTodo}" />-->
 
                         <ItemsControl x:Name="TasksTodo"
                                       BorderThickness="0"
@@ -131,6 +134,8 @@
                                 <DataTemplate>
 
                                     <usercontrols:ProjectTaskTemplate Margin="5,0,5,10"
+                                                                      MouseEnter="ProjectTaskTemplate_MouseEnter"   
+                                                                      MouseLeave="ProjectTaskTemplate_MouseLeave"
                                                                       MouseDown="ProjectTaskTemplate_MouseDown"
                                                                       HorizontalAlignment="Stretch"
                                                                       Details="{Binding Details}"
@@ -165,12 +170,12 @@
                                    Margin="0,0,0,5"
                                    HorizontalAlignment="Center" />
 
-                        <Button Style="{StaticResource GreenButton}"
+                        <!--<Button Style="{StaticResource GreenButton}"
                                 HorizontalAlignment="Stretch"
                                 Margin="10"
                                 Height="30"
                                 Content="Add task"
-                                Command="{Binding AddProjectTaskInProcess}" />
+                                Command="{Binding AddProjectTaskInProcess}" />-->
 
                         <ItemsControl x:Name="TasksInProgress"
                                       ScrollViewer.CanContentScroll="False"
@@ -183,6 +188,8 @@
                                 <DataTemplate>
 
                                     <usercontrols:ProjectTaskTemplate Margin="0,0,0,10"
+                                                                      MouseEnter="ProjectTaskTemplate_MouseEnter"
+                                                                      MouseLeave="ProjectTaskTemplate_MouseLeave"
                                                                       MouseDown="ProjectTaskTemplate_MouseDown"
                                                                       Details="{Binding Details}"
                                                                       Title="{Binding Title}"
@@ -219,12 +226,12 @@
 
 
 
-                        <Button Style="{StaticResource GreenButton}"
+                        <!--<Button Style="{StaticResource GreenButton}"
                                 HorizontalAlignment="Stretch"
                                 Margin="10"
                                 Height="30"
                                 Content="Add task"
-                                Command="{Binding AddProjectTaskTesting}" />
+                                Command="{Binding AddProjectTaskTesting}" />-->
 
 
                         <ItemsControl x:Name="TasksTesting"
@@ -238,6 +245,8 @@
                                 <DataTemplate>
 
                                     <usercontrols:ProjectTaskTemplate Margin="0,0,0,10"
+                                                                      MouseEnter="ProjectTaskTemplate_MouseEnter"
+                                                                      MouseLeave="ProjectTaskTemplate_MouseLeave"
                                                                       MouseDown="ProjectTaskTemplate_MouseDown"
                                                                       Details="{Binding Details}"
                                                                       Title="{Binding Title}"
@@ -273,12 +282,12 @@
                                    HorizontalAlignment="Center" />
 
 
-                        <Button Style="{StaticResource GreenButton}"
+                        <!--<Button Style="{StaticResource GreenButton}"
                                 HorizontalAlignment="Stretch"
                                 Margin="10"
                                 Height="30"
                                 Content="Add task"
-                                Command="{Binding AddProjectTaskDone}" />
+                                Command="{Binding AddProjectTaskDone}" />-->
 
 
                         <ItemsControl x:Name="TasksDone"
@@ -295,6 +304,8 @@
                                     <usercontrols:ProjectTaskTemplate Margin="0,0,0,10"
                                                                       MouseDown="ProjectTaskTemplate_MouseDown"
                                                                       Details="{Binding Details}"
+                                                                      MouseEnter="ProjectTaskTemplate_MouseEnter"
+                                                                      MouseLeave="ProjectTaskTemplate_MouseLeave"
                                                                       Title="{Binding Title}"
                                                                       ExecutorName="{Binding ExecutorName}" />
 

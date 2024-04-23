@@ -1,79 +1,49 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Net;
+using System.Net.Http.Json;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.Domain.Exceptions;
+using TeamTaskClient.Infrastructure.LocalDB.Models;
+using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
     public class ProjectTaskRepositoryImplementation(IHttpClient client) : IProjectTaskRepository
     {
+        private HubConnection HubClient = ProjectHubConnection.Instance.GetClient();
+
+
         public async Task ChangeStatusProjectTask(int projectId, int projectTaskId, int status)
         {
-            var content = JsonContent.Create((int)status);
-
-
-            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectId}/{projectTaskId}/change-status", content);
-
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            await HubClient.SendAsync("ChangeStatusProjectTask", new ProjectTaskEntity
             {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+                Status = status,
+                ProjectId = projectId,
+                ID = projectTaskId
+            });
         }
 
-        public async Task<ProjectTaskModel> CreateProjectTask(ProjectTaskEntity entity)
+        public async Task CreateProjectTask(ProjectTaskEntity entity)
         {
-            var content = JsonContent.Create(entity);
+            await HubClient.SendAsync("ChangeStatusProjectTask", entity);
 
-
-            var httpReply =  client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/ProjectTask/create", content).Result;
-
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return await httpReply.Content.ReadFromJsonAsync<ProjectTaskModel>();
-            }
-            throw new ConnectionException();
         }
 
         public async Task DeleteProjectTask(int projectId, int projectTaskId)
         {
-            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/delete");
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("DeleteProjectTask", projectId, projectTaskId);
+
         }
 
-        public async Task SetExecutorProjectTask(int projectTaskId, string userTag)
+        public async Task SetExecutorProjectTask(int projectId, int projectTaskId, string userTag)
         {
-            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/set-executor", JsonContent.Create(userTag));
+            await HubClient.SendAsync("SetExecutorProjectTask", projectId, projectTaskId, userTag);
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
         }
 
 
@@ -94,17 +64,9 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task UpdateProjectTask(ProjectTaskEntity projectTask)
         {
-            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTask.ID}/update", JsonContent.Create(projectTask));
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("UpdateProjectTask", projectTask);
+
         }
     }
 }

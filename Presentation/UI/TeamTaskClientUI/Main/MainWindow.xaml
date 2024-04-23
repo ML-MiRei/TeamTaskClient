@@ -15,8 +15,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <Style x:Key="OptionMarkFocusVisual">
@@ -171,7 +171,7 @@
                 <ToggleButton.Content>
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\profile.png"
+                            <Image Source="/TeamTaskClient.UI;component/Resources/profile.png"
                                    Width="20"
                                    VerticalAlignment="Center"
                                    Margin="5,0,15,0" />
@@ -199,7 +199,7 @@
                 <ToggleButton.Content>
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\folder.png"
+                            <Image Source="/TeamTaskClient.UI;component/Resources/folder.png"
                                    Width="20"
                                    VerticalAlignment="Center"
                                    Margin="5,0,15,0" />
@@ -226,7 +226,7 @@
                 <ToggleButton.Content>
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="C:\Users\feyri\source\repos\TeamTaskApp\TeamTaskApp\res\bubble-chat.png"
+                            <Image Source="/TeamTaskClient.UI;component/Resources/bubble-chat.png"
                                    Width="20"
                                    VerticalAlignment="Center"
                                    Margin="5,0,15,0" />
@@ -253,7 +253,7 @@
                 <ToggleButton.Content>
                     <Grid>
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\group.png"
+                            <Image Source="/TeamTaskClient.UI;component/Resources/group.png"
                                    Width="20"
                                    VerticalAlignment="Center"
                                    Margin="5,0,15,0" />

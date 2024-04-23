@@ -9,7 +9,7 @@
              d:DesignWidth="100">
     <UserControl.Resources>
         <ResourceDictionary>
-            <local:RandomColorConverter x:Key="RandomColorConverter" />
+            <local:ColorConverter x:Key="ColorConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -19,10 +19,7 @@
                 Height="Auto">
 
             <Grid>
-                <Ellipse
-                  
-                    
-                         Fill="{Binding Lit, Converter={StaticResource RandomColorConverter}}" />
+                <Ellipse Fill="{Binding ColorNumber, Converter={StaticResource ColorConverter}}" />
 
                 <TextBlock VerticalAlignment="Center"
                            Foreground="White"

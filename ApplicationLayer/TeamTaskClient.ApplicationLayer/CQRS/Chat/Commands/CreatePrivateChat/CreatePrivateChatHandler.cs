@@ -5,15 +5,16 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreatePrivateChat
 {
-    public class CreatePrivateChatHandler(IChatRepository chatRepository) : IRequestHandler<CreatePrivateChatCommand, ChatModel>
+    public class CreatePrivateChatHandler(IChatRepository chatRepository) : IRequestHandler<CreatePrivateChatCommand>
     {
-
-        Task<ChatModel> IRequestHandler<CreatePrivateChatCommand, ChatModel>.Handle(CreatePrivateChatCommand request, CancellationToken cancellationToken)
+        public Task Handle(CreatePrivateChatCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var chat = chatRepository.CreatePrivateChat(request.UserId, request.SecondUserTag).Result;
-                return Task.FromResult(chat);
+                // var chat = chatRepository.CreatePrivateChat(request.UserId, request.SecondUserTag).Result;
+                chatRepository.CreatePrivateChat(request.UserId, request.SecondUserTag);
+                return Task.CompletedTask;
+                // return Task.FromResult(chat);
             }
             catch (Exception)
             {
@@ -21,4 +22,6 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreatePrivateChat
             }
         }
     }
+
+
 }

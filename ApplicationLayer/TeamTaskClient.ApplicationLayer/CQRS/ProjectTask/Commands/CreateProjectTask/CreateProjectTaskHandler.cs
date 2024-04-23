@@ -6,13 +6,13 @@ using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask
 {
-    public class CreateProjectTaskHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<CreateProjectTaskCommand, ProjectTaskModel>
+    public class CreateProjectTaskHandler(IProjectTaskRepository projectTaskRepository) : IRequestHandler<CreateProjectTaskCommand>
     {
-        public Task<ProjectTaskModel> Handle(CreateProjectTaskCommand request, CancellationToken cancellationToken)
+        public Task Handle(CreateProjectTaskCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var projectTask = projectTaskRepository.CreateProjectTask(new ProjectTaskEntity()
+                projectTaskRepository.CreateProjectTask(new ProjectTaskEntity()
                 {
                     Detail = request.Detail,
                     Title = request.Title,
@@ -20,8 +20,9 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjec
                     ProjectId = request.ProjectId,
                     Status = request.Status.Value
                 });
+                
+                return Task.CompletedTask;
 
-                return projectTask;
             }
             catch (Exception)
             {

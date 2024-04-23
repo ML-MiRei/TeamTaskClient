@@ -19,6 +19,11 @@ namespace TeamTaskClient.UI.UserControls
 
 
         public static DependencyProperty LitProperty = DependencyProperty.Register("Lit", typeof(string), typeof(CircleImage));
+        public static DependencyProperty ColorNumberProperty = DependencyProperty.Register("ColorNumber", typeof(int), typeof(CircleImage));
+
+
+
+
 
         public string Lit
         {
@@ -26,16 +31,10 @@ namespace TeamTaskClient.UI.UserControls
             set { SetValue(LitProperty, value); }
         }
 
-
-        //public static DependencyProperty ImageProperty = DependencyProperty.Register("Image", typeof(string), typeof(CircleImage));
-
-        //public string Image
-        //{
-        //    get { return (string)GetValue(ImageProperty); }
-        //    set { SetValue(ImageProperty, value); }
-        //}
-
-
-
+        public int ColorNumber
+        {
+            get { return (int)GetValue(ColorNumberProperty); }
+            set { SetValue(ColorNumberProperty, value); }
+        }
     }
 }

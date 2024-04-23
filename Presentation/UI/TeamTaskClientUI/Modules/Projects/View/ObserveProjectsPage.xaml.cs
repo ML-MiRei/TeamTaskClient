@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.CQRS.Sprint.Commands.CreateSprint;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
+using TeamTaskClient.Domain.Enums;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Main;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
-using TeamTaskClient.UI.Modules.Projects.Storage;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
 
@@ -46,8 +48,27 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
             ProjectsStorage.SelectedProject = (((ProjectTemplate)sender).DataContext as ProjectModel);
 
-             
+
             MainWindowVM.ToProjectTaskButton();
+        }
+
+        private void ProjectTemplate_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+            var projectModel = (((ProjectTemplate)sender).DataContext as ProjectModel);
+
+                vm.DeleteProject(projectModel);
+
+        }
+
+        private void ProjectTemplate_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void ProjectTemplate_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
         }
     }
 }

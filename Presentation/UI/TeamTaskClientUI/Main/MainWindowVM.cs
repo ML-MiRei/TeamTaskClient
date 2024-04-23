@@ -19,21 +19,15 @@ namespace TeamTaskClient.UI.Main
         private static IMediator _mediator;
 
 
-        public MainWindowVM(MainWindow mainWindow, IMediator mediator, IRemoveCash removeCash)
+        public MainWindowVM(MainWindow mainWindow, IMediator mediator)
         {
             _mainWindow = mainWindow;
             _mediator = mediator;
 
-            ProfileButton = new NavigationCommand(mainWindow, new ProfilePage(mediator, removeCash));
+            ProfileButton = new NavigationCommand(mainWindow, new ProfilePage(mediator));
             ProjectsButton = new NavigationCommand(mainWindow, new ObserveProjectsPage(mediator));
             MessangerButton = new NavigationCommand(mainWindow, new MessangerPage(mediator));
             TeamsButton = new NavigationCommand(mainWindow, new TeamPage(mediator));
-
-
-
-
-            //TasksButton = new NavigationCommand(new TaskPage());
-
         }
 
 

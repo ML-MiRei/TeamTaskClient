@@ -20,5 +20,15 @@ namespace TeamTaskClient.UI.Login
         {
             DialogResult = false;
         }
+
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            if (Properties.Settings.Default.userId == 0)
+                App.Current.Shutdown();
+
+        }
     }
 }

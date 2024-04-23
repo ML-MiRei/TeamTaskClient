@@ -6,6 +6,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.SetExecutorP
     public class SetExecutorProjectTaskCommand : IRequest
     {
         public int ProjectTaskId { get; set; }
+        public int ProjectId { get; set; }
         public UserModel User { get; set; }
 
     }

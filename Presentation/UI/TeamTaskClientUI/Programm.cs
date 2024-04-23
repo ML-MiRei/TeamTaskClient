@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using TeamTaskClient.ApplicationLayer;
 using TeamTaskClient.Infrastructure;
+using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
@@ -57,7 +58,8 @@ namespace TeamTaskClient.UI
             var canConnection = httpClient.TryConnection(Properties.Settings.Default.userId);
             if (canConnection)
             {
-                ChatService chatService = ChatService.GetInstance(Properties.Settings.Default.userId);
+                ChatHubClient chatService = ChatHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
+                TeamHubClient teamHubClient = TeamHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
                 var app = host.Services.GetService<App>();
                 app?.Run();
             }

@@ -10,6 +10,8 @@ namespace TeamTaskClient.ApplicationLayer.Models
         public string UserTag { get; set; }
         public string PhoneNumber { get; set; }
         public string Email { get; set; }
+        public int ColorNumber {  get; set; }
+
         public string FullName => FirstName + " " + SecondName;
         public string Lit => FirstName[0] + "";
 

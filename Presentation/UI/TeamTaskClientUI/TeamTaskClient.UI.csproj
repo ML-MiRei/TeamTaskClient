@@ -9,8 +9,16 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Modules\Tasks\ViewModels\" />
-		<Folder Include="Modules\Tasks\View\" />
+	  <None Remove="Resources\back-messenger.png" />
+	  <None Remove="Resources\bubble-chat.png" />
+	  <None Remove="Resources\folder.png" />
+	  <None Remove="Resources\group.png" />
+	  <None Remove="Resources\profile.png" />
+	  <None Remove="Resources\send-message.png" />
+	  <None Remove="Resources\settings.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Folder Include="Common\" />
 		<Folder Include="Main\" />
 		<Folder Include="Common\Base" />
@@ -26,6 +34,16 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\..\..\ApplicationLayer\TeamTaskClient.ApplicationLayer\TeamTaskClient.ApplicationLayer.csproj" />
 	  <ProjectReference Include="..\..\..\Infrastructure\TeamTaskClientInfrastructure\TeamTaskClient.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Resources\back-messenger.png" />
+	  <Resource Include="Resources\bubble-chat.png" />
+	  <Resource Include="Resources\folder.png" />
+	  <Resource Include="Resources\group.png" />
+	  <Resource Include="Resources\profile.png" />
+	  <Resource Include="Resources\send-message.png" />
+	  <Resource Include="Resources\settings.png" />
 	</ItemGroup>
 
 <ItemGroup>

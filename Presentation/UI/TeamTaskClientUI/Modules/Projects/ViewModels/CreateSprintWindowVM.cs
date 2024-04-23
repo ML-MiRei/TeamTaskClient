@@ -12,7 +12,7 @@ using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
-using TeamTaskClient.UI.Modules.Projects.Storage;
+using TeamTaskClient.UI.Storages;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
@@ -23,7 +23,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
         {
 
             DateStart = DateTime.Now;
-            DateEnd = DateTime.Now;
+            DateEnd = DateTime.Now.AddDays(7);
 
             Tasks = ProjectsStorage.BacklogTasks.Where(t => t.Status == (int)StatusProjectTaskEnum.STORIES).ToList();
         }

@@ -8,7 +8,7 @@ using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Profile.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
-using TeamTaskClient.UI.Modules.Projects.Storage;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Projects.View
@@ -54,6 +54,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
                     CreateSprintWindow createSprintWindow = new CreateSprintWindow();
                     if (createSprintWindow.ShowDialog().Value)
                     {
+
                         var newSprint = createSprintWindow.GetSprintModel();
                         try
                         {
@@ -70,15 +71,20 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
                             ProjectsStorage.Sprints.Add(sprint);
                             ProjectsStorage.SelectedSprint = sprint;
+
+
+
                             var tasks = createSprintWindow.GetSelectedTasks();
 
                             foreach (var task in tasks)
                             {
                                 _mediator.Send(new AddInSprintProjectTaskCommand { ProjectTaskId = task.ProjectTaskId, SprintId = sprint.SprintId });
 
-                                ProjectsStorage.Sprints.First(s => s.SprintId == sprint.SprintId).Tasks.Add(task);
-                            }
+                                task.Status = (int)StatusProjectTaskEnum.TODO;
+                                sprint.Tasks.Add(task);
 
+                                ProjectsStorage.AddTasks(task);
+                            }
                             frameLayuot.NavigationService.Navigate(new TasksPage(_mediator));
 
                         }
@@ -86,6 +92,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
                         {
                             ErrorWindow.Show("Create sprint error");
                         }
+
                     }
                 }
             }

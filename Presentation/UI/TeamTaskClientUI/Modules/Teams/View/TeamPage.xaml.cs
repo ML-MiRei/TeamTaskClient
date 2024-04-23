@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.Models;
@@ -23,12 +24,17 @@ namespace TeamTaskClient.UI.Modules.Teams.View
             vm = new TeamPageVM(mediator);
             DataContext = vm;
 
+            vm.InterfaceRefresh += Vm_InterfaceRefresh;
         }
 
+        private void Vm_InterfaceRefresh(object? sender, EventArgs e)
+        {
+            App.Current.Dispatcher.Invoke(()=> TeamList.Items.Refresh());
+        }
 
         private void TeamTemplate_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-                vm.SettingsTeam((TeamModel)(((TeamTemplate)sender).DataContext));
+            vm.SettingsTeam((TeamModel)(((TeamTemplate)sender).DataContext));
             TeamList.Items.Refresh();
         }
 

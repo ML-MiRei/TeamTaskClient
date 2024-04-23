@@ -6,7 +6,8 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
     public interface ITeamRepository
     {
         Task<List<TeamModel>> GetTeamsByUserId(int userId);
-        Task<TeamModel> CreateTeam(TeamEntity team);
+        // Task<TeamModel> CreateTeam(TeamEntity team);
+        Task CreateTeam(TeamEntity team);
         Task UpdateTeam(TeamEntity team);
         Task LeaveTeam(int userId, int teamId);
         Task DeleteUserFromTeam(string userTag, int teamId);

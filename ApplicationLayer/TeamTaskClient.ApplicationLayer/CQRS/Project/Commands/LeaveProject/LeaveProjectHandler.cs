@@ -10,7 +10,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.LeaveProject
         {
             try
             {
-                projectRepository.LeaveFromProject(request.ProjectId);
+                projectRepository.LeaveFromProject(request.UserId, request.ProjectId);
                 return Task.CompletedTask;
             }
             catch (Exception)

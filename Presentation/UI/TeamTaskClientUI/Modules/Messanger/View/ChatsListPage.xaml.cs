@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.Models;
-using TeamTaskClient.UI.Modules.Messanger.Storage;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
 
@@ -60,5 +60,6 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
         {
             Cursor = Cursors.Arrow;
         }
+
     }
 }

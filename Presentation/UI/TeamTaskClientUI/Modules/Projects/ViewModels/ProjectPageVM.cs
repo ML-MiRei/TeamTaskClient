@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.UpdateProject;
 using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
-using TeamTaskClient.UI.Modules.Projects.Storage;
 using TeamTaskClient.UI.Modules.Projects.View;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels

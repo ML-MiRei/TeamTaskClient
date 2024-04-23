@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.Infrastructure.LocalDB.Context;
 using TeamTaskClient.Infrastructure.Repositories;
+using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Implementation;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 using TeamTaskClient.Infrastructure.Services.Implementation;
@@ -31,16 +32,15 @@ namespace TeamTaskClient.Infrastructure
                                                 .AddTransient<IProjectRepository, ProjectRepositoryImplementation>()
                                                 .AddTransient<ISprintRepositoryInterface, SprintRepositoryImplementation>()
                                                 .AddTransient<IProjectTaskRepository, ProjectTaskRepositoryImplementation>()
-                                                
+
                                                 .AddTransient<IUserRepository, UserRepositoryImplementation>()
                                                 .AddTransient<ITeamRepository, TeamRepositoryImplementation>()
                                                 .AddTransient<INotificationRepository, NotificationRepositoryImplementation>()
 
                                                 .AddTransient<IAuthorizationService, AuthorizationService>()
-                                                .AddTransient<IRemoveCash, RemoveCash>()
 
                                                 .AddTransient<IHttpClient, TeamTaskSeverHttpClient>()
-                                                .AddTransient<IChatHubClient, ChatHubClient>();
+                                                .AddTransient<INotificationHubClient, NotificationHubClient>();
             return services;
         }
     }

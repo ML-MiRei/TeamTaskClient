@@ -11,7 +11,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.SetExecutorP
         {
             try
             {
-                var projectTask = projectTaskRepository.SetExecutorProjectTask(request.ProjectTaskId, request.User.UserTag);
+                var projectTask = projectTaskRepository.SetExecutorProjectTask(request.ProjectId, request.ProjectTaskId, request.User.UserTag);
 
                 return projectTask;
             }

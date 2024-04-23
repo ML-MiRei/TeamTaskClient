@@ -1,13 +1,14 @@
 ﻿using MediatR;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 
 namespace TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById
 {
-    public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandler<GetUserByIdQuery, UserEntity>
+    public class GetUserByIdHandler(IUserRepository userRepository) : IRequestHandler<GetUserByIdQuery, UserModel>
     {
-        public Task<UserEntity> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public Task<UserModel> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             try
             {

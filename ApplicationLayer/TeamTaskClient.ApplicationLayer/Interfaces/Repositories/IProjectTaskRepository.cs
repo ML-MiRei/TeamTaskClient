@@ -7,9 +7,11 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
     public interface IProjectTaskRepository
     {
 
-        Task<ProjectTaskModel> CreateProjectTask(ProjectTaskEntity entity);
+      //  Task<ProjectTaskModel> CreateProjectTask(ProjectTaskEntity entity);
+        Task CreateProjectTask(ProjectTaskEntity entity);
         Task UpdateProjectTask(ProjectTaskEntity projectTask);
-        Task SetExecutorProjectTask(int projectTaskId, string userTag);
+       // Task SetExecutorProjectTask(int projectTaskId, string userTag);
+        Task SetExecutorProjectTask(int projectId, int projectTaskId, string userTag);
         Task DeleteProjectTask(int projectId, int projectTaskId);
         Task ChangeStatusProjectTask(int projectId, int projectTaskId, int status);
         Task AddInSprintProjectTask(int projectTaskId, int sprintId);

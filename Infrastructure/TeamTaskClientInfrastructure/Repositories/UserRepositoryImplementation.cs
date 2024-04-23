@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
@@ -26,7 +27,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
             throw new ConnectionException();
         }
 
-        public async Task<UserEntity> GetUserById(int id)
+        public async Task<UserModel> GetUserById(int id)
         {
 
 
@@ -39,7 +40,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
             }
             else if (httpReply.IsSuccessStatusCode)
             {
-                var user = httpReply.Content.ReadFromJsonAsync<UserEntity>();
+                var user = httpReply.Content.ReadFromJsonAsync<UserModel>();
                 return user.Result;
 
 
@@ -48,11 +49,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
             throw new ConnectionException();
         }
 
-        public async Task<UserEntity> GetUserByTag(string userTag)
+        public async Task<UserModel> GetUserByTag(string userTag)
         {
-
-
-            var httpReply = httpClient.CurrentHttpClient.GetAsync($"{httpClient.ConnectionString}{API_DOMAIN}/tag/{userTag}").Result;
+            var httpReply = httpClient.CurrentHttpClient
+                .GetAsync($"{httpClient.ConnectionString}{API_DOMAIN}/tag/{userTag}").Result;
 
             if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -60,12 +60,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
             }
             else if (httpReply.IsSuccessStatusCode)
             {
-                var user = httpReply.Content.ReadFromJsonAsync<UserEntity>();
+                var user = httpReply.Content.ReadFromJsonAsync<UserModel>();
                 return user.Result;
-
             }
             throw new ConnectionException();
-
 
         }
 

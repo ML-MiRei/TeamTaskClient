@@ -7,18 +7,26 @@ using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.DeleteUserFromTeam;
 using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.LeaveTeam;
 using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.UpdateTeam;
 using TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByUserId;
+using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
+using TeamTaskClient.Infrastructure.ServerClients.HubClients;
+using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
+using TeamTaskClient.UI.Modules.Profile.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 {
     class TeamPageVM : ViewModelBase
     {
         private static IMediator _mediator;
+
+
+        public event EventHandler InterfaceRefresh;
+
 
         public TeamPageVM(IMediator mediator)
         {
@@ -28,6 +36,60 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
             CreateTeam = new NewTeamCommand(this);
             InputSearchString = "Team name..";
 
+
+            TeamHubClient.TeamUpdated += OnTeamUpdated;
+            TeamHubClient.AddNewUserInTeam += OnAddNewUserInTeam;
+            TeamHubClient.AddNewTeam += OnAddNewTeam;
+            TeamHubClient.TeamDeleted += OnTeamDeleted;
+            TeamHubClient.DeleteUserFromTeam += OnDeleteUserFromTeam;
+            TeamHubClient.TeamCreated += OnTeamCreated;
+
+        }
+
+        private void OnTeamCreated(object? sender, TeamModel e)
+        {
+            App.Current.Dispatcher.Invoke(() => _teams.Add(e));
+        }
+
+        private void OnDeleteUserFromTeam(object? sender, string e)
+        {
+            App.Current.Dispatcher.Invoke(() => _teams.First(t => t.TeamId == (int)sender)
+            .Users
+            .Remove(_teams.First(t => t.TeamId == (int)sender).Users.First(u => u.UserTag == e)));
+            InterfaceRefresh?.Invoke(null, new EventArgs());
+
+        }
+
+        private void OnTeamDeleted(object? sender, int e)
+        {
+            App.Current.Dispatcher.Invoke(() => _teams.Remove(_teams.First(t => t.TeamId == e)));
+        }
+
+        private void OnAddNewTeam(object? sender, TeamModel e)
+        {
+            App.Current.Dispatcher.Invoke(() => _teams.Add(e));
+        }
+
+        private void OnAddNewUserInTeam(object? sender, UserModel e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                _teams.First(t => t.TeamId == (int)sender).Users.Add(e);
+            });
+            InterfaceRefresh?.Invoke(null, new EventArgs());
+        }
+
+        private void OnTeamUpdated(object? sender, TeamModel e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                _teams.First(t => t.TeamId == e.TeamId).TeamLeadName = e.TeamLeadName;
+                _teams.First(t => t.TeamId == e.TeamId).TeamName = e.TeamName;
+                _teams.First(t => t.TeamId == e.TeamId).UserRole = e.UserRole;
+
+            });
+
+            OnPropertyChanged(nameof(Teams));
         }
 
 
@@ -58,7 +120,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 
 
 
-        public void SettingsTeam(TeamModel teamModel)
+        public async void SettingsTeam(TeamModel teamModel)
         {
             if (teamModel.UserRole == (int)UserRole.EMPLOYEE)
             {
@@ -70,10 +132,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                         AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Complete", "Cancel");
                         if (alertDialogWindow.ShowDialog().Value)
                         {
-                            _mediator.Send(new LeaveTeamCommand { TeamId = teamModel.TeamId, UserId = Properties.Settings.Default.userId });
-                            var deletedTeam = Teams.First(t => t.TeamId == teamModel.TeamId);
-                            Teams.Remove(deletedTeam);
-                            OnPropertyChanged(nameof(Teams));
+                            await _mediator.Send(new LeaveTeamCommand { TeamId = teamModel.TeamId, UserId = Properties.Settings.Default.userId });
                         }
                     }
                     catch (Exception)
@@ -85,7 +144,11 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
             else
             {
 
-                var listActions = new List<string> { "Add user", "Delete user from team", "Change name", "Change lead" };
+                var listActions = new List<string> { "Add user", "Change name", "Change lead" };
+
+                if (teamModel.Users.Count > 1)
+                    listActions.Add("Delete user from team");
+
                 if (Teams.First(t => t.TeamId == teamModel.TeamId).Users.Count == 1)
                 {
                     listActions.Add("Leave");
@@ -103,20 +166,15 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
-                                _mediator.Send(new AddUserInTeamCommand { TeamId = teamModel.TeamId, UserTag = userTag });
 
-                                var newUser = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
-
-                                Teams.First(c => c.TeamId == teamModel.TeamId).Users.Add(new UserModel
+                                if (userTag != Properties.Settings.Default.userTag)
                                 {
-                                    Email = newUser.Email,
-                                    UserTag = userTag,
-                                    SecondName = newUser.SecondName,
-                                    FirstName = newUser.FirstName,
-                                    LastName = newUser.LastName,
-                                    PhoneNumber = newUser.PhoneNumber
-                                });
-                                OnPropertyChanged(nameof(Teams));
+                                    _mediator.Send(new AddUserInTeamCommand { TeamId = teamModel.TeamId, UserTag = userTag });
+                                }
+                                else
+                                {
+                                    ErrorWindow.Show("You can't add \nyourself to the team\r\n");
+                                }
 
                             }
 
@@ -130,9 +188,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 
                                 if (inputPropertiesDialogWindow.ShowDialog().Value)
                                 {
-                                    _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, Name = inputPropertiesDialogWindow.GetInputValue()[0] });
-                                    Teams.First(t => t.TeamId == teamModel.TeamId).TeamName = inputPropertiesDialogWindow.GetInputValue()[0];
-                                    OnPropertyChanged(nameof(Teams));
+                                  await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, Name = inputPropertiesDialogWindow.GetInputValue()[0], LeaderTag = Properties.Settings.Default.userTag });
 
                                 }
                             }
@@ -148,7 +204,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                             {
                                 SelectActionsDialogWindow selectLead =
                                new SelectActionsDialogWindow("Select user", Teams.First(t => t.TeamId == teamModel.TeamId).Users
-                                                                                 .Where(u=> u.UserTag != Properties.Settings.Default.userTag)
+                                                                                 .Where(u => u.UserTag != Properties.Settings.Default.userTag)
                                                                                  .Select(u => u.FirstName + ", tag: " + u.UserTag)
                                                                                  .ToList());
 
@@ -156,10 +212,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                                 {
                                     var userTag = selectLead.GetSelectedAction().Substring(selectLead.GetSelectedAction().IndexOf(": ") + 2);
 
-                                    _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, LeaderTag = userTag });
-
-                                    Teams.First(c => c.TeamId == teamModel.TeamId).UserRole = (int)UserRole.EMPLOYEE;
-                                    OnPropertyChanged(nameof(Teams));
+                                   await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, LeaderTag = userTag });
 
                                 }
 
@@ -182,12 +235,9 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                             {
                                 var userTag = selectActions.GetSelectedAction().Substring(selectActions.GetSelectedAction().IndexOf(": ") + 2);
 
-                                _mediator.Send(new DeleteUserFromTeamCommand { TeamId = teamModel.TeamId, Tag = userTag });
+                                await _mediator.Send(new DeleteUserFromTeamCommand { TeamId = teamModel.TeamId, Tag = userTag });
 
                                 var deletedUser = Teams.First(c => c.TeamId == teamModel.TeamId).Users.First(u => u.UserTag == userTag);
-
-                                Teams.First(c => c.TeamId == teamModel.TeamId).Users.Remove(deletedUser);
-                                OnPropertyChanged(nameof(Teams));
 
                             }
 
@@ -202,9 +252,6 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                                 if (alertDialogWindow.ShowDialog().Value)
                                 {
                                     _mediator.Send(new LeaveTeamCommand { TeamId = teamModel.TeamId, UserId = Properties.Settings.Default.userId });
-                                    var deletedTeam = Teams.First(t => t.TeamId == teamModel.TeamId);
-                                    Teams.Remove(deletedTeam);
-                                    OnPropertyChanged(nameof(Teams));
                                 }
                             }
                             catch (Exception)
@@ -228,16 +275,14 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 
         private class NewTeamCommand(TeamPageVM vM) : CommandBase
         {
-            public override void Execute(object? parameter)
+            public async override void Execute(object? parameter)
             {
                 CreateSubjectDialogWindow dialogWindow = new CreateSubjectDialogWindow("Creating a team", new List<string> { "Team name:" });
                 if (dialogWindow.ShowDialog().Value)
                 {
                     try
                     {
-                        var team = _mediator.Send(new CreateTeamCommand { Name = (dialogWindow.GetCreatingProperties()[0]), UserId = Properties.Settings.Default.userId }).Result;
-
-                        vM.Teams.Add(team);
+                        await _mediator.Send(new CreateTeamCommand { Name = (dialogWindow.GetCreatingProperties()[0]), UserId = Properties.Settings.Default.userId });
                     }
                     catch
                     {

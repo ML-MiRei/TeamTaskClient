@@ -1,15 +1,22 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using System.Net.Http.Json;
 using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
+using TeamTaskClient.Infrastructure.LocalDB.Models;
+using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
     public class ProjectRepositoryImplementation(IHttpClient client) : IProjectRepository
     {
+
+        private HubConnection HubClient = ProjectHubConnection.Instance.GetClient();
+
+
         public Task AddTeamInProject(int projectId, string teamTag)
         {
             var content = JsonContent.Create(teamTag);
@@ -27,21 +34,10 @@ namespace TeamTaskClient.Infrastructure.Repositories
             throw new ConnectionException();
         }
 
-        public Task AddUserInProject(int projectId, string userTag)
+        public async Task AddUserInProject(int projectId, string userTag)
         {
-            var content = JsonContent.Create(userTag);
 
-            var httpReply = client.CurrentHttpClient.PostAsync($"{client.ConnectionString}/Project/{projectId}/add-user", content).Result;
-
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return Task.CompletedTask;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("AddUserInProject", projectId, userTag);
         }
 
         public async Task<ProjectModel> CreateProject(string name)
@@ -63,33 +59,41 @@ namespace TeamTaskClient.Infrastructure.Repositories
 
         public async Task DeleteProject(int projectId)
         {
-            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/delete");
+            await HubClient.SendAsync("DeleteProject", projectId);
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+
+
+            //var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/delete");
+
+            //if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            //{
+            //    throw new NotFoundException();
+            //}
+            //else if (httpReply.IsSuccessStatusCode)
+            //{
+            //    return;
+            //}
+            //throw new ConnectionException();
         }
 
 
         public async Task DeleteUserFromProject(int projectId, string userTag)
         {
-            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/delete-user/{userTag}");
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("DeleteUserFromProject", projectId, userTag);
+
+
+            //var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/delete-user/{userTag}");
+
+            //if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
+            //{
+            //    throw new NotFoundException();
+            //}
+            //else if (httpReply.IsSuccessStatusCode)
+            //{
+            //    return;
+            //}
+            //throw new ConnectionException();
         }
 
 
@@ -111,35 +115,15 @@ namespace TeamTaskClient.Infrastructure.Repositories
             throw new ConnectionException();
         }
 
-        public async Task LeaveFromProject(int projectId)
+        public async Task LeaveFromProject(int  projectId, int userId)
         {
-            var httpReply = await client.CurrentHttpClient.DeleteAsync($"{client.ConnectionString}/Project/{projectId}/leave");
+            await HubClient.SendAsync("LeaveFromProject", projectId, userId);
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
         }
 
         public async Task UpdateProject(ProjectEntity project)
         {
-
-            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/Project/{project.ID}/update", JsonContent.Create(project));
-
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("UpdateProject", project);
         }
     }
 }

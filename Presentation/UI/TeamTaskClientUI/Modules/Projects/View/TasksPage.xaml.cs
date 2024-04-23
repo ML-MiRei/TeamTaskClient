@@ -16,8 +16,8 @@ using System.Windows.Shapes;
 using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatusProjectTask;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Dialogs.View;
-using TeamTaskClient.UI.Modules.Projects.Storage;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
 
@@ -67,9 +67,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
             {
                 ErrorWindow.Show("Error change status");
             }
-            ProjectsStorage.ChangeStatusProjectTask(projectTask);
 
-            //((ItemsControl)sender).ItemsSource
         }
         private async void TaskDropInProgress(object sender, DragEventArgs e)
         {
@@ -142,11 +140,24 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         private void ProjectTaskTemplate_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            
+
             ProjectTaskTemplate projectTaskTemplate = (ProjectTaskTemplate)sender;
 
-            if(((ProjectTaskModel)projectTaskTemplate.DataContext).IsUserExecutor || ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD)
+
+            if ((ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date) && (((ProjectTaskModel)projectTaskTemplate.DataContext).IsUserExecutor || ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD))
                 DragDrop.DoDragDrop(projectTaskTemplate, projectTaskTemplate.DataContext, DragDropEffects.Move);
+        }
+
+        private void ProjectTaskTemplate_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ProjectTaskTemplate projectTaskTemplate = (ProjectTaskTemplate)sender;
+            if (ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date && (((ProjectTaskModel)projectTaskTemplate.DataContext).IsUserExecutor || ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD))
+                Cursor = Cursors.Hand;
+        }
+
+        private void ProjectTaskTemplate_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
         }
     }
 }

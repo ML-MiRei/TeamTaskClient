@@ -5,11 +5,11 @@ using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.DeleteMessage;
 using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.UpdateMessage;
 using TeamTaskClient.ApplicationLayer.DTOs.Message.Command.SendMessage;
 using TeamTaskClient.ApplicationLayer.Models;
-using TeamTaskClient.Infrastructure.Services.Implementation;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
-using TeamTaskClient.UI.Modules.Messanger.Storage;
+using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -30,9 +30,9 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
 
             MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
-            ChatService.OnMessageReceived += ChatService_OnMessageReceived;
-            ChatService.OnMessageDeleted += ChatService_OnMessageDeleted;
-            ChatService.OnMessageUpdated += ChatService_OnMessageUpdated;
+            ChatHubClient.OnMessageReceived += ChatService_OnMessageReceived;
+            ChatHubClient.OnMessageDeleted += ChatService_OnMessageDeleted;
+            ChatHubClient.OnMessageUpdated += ChatService_OnMessageUpdated;
         }
 
         private void ChatService_OnMessageUpdated(object? sender, string e)
@@ -54,7 +54,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
         private void ChatService_OnMessageReceived(object? sender, MessageModel e)
         {
-            App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.Add(e));
+            App.Current.Dispatcher.Invoke(() => MessengerStorage.AddMessage((int)sender, e));
             OnPropertyChanged(nameof(Messages));
         }
 
@@ -96,7 +96,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
         private class DoubleClickCommand(MessagesPageVM vm) : CommandBase
         {
-            public override void Execute(object? parameter)
+            public async override void Execute(object? parameter)
             {
 
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", new List<string> { "Update", "Delete" });
@@ -110,7 +110,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var newTextMessage = updatePropertiesDialogWindow.GetInputValue()[0];
-                                _mediator.Send(new UpdateMessageCommand { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
+                               await _mediator.Send(new UpdateMessageCommand { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
                                 vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId).TextMessage = newTextMessage;
                                 vm.OnPropertyChanged(nameof(Messages));
                             }
@@ -120,7 +120,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         case "Delete":
                             try
                             {
-                                _mediator.Send(new DeleteMessageCommand() { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
+                               await _mediator.Send(new DeleteMessageCommand() { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
                                 vm.Messages.Remove(vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId));
                             }
                             catch (Exception)

@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
-using TeamTaskClient.UI.Modules.Projects.Storage;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
 using TeamTaskClient.UI.Modules.Teams.UserControls;
@@ -36,6 +36,12 @@ namespace TeamTaskClient.UI.Modules.Projects.View
             vm = new BacklogProjectPageVM(mediator);
             DataContext = vm;
 
+            ProjectsStorage.SelectedProjectChanged += ProjectsStorage_SelectedProjectChanged;
+        }
+
+        private void ProjectsStorage_SelectedProjectChanged(object? sender, ProjectModel e)
+        {
+            TasksStories.Items.Refresh();
         }
 
         private void UsersProject_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

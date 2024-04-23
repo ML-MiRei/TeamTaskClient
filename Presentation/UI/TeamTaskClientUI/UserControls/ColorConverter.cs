@@ -10,7 +10,7 @@ using System.Windows.Shapes;
 
 namespace TeamTaskClient.UI.UserControls
 {
-    internal class RandomColorConverter : IValueConverter
+    internal class ColorConverter : IValueConverter
     {
         Dictionary<int, Brush> _colors = new Dictionary<int, Brush>()
         {
@@ -24,8 +24,7 @@ namespace TeamTaskClient.UI.UserControls
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Random random = new Random();
-            return _colors.GetValueOrDefault(random.Next(5));
+            return _colors.GetValueOrDefault((int)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

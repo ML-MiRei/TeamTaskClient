@@ -10,6 +10,9 @@
         public List<UserModel> Users { get; set; }
         public List<MessageModel> Messages { get; set; }
 
+        public int ColorNumber { get; set; }
+
+
         public string Lit => ChatName[0] + "";
 
         public string LastMessage

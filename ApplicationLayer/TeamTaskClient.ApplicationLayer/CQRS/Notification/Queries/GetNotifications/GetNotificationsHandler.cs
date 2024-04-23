@@ -20,7 +20,7 @@ namespace TeamTaskClient.ApplicationLayer.CQRS.Notification.Queries.GetNotificat
             }
             catch (Exception)
             {
-                throw new NotFoundException();
+                return Task.FromResult(new List<NotificationModel>());
             }
         }
     }

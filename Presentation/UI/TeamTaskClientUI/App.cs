@@ -11,7 +11,7 @@ namespace TeamTaskClient.UI
         public App(MainWindow mainWindow)
         {
 
-
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
             this.mainWindow = mainWindow;
             mainWindow.Show();

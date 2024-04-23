@@ -1,15 +1,19 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using TeamTaskClient.ApplicationLayer.CQRS.Notification.Commands.DeleteNotification;
+using TeamTaskClient.ApplicationLayer.CQRS.Notification.Queries.GetNotifications;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Commands.DeleteUser;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Commands.UpdateUser;
 using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById;
 using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
-using TeamTaskClient.UI.Modules.Profile.Models;
+using TeamTaskClient.UI.Storages;
 
 
 namespace TeamTaskClient.UI.Modules.Profile.ViewModels
@@ -18,28 +22,43 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
     {
         private static IMediator _mediator;
 
-        public ProfileVM(IMediator mediator, IRemoveCash removeCash)
+
+        public static ProfileVM profile;
+
+        public ProfileVM(IMediator mediator)
         {
 
             _mediator = mediator;
-            var user = mediator.Send(new GetUserByIdQuery() { UserId = Convert.ToInt32(Properties.Settings.Default.userId) }).Result;
+            User = mediator.Send(new GetUserByIdQuery() { UserId = Convert.ToInt32(Properties.Settings.Default.userId) }).Result;
 
-            User = new ApplicationLayer.Models.UserModel();
-            User.FirstName = user.FirstName;
-            User.LastName = user.LastName;
-            User.PhoneNumber = user.PhoneNumber;
-            User.Email = user.Email;
-            User.UserTag = user.Tag;
-            User.SecondName = user.SecondName;
+            profile = this;
+            NotificationStorage.Notifications =
+                new ObservableCollection<NotificationModel>(mediator.Send(new GetNotificationsQuery { UserId = Properties.Settings.Default.userId }).Result);
 
-            Logout = new LogoutCommand(removeCash);
-            DeleteAccount = new DeleteAccountCommand(removeCash);
+            NotificationStorage.Notifications = new ObservableCollection<NotificationModel>()
+            {
+                new NotificationModel{ Details = "A new user has been added to the chat", Title = "Chats"},
+                new NotificationModel{ Details = "The project has been updated", Title = "Projects"},
+            };
+
+            Logout = new LogoutCommand();
+            DeleteAccount = new DeleteAccountCommand();
             EditProfile = new EditProfileCommand(this);
         }
 
         public string Lit => User.Lit;
+        public int ColorNumber => User.ColorNumber;
 
-        public ApplicationLayer.Models.UserModel User { get; set; }
+        public UserModel User { get; set; }
+
+
+        public void UpdateNotifications()
+        {
+            NotificationStorage.Notifications =
+               new ObservableCollection<NotificationModel>(_mediator.Send(new GetNotificationsQuery { UserId = Properties.Settings.Default.userId }).Result);
+            OnPropertyChanged(nameof(Notifications));
+
+        }
 
 
         public ICommand Logout { get; }
@@ -51,17 +70,36 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
         {
             get
             {
-                return new ObservableCollection<NotificationModel>()
-                {
-                    new NotificationModel() {Details = "You have been added to the team", Title = "Add team"},
-                    new NotificationModel() {Details = "You were kicked out of the team", Title = "Delete team"},
-                    new NotificationModel() {Details = "The name of the project has been changed", Title = "Change name"}
-
-
-                };
+                return NotificationStorage.Notifications;
             }
         }
 
+
+        public void DeleteNotification(NotificationModel notificationModel)
+        {
+
+            try
+            {
+
+                AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Delete a message?", "Yes", "Cancel");
+
+                if (alertDialogWindow.ShowDialog().Value)
+                {
+                    _mediator.Send(new DeleteNotificationCommand { NotificationId = notificationModel.NotificationId });
+
+                    NotificationStorage.Notifications.Remove(notificationModel);
+                    OnPropertyChanged(nameof(Notifications));
+                }
+
+            }
+            catch (Exception)
+            {
+                ErrorWindow.Show("Error notification delete");
+
+            }
+
+
+        }
 
 
         private class EditProfileCommand(ProfileVM profileVM) : CommandBase
@@ -73,23 +111,23 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
                 });
                 if (inputDialog.ShowDialog().Value)
                 {
-                    var userModel = ((InputDialogVM)inputDialog.DataContext);
+                    var inputData = ((InputDialogVM)inputDialog.DataContext);
+
+
                     _mediator.Send(new UpdateUserCommand
                     {
-                        FirstName = userModel.InputValues[0].Text,
-                        SecondName = userModel.InputValues[1].Text,
-                        LastName = userModel.InputValues[2].Text,
-                        Phone = userModel.InputValues[3].Text,
+                        FirstName = String.IsNullOrEmpty(inputData.InputValues[0].Text) ? null : inputData.InputValues[0].Text,
+                        SecondName = inputData.InputValues[1].Text,
+                        LastName = String.IsNullOrEmpty(inputData.InputValues[2].Text) ? null : inputData.InputValues[2].Text,
+                        Phone = String.IsNullOrEmpty(inputData.InputValues[3].Text) ? null : inputData.InputValues[3].Text,
                         UserId = Properties.Settings.Default.userId
                     });
 
 
-                    profileVM.User.FirstName = userModel.InputValues[0].Text;
-                    profileVM.User.SecondName = userModel.InputValues[1].Text;
-                    profileVM.User.LastName = userModel.InputValues[2].Text;
-                    profileVM.User.PhoneNumber = userModel.InputValues[3].Text;
-                    profileVM.User.Email = profileVM.User.Email;
-
+                    profileVM.User.FirstName = String.IsNullOrEmpty(inputData.InputValues[0].Text) ? profileVM.User.FirstName : inputData.InputValues[0].Text;
+                    profileVM.User.SecondName = inputData.InputValues[1].Text;
+                    profileVM.User.LastName = String.IsNullOrEmpty(inputData.InputValues[2].Text) ? profileVM.User.LastName : inputData.InputValues[2].Text;
+                    profileVM.User.PhoneNumber = String.IsNullOrEmpty(inputData.InputValues[3].Text) ? profileVM.User.PhoneNumber : inputData.InputValues[3].Text;
 
 
                     profileVM.OnPropertyChanged(nameof(User));
@@ -98,11 +136,10 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
         }
 
 
-        private class LogoutCommand(IRemoveCash removeCash) : CommandBase
+        private class LogoutCommand : CommandBase
         {
             public override void Execute(object? parameter)
             {
-                removeCash.RemoveCash();
                 Properties.Settings.Default.userId = 0;
                 Properties.Settings.Default.userTag = "";
                 Properties.Settings.Default.Save();
@@ -113,7 +150,7 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
         }
 
 
-        private class DeleteAccountCommand(IRemoveCash removeCash) : CommandBase
+        private class DeleteAccountCommand : CommandBase
         {
             public override void Execute(object? parameter)
             {
@@ -124,7 +161,6 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
                     {
                         _mediator.Send(new DeleteUserCommand { UserId = Properties.Settings.Default.userId });
 
-                        removeCash.RemoveCash();
                         Properties.Settings.Default.userId = 0;
                         Properties.Settings.Default.userTag = "";
                         Properties.Settings.Default.Save();

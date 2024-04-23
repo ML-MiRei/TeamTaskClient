@@ -21,8 +21,8 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppColors.xaml" />
-                <ResourceDictionary Source="C:\Users\feyri\source\repos\TeamTaskClient\Presentation\UI\TeamTaskClientUI\Resources\AppStyles.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -70,7 +70,6 @@
                         VerticalAlignment="Center"
                         Width="150"
                         SelectedDate="{Binding DateStart}"
-                        DisplayDateStart="{x:Static sys:DateTime.Now}"
                         Margin="0,0,20,0"
                         BorderThickness="0"
                         Grid.Row="1"
@@ -87,7 +86,6 @@
                         Grid.Column="1"
                         BorderThickness="0"
                         SelectedDate="{Binding DateEnd}"
-                        DisplayDateStart="{x:Static sys:DateTime.Now}"
                         Width="150"
                         Margin="0,0,20,0"
                         Grid.Row="2"
