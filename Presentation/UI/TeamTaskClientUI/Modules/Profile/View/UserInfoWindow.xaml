@@ -1,0 +1,163 @@
+﻿<Window x:Class="TeamTaskClient.UI.Modules.Profile.View.UserInfoWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Profile.View"
+        xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        BorderThickness="0"
+        Height="250"
+        Width="350">
+
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppColors.xaml" />
+                <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Border CornerRadius="10"
+            Grid.Column="1"
+            BorderThickness="10"
+            BorderBrush="White">
+
+        <Grid Background="White"
+              Margin="-1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0"
+                  Margin="20,30,30,10">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="4*" />
+                </Grid.ColumnDefinitions>
+                <Viewbox HorizontalAlignment="Left"
+                         Margin="-5">
+                    <Border CornerRadius="50"
+                            Margin="0,10,10,10"
+                            HorizontalAlignment="Left">
+
+                        <Grid>
+
+                            <usercontrols:CircleImage  Grid.Column="0"
+                                                       Width="50"
+                                                       Height="50"
+                                                       VerticalAlignment="Stretch"
+                                                       HorizontalAlignment="Stretch"
+                                                       Lit="{Binding Lit}" />
+
+                        </Grid>
+                    </Border>
+                </Viewbox>
+
+                <Grid Grid.Column="1">
+
+
+                    <StackPanel Margin="10,0,0,0"
+                                VerticalAlignment="Center"
+                                Orientation="Vertical">
+
+                        <StackPanel Orientation="Horizontal">
+
+
+
+                            <TextBox Style="{StaticResource SimpleBlackOnlyReadTextBox}"
+                                     VerticalAlignment="Center"
+                                     TextWrapping="Wrap"
+                                     FontSize="18"
+                                     Margin="5,0,0,0"
+                                     Text="{Binding FullUserName, FallbackValue=Name_LastName_SecondName, Mode=OneWay}" />
+
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource SimpleBlackText}"
+                                   Margin="5,0,50,0"
+                                   Text="{Binding UserTag, FallbackValue=tag, Mode=OneWay}" />
+                    </StackPanel>
+
+                </Grid>
+            </Grid>
+
+
+            <Grid Grid.Row="1"
+                  Margin="20,0,20,30">
+
+
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock Style="{StaticResource GreenHeader}"
+                           Text="Contacts:" />
+
+                <TextBlock Style="{StaticResource SimpleBlackText}"
+                           Foreground="{StaticResource DarkGreen}"
+                           Grid.Row="1"
+                           Margin="0,10,0,0"
+                           Text="Phone number" />
+
+                <TextBox Style="{StaticResource SimpleBlackOnlyReadTextBox}"
+                         Foreground="{StaticResource DarkGreen}"
+                         Margin="0,10,0,0"
+                         Grid.Column="1"
+                         Grid.Row="1"
+                         TextAlignment="Right"
+                         HorizontalAlignment="Stretch"
+                         Text="{Binding FormatedPhoneNumber, Mode=OneWay, FallbackValue=+7-(234)-234-21-23}" />
+
+
+                <TextBlock Style="{StaticResource SimpleBlackText}"
+                           Foreground="{StaticResource DarkGreen}"
+                           Text="Email"
+                           Margin="0,5,0,0"
+                           Grid.Column="0"
+                           Grid.Row="2" />
+
+                <TextBox Style="{StaticResource SimpleBlackOnlyReadTextBox}"
+                         Foreground="{StaticResource DarkGreen}"
+                         Grid.Row="2"
+                         Margin="0,5,0,0"
+                         TextAlignment="Right"
+                         HorizontalAlignment="Stretch"
+                         Grid.Column="1"
+                         Text="{Binding Email,Mode=OneWay, FallbackValue=email@gmail.com}" />
+
+
+
+
+            </Grid>
+
+            <Button Style="{StaticResource RedButton}"
+                    Width="30"
+                    Height="30"
+                    Grid.Column="1"
+                    Margin="0,5,5,0"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Right"
+                    Content="x"
+                    Click="Button_Click" />
+
+
+        </Grid>
+    </Border>
+</Window>

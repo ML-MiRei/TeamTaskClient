@@ -17,9 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="CQRS\Message\Queries\" />
-	  <Folder Include="CQRS\ProjectTask\Queries\" />
-	  <Folder Include="CQRS\Sprint\Queries\" />
+	  <Folder Include="UseCases\Message\Queries\" />
+	  <Folder Include="UseCases\ProjectTask\Queries\" />
+	  <Folder Include="UseCases\Sprint\Queries\" />
 	</ItemGroup>
 
 </Project>

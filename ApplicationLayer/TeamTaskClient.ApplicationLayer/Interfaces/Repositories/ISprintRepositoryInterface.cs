@@ -10,10 +10,10 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
 {
     public interface ISprintRepositoryInterface
     {
-        Task<SprintModel> CreateSprint(SprintEntity sprintEntity); 
-        void DeleteSprint(int sprintId); 
-        void ChangeDateStartSprint(int sprintId, DateTime dateStart); 
-        void ChangeDateEndSprint(int sprintId, DateTime dateEnd); 
+        Task CreateSprint(int projectId, SprintModel sprintModel);
+        Task DeleteSprint(int projectId, int sprintId);
+        Task ChangeDateStartSprint(int projectId, int sprintId, DateTime dateStart);
+        Task ChangeDateEndSprint(int projectId, int sprintId, DateTime dateEnd); 
         
     }
 }

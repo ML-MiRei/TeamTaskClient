@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatusProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.ChangeStatusProjectTask;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Storages;
@@ -31,111 +31,47 @@ namespace TeamTaskClient.UI.Modules.Projects.View
         IMediator _mediator;
         ProjectModel _projectModel;
 
+        TasksVM vm;
+
         public TasksPage(IMediator mediator)
         {
             InitializeComponent();
-            DataContext = new TasksVM(mediator);
+            vm = new TasksVM(mediator);
+            DataContext = vm;
 
             _mediator = mediator;
 
             ProjectsStorage.SelectedSprintChanged += OnSelectedSprintChanged;
         }
 
+
+
         private void OnSelectedSprintChanged(object? sender, SprintModel e)
         {
-            DataContext = new TasksVM(_mediator);
+            if (e != null)
+                DataContext = new TasksVM(_mediator);
+            else
+                ProjectPage.Instance.ToBacklogButton.IsChecked = true;
         }
 
         private async void TaskDropDone(object sender, DragEventArgs e)
         {
-            ProjectTaskModel projectTask = (ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]);
-
-            try
-            {
-                projectTask.Status = (int)StatusProjectTaskEnum.DONE;
-
-                await _mediator.Send(new ChangeStatusProjectTaskCommand
-                {
-                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                    ProjectTaskId = projectTask.ProjectTaskId,
-                    Status = projectTask.Status
-                });
-
-                ProjectsStorage.ChangeStatusProjectTask(projectTask);
-            }
-            catch
-            {
-                ErrorWindow.Show("Error change status");
-            }
-
+            vm.StatusProjectTaskChange((ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]), StatusProjectTaskEnum.DONE);
         }
+
         private async void TaskDropInProgress(object sender, DragEventArgs e)
         {
-            ProjectTaskModel projectTask = (ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]);
-
-            try
-            {
-                projectTask.Status = (int)StatusProjectTaskEnum.IN_PROGRESS;
-
-                await _mediator.Send(new ChangeStatusProjectTaskCommand
-                {
-                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                    ProjectTaskId = projectTask.ProjectTaskId,
-                    Status = projectTask.Status
-                });
-
-                ProjectsStorage.ChangeStatusProjectTask(projectTask);
-            }
-            catch
-            {
-                ErrorWindow.Show("Error change status");
-            }
+            vm.StatusProjectTaskChange((ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]), StatusProjectTaskEnum.IN_PROGRESS);
         }
+
         private async void TaskDropTesting(object sender, DragEventArgs e)
         {
-            ProjectTaskModel projectTask = (ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]);
-
-            try
-            {
-                projectTask.Status = (int)StatusProjectTaskEnum.TESTING;
-
-                await _mediator.Send(new ChangeStatusProjectTaskCommand
-                {
-                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                    ProjectTaskId = projectTask.ProjectTaskId,
-                    Status = projectTask.Status
-                });
-
-                ProjectsStorage.ChangeStatusProjectTask(projectTask);
-            }
-            catch
-            {
-                ErrorWindow.Show("Error change status");
-            }
-
-
+            vm.StatusProjectTaskChange((ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]), StatusProjectTaskEnum.TESTING);
         }
+
         private async void TaskDropTodo(object sender, DragEventArgs e)
         {
-            ProjectTaskModel projectTask = (ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]);
-
-            try
-            {
-                projectTask.Status = (int)StatusProjectTaskEnum.TODO;
-
-                await _mediator.Send(new ChangeStatusProjectTaskCommand
-                {
-                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                    ProjectTaskId = projectTask.ProjectTaskId,
-                    Status = projectTask.Status
-                });
-
-                ProjectsStorage.ChangeStatusProjectTask(projectTask);
-            }
-            catch
-            {
-                ErrorWindow.Show("Error change status");
-            }
+            vm.StatusProjectTaskChange((ProjectTaskModel)e.Data.GetData(e.Data.GetFormats()[0]), StatusProjectTaskEnum.TODO);
         }
 
         private void ProjectTaskTemplate_MouseDown(object sender, MouseButtonEventArgs e)
@@ -144,14 +80,18 @@ namespace TeamTaskClient.UI.Modules.Projects.View
             ProjectTaskTemplate projectTaskTemplate = (ProjectTaskTemplate)sender;
 
 
-            if ((ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date) && (((ProjectTaskModel)projectTaskTemplate.DataContext).IsUserExecutor || ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD))
+            if ((ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date) &&
+                (((ProjectTaskModel)projectTaskTemplate.DataContext).ExecutorTag == Properties.Settings.Default.userTag ||
+                ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD))
                 DragDrop.DoDragDrop(projectTaskTemplate, projectTaskTemplate.DataContext, DragDropEffects.Move);
         }
 
         private void ProjectTaskTemplate_MouseEnter(object sender, MouseEventArgs e)
         {
             ProjectTaskTemplate projectTaskTemplate = (ProjectTaskTemplate)sender;
-            if (ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date && (((ProjectTaskModel)projectTaskTemplate.DataContext).IsUserExecutor || ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD))
+            if ((ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date) &&
+                          (((ProjectTaskModel)projectTaskTemplate.DataContext).ExecutorTag == Properties.Settings.Default.userTag ||
+                          ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD))
                 Cursor = Cursors.Hand;
         }
 

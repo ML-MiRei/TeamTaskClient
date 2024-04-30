@@ -6,7 +6,6 @@ using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.LocalDB.Models;
 using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
@@ -17,19 +16,20 @@ namespace TeamTaskClient.Infrastructure.Repositories
         private HubConnection HubClient = ProjectHubConnection.Instance.GetClient();
 
 
-        public async Task ChangeStatusProjectTask(int projectId, int projectTaskId, int status)
+        public async Task ChangeStatusProjectTask(int projectId, int spintId, int projectTaskId, int status)
         {
             await HubClient.SendAsync("ChangeStatusProjectTask", new ProjectTaskEntity
             {
                 Status = status,
                 ProjectId = projectId,
-                ID = projectTaskId
+                ID = projectTaskId,
+                SprintId = spintId
             });
         }
 
         public async Task CreateProjectTask(ProjectTaskEntity entity)
         {
-            await HubClient.SendAsync("ChangeStatusProjectTask", entity);
+            await HubClient.SendAsync("CreateProjectTask", entity);
 
         }
 
@@ -47,19 +47,12 @@ namespace TeamTaskClient.Infrastructure.Repositories
         }
 
 
-        public async Task AddInSprintProjectTask(int projectTaskId, int sprintId)
+        public async Task AddInSprintProjectTask(int projectId, int sprintId, int projectTaskId)
         {
-            var httpReply = await client.CurrentHttpClient.PatchAsync($"{client.ConnectionString}/ProjectTask/{projectTaskId}/add-in-sprint", JsonContent.Create(sprintId));
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                return;
-            }
-            throw new ConnectionException();
+            await HubClient.SendAsync("AddInSprintProjectTask", projectId, sprintId, projectTaskId);
+
+
         }
 
         public async Task UpdateProjectTask(ProjectTaskEntity projectTask)

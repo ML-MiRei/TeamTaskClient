@@ -2,6 +2,7 @@
 using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
@@ -19,14 +20,14 @@ namespace TeamTaskClient.UI.Main
         private static IMediator _mediator;
 
 
-        public MainWindowVM(MainWindow mainWindow, IMediator mediator)
+        public MainWindowVM(MainWindow mainWindow, IMediator mediator, IMessengerEvents messengerEvents)
         {
             _mainWindow = mainWindow;
             _mediator = mediator;
 
-            ProfileButton = new NavigationCommand(mainWindow, new ProfilePage(mediator));
+            ProfileButton = new NavigationCommand(mainWindow, new ProfilePage(mediator, messengerEvents));
             ProjectsButton = new NavigationCommand(mainWindow, new ObserveProjectsPage(mediator));
-            MessangerButton = new NavigationCommand(mainWindow, new MessangerPage(mediator));
+            MessangerButton = new NavigationCommand(mainWindow, new MessangerPage(mediator, messengerEvents));
             TeamsButton = new NavigationCommand(mainWindow, new TeamPage(mediator));
         }
 

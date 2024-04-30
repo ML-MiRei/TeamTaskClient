@@ -1,6 +1,7 @@
 ﻿using System.Windows.Input;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
+using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Login.Modules.View;
 
 namespace TeamTaskClient.UI.Login.Modules.ViewModels
@@ -38,7 +39,10 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
         private static string _email;
         public string Email
         {
-            get { return _email; }
+            get
+            {
+                return  _email;
+            }
             set
             {
                 _email = value;
@@ -68,15 +72,28 @@ namespace TeamTaskClient.UI.Login.Modules.ViewModels
         {
             public async override void Execute(object parameter)
             {
+                if (String.IsNullOrEmpty(_password) || _email == "Enter E-mail" || String.IsNullOrEmpty(_email) || _password == "Enter password")
+                {
+                    ErrorWindow.Show("Enter all data");
+                }
+                else
+                {
+                    try
+                    {
+                        var user = await _authorizationService.Authorize(_email, _password);
 
-                var user = await _authorizationService.Authorize(_email, _password);
+                        Properties.Settings.Default.userId = user.ID;
+                        Properties.Settings.Default.userTag = user.Tag;
+                        Properties.Settings.Default.Save();
 
-                Properties.Settings.Default.userId = user.ID;
-                Properties.Settings.Default.userTag = user.Tag;
-                Properties.Settings.Default.Save();
+                        Programm.LoginWindow.DialogResult = true;
 
-                Programm.LoginWindow.DialogResult = true;
-
+                    }
+                    catch (Exception)
+                    {
+                        ErrorWindow.Show("User not found");
+                    }
+                }
             }
         }
 

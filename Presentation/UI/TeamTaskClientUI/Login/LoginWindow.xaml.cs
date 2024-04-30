@@ -26,9 +26,6 @@ namespace TeamTaskClient.UI.Login
         {
             base.OnClosed(e);
 
-            if (Properties.Settings.Default.userId == 0)
-                App.Current.Shutdown();
-
         }
     }
 }

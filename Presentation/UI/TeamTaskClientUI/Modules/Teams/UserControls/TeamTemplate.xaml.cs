@@ -1,6 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.UI.Modules.Profile.View;
+using TeamTaskClient.UI.Modules.Teams.View;
+using TeamTaskClient.UI.Modules.Teams.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Teams.UserControls
 {
@@ -37,5 +41,28 @@ namespace TeamTaskClient.UI.Modules.Teams.UserControls
             set { SetValue(UsersProperty, value); }
         }
 
+
+        private void UserTemplate_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var user = (UserModel)((UserTemplate)sender).DataContext;
+
+            UserInfoWindow userInfo = new UserInfoWindow(user);
+            userInfo.ShowDialog();
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            TeamPageVM.Instance.SettingsTeam((TeamModel)DataContext);
+        }
+
+        private void UserTemplate_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Cursor = Cursors.Hand;
+        }
+
+        private void UserTemplate_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            Cursor = Cursors.Arrow;
+        }
     }
 }

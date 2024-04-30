@@ -7,26 +7,16 @@ using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class MessageRepositoryImplementation : IMessageRepository
+    public class MessageRepositoryImplementation(IChatHubConnection chatHubClient) : IMessageRepository
     {
 
-        private static HubConnection hubClient = ChatHubClient.GetInstance().HubClient;
-        private static IHttpClient _httpClient;
+        private HubConnection hubClient = chatHubClient.HubConnection;
 
 
 
-        public MessageRepositoryImplementation(IHttpClient httpClient)
+        public async Task CreateMessage(MessageEntity messageData)
         {
-            _httpClient = httpClient;
-        }
-
-
-        public async void CreateMessage(MessageDTO messageData)
-        {
-
-
-            await hubClient.SendAsync("SendMessage", messageData.UserID, messageData.ChatID, messageData.Text);
-
+            await hubClient.SendAsync("SendMessage", messageData.CreatorID, messageData.ChatId, messageData.TextMessage);
         }
 
         public async Task DeleteMessage(int chatId, int messageId)

@@ -13,24 +13,5 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
 
         public string TextError { get; set; }
 
-        public ICommand CloseWindow { get; } = new CloseWindowCommand();
-
-
-        private class CloseWindowCommand : CommandBase
-        {
-            public override void Execute(object? parameter)
-            {
-                try
-                {
-                    App.Current.Windows.OfType<ErrorWindow>().First().DialogResult = false;
-                }
-                catch
-                {
-
-                    Programm.ErrorWindow.DialogResult = false;
-                }
-            }
-        }
-
     }
 }

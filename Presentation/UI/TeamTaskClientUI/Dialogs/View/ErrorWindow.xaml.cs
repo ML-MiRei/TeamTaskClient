@@ -24,5 +24,10 @@ namespace TeamTaskClient.UI.Dialogs.View
             errorWindow.ShowDialog();
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

@@ -6,22 +6,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.AddTeamProject;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.AddUserInProject;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.DeleteUserFromProject;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.DeleteProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.SetExecutorProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.UpdateProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.AddUserInTeam;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByProjectId;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.AddTeamProject;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.AddUserInProject;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.DeleteUserFromProject;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.CreateProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.DeleteProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.SetExecutorProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.UpdateProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.AddUserInTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Queries.GetTeamsByProjectId;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
+using TeamTaskClient.UI.Modules.Profile.View;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
@@ -64,26 +65,37 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         public async void ActionWithUser(UserModel user)
         {
-            SelectActionsDialogWindow window = new SelectActionsDialogWindow("Select action", new List<string> { "Delete user" });
-            if (window.ShowDialog().Value)
+            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
             {
-
-
-                AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Delete", "Cancel");
-                if (alertDialogWindow.ShowDialog().Value)
+                SelectActionsDialogWindow window = new SelectActionsDialogWindow("Select action", new List<string> { "Info", "Delete user" });
+                if (window.ShowDialog().Value)
                 {
-                    try
+                    if (window.GetSelectedAction() == "Info")
                     {
-                        await _mediator.Send(new DeleteUserFromProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, UserTag = user.UserTag });
-                        ProjectsStorage.Users.Remove(user);
+                        UserInfoWindow userInfoWindow = new UserInfoWindow(user);
+                        userInfoWindow.ShowDialog();
                     }
-                    catch
+                    else
                     {
-                        ErrorWindow.Show("Error user delete");
+                        AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Delete", "Cancel");
+                        if (alertDialogWindow.ShowDialog().Value)
+                        {
+                            try
+                            {
+                                await _mediator.Send(new DeleteUserFromProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, UserTag = user.UserTag });
+                            }
+                            catch
+                            {
+                                ErrorWindow.Show("Error user delete");
+                            }
+                        }
                     }
-
                 }
-
+            }
+            else
+            {
+                UserInfoWindow userInfoWindow = new UserInfoWindow(user);
+                userInfoWindow.ShowDialog();
             }
         }
 
@@ -104,7 +116,6 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                             try
                             {
                                 await _mediator.Send(new DeleteProjectTaskCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, ProjectTaskId = projectTask.ProjectTaskId });
-                                ProjectsStorage.RemoveBacklogTasks(projectTask);
                             }
                             catch
                             {
@@ -127,19 +138,25 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                 {
                                     if (!String.IsNullOrEmpty(details))
                                     {
-                                        await _mediator.Send(new UpdateProjectTaskCommand { Detail = details, Title = title, ProjectTaskId = projectTask.ProjectTaskId });
-                                        projectTask.Details = details;
-                                        projectTask.Title = title;
-                                        ProjectsStorage.UpdateProjectTask(projectTask);
+                                        await _mediator.Send(new UpdateProjectTaskCommand
+                                        {
+                                            Detail = details,
+                                            Title = title,
+                                            ProjectTaskId = projectTask.ProjectTaskId,
+                                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                        });
 
-                                        OnPropertyChanged(nameof(BacklogProjectTasks));
                                     }
                                     else
                                     {
 
-                                        await _mediator.Send(new UpdateProjectTaskCommand { Title = title, Detail = projectTask.Details, ProjectTaskId = projectTask.ProjectTaskId });
-                                        projectTask.Title = title;
-                                        ProjectsStorage.UpdateProjectTask(projectTask);
+                                        await _mediator.Send(new UpdateProjectTaskCommand
+                                        {
+                                            Title = title,
+                                            Detail = projectTask.Details,
+                                            ProjectTaskId = projectTask.ProjectTaskId,
+                                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                        });
                                     }
 
                                 }
@@ -147,11 +164,16 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                 {
                                     if (!String.IsNullOrEmpty(details))
                                     {
-                                        await _mediator.Send(new UpdateProjectTaskCommand { Detail = details, Title = projectTask.Title, ProjectTaskId = projectTask.ProjectTaskId });
-                                        projectTask.Details = details;
-                                        ProjectsStorage.UpdateProjectTask(projectTask);
+                                        await _mediator.Send(new UpdateProjectTaskCommand
+                                        {
+                                            Detail = details,
+                                            Title = projectTask.Title,
+                                            ProjectTaskId = projectTask.ProjectTaskId,
+                                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                        });
                                     }
                                 }
+
                             }
                             catch
                             {
@@ -169,10 +191,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                             {
                                 try
                                 {
-                                    await _mediator.Send(new SetExecutorProjectTaskCommand { ProjectTaskId = projectTask.ProjectTaskId, User = executor });
-
-                                    projectTask.ExecutorName = executor.FirstName;
-                                    ProjectsStorage.UpdateProjectTask(projectTask);
+                                    await _mediator.Send(new SetExecutorProjectTaskCommand { ProjectTaskId = projectTask.ProjectTaskId, User = executor, ProjectId = ProjectsStorage.SelectedProject.ProjectId });
                                 }
                                 catch
                                 {
@@ -205,7 +224,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                     try
                     {
-                       await _mediator.Send(new CreateProjectTaskCommand
+                        await _mediator.Send(new CreateProjectTaskCommand
                         {
                             Detail = inputData[1],
                             Title = inputData[0],
@@ -227,7 +246,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         private class AddUserCommand(BacklogProjectPageVM vm) : CommandBase
         {
-            public override void Execute(object? parameter)
+            public override async void Execute(object? parameter)
             {
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", new List<string> { "Add user", "Add team" });
                 if (selectActionsDialogWindow.ShowDialog().Value)
@@ -238,72 +257,58 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                         InputDialogWindow updatePropertiesDialogWindow = new InputDialogWindow("User tag", "Add", new List<string> { "" });
                         if (updatePropertiesDialogWindow.ShowDialog().Value)
                         {
+                            var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
+
                             try
                             {
-                                var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
-                                _mediator.Send(new AddUserInProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, UserTag = userTag });
+                                var user = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
 
-                                var newUser = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
-
-                                var user = new UserModel
+                                AlertDialogWindow alertDialogWindow = new AlertDialogWindow($"Founded user: {user.FirstName} {user.SecondName} {user.LastName}", "Complete", "Cancel");
+                                if (alertDialogWindow.ShowDialog().Value)
                                 {
-                                    Email = newUser.Email,
-                                    UserTag = userTag,
-                                    SecondName = newUser.SecondName,
-                                    FirstName = newUser.FirstName,
-                                    LastName = newUser.LastName,
-                                    PhoneNumber = newUser.PhoneNumber
-                                };
+                                    if (ProjectsStorage.SelectedProject.Users.Any(u => u.UserTag == userTag))
+                                    {
+                                        ErrorWindow.Show("This user is already\n a member of the project");
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            _mediator.Send(new AddUserInProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, UserTag = userTag });
+                                        }
+                                        catch
+                                        {
+                                            ErrorWindow.Show("Add user error");
 
-                                ProjectsStorage.Users.Add(user);
+                                        }
+                                    }
+                                }
                             }
                             catch
                             {
-                                ErrorWindow.Show("Add user error");
-
+                                ErrorWindow.Show("User not found");
                             }
-
                         }
-                        else
+                    }
+                    else
+                    {
+                        InputDialogWindow inputDialogWindow = new InputDialogWindow("Team tag", "Add", new List<string> { "" });
+                        if (inputDialogWindow.ShowDialog().Value)
                         {
-                            InputDialogWindow updateDialogWindow = new InputDialogWindow("Team tag", "Add", new List<string> { "" });
-                            if (updatePropertiesDialogWindow.ShowDialog().Value)
+                            try
                             {
-                                try
-                                {
-                                    var teamTag = updatePropertiesDialogWindow.GetInputValue()[0];
-                                    _mediator.Send(new AddTeamProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, TeamTag = teamTag });
-
-                                    var newTeam = _mediator.Send(new GetTeamsByProjectIdCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId }).Result
-                                        .First(p => p.TeamTag == teamTag);
-
-                                    foreach (var userInTeam in newTeam.Users)
-                                    {
-
-
-                                        ProjectsStorage.Users.Add(new UserModel
-                                        {
-                                            Email = userInTeam.Email,
-                                            UserTag = userInTeam.UserTag,
-                                            SecondName = userInTeam.SecondName,
-                                            FirstName = userInTeam.FirstName,
-                                            LastName = userInTeam.LastName,
-                                            PhoneNumber = userInTeam.PhoneNumber
-                                        });
-                                    }
-                                }
-                                catch
-                                {
-                                    ErrorWindow.Show("Add team error");
-
-                                }
+                                var teamTag = inputDialogWindow.GetInputValue()[0];
+                                await _mediator.Send(new AddTeamProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, TeamTag = teamTag });
                             }
+                            catch
+                            {
+                                ErrorWindow.Show("Add team error");
 
-
+                            }
                         }
+
 
                     }
-
 
                 }
 

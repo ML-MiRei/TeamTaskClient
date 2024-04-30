@@ -7,26 +7,33 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Queries.GetChats;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Queries.GetChats;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.UI.Modules.Profile.ViewModels;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 namespace TeamTaskClient.UI.Storages
 {
     public class MessengerStorage
     {
-        static MessengerStorage()
+        public MessengerStorage(IMessengerEvents messengerEvents)
         {
-            _messages.CollectionChanged += OnMessagesCollectionChanged;
+            messengerEvents.PrivateChatCreated += OnPrivateChatCreated;
+            messengerEvents.AddNewUserChat += OnAddNewUserChat;
+            messengerEvents.ChatUpdated += OnChatUpdated;
+            messengerEvents.DeleteUserFromChat += OnDeleteUserFromChat;
+            messengerEvents.DeleteChat += OnDeleteChat;
+            messengerEvents.GroupChatCreated += OnGroupChatCreated;
+        }
+
+        public static event EventHandler ChatsRefresh;
 
 
-            ChatHubClient.PrivateChatCreated += OnPrivateChatCreated;
-            ChatHubClient.AddNewUserChat += OnAddNewUserChat;
-            ChatHubClient.ChatUpdated += OnChatUpdated;
-            ChatHubClient.DeleteUserFromChat += OnDeleteUserFromChat;
-            ChatHubClient.DeleteChat += OnDeleteChat; ;
+        private static void OnGroupChatCreated(object? sender, ChatModel e)
+        {
+            App.Current.Dispatcher.Invoke(() => _chats.Add(e));
         }
 
         private static void OnDeleteChat(object? sender, int e)
@@ -44,6 +51,7 @@ namespace TeamTaskClient.UI.Storages
         private static void OnChatUpdated(object? sender, ChatModel e)
         {
             App.Current.Dispatcher.Invoke(() => _chats.First(c => c.ChatId == e.ChatId).ChatName = e.ChatName);
+            ChatsRefresh?.Invoke(null, new EventArgs());
         }
 
         private static void OnAddNewUserChat(object? sender, UserModel e)
@@ -53,52 +61,8 @@ namespace TeamTaskClient.UI.Storages
 
         private static void OnPrivateChatCreated(object? sender, ChatModel e)
         {
+            e.ChatName = e.Users.First(u => u.UserTag != Properties.Settings.Default.userTag).FirstName;
             App.Current.Dispatcher.Invoke(() => _chats.Add(e));
-        }
-
-        private static void OnMemberChatAdded(object? sender, UserModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => _chats.First(c => c.ChatId == (int)sender).Users.Add(e));
-            ProfileVM.profile.UpdateNotifications();
-        }
-
-        private static void OnMemberChatDeleted(object? sender, UserModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => _chats.First(c => c.ChatId == (int)sender).Users.Remove(e));
-            ProfileVM.profile.UpdateNotifications();
-
-        }
-
-        private static void OnChatDelete(object? sender, ChatModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => _chats.Remove(e));
-            ProfileVM.profile.UpdateNotifications();
-
-        }
-
-        private static void OnChatCreate(object? sender, ChatModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => AddChat(e));
-            ProfileVM.profile.UpdateNotifications();
-
-        }
-
-        private static void OnChatUpdate(object? sender, ChatModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => _chats.First(c => c.ChatId == e.ChatId).ChatName = e.ChatName);
-            App.Current.Dispatcher.Invoke(() => _chats.First(c => c.ChatId == e.ChatId).UserRole = e.UserRole);
-            ProfileVM.profile.UpdateNotifications();
-
-        }
-
-        private static void OnMessagesCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-                SelectedChat.Messages.Add((MessageModel)sender);
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-                SelectedChat.Messages.Remove((MessageModel)sender);
-
-            SelectedChatChanged?.Invoke(sender, null);
         }
 
 
@@ -144,17 +108,24 @@ namespace TeamTaskClient.UI.Storages
 
         public static void AddMessage(int chatId, MessageModel messageModel)
         {
-            if (SelectedChat.ChatId == chatId)
+            if (SelectedChat?.ChatId == chatId)
             {
                 _messages.Add(messageModel);
-                SelectedChat.Messages.Add(messageModel);
-                SelectedChatChanged?.Invoke(SelectedChatChanged, null);
+                ChatsRefresh?.Invoke(chatId, new EventArgs());
             }
 
+            Chats.First(c => c.ChatId == chatId).Messages.Add(messageModel);
+        }
 
-            Chats.First(c => c.ChatId == SelectedChat.ChatId).Messages.Add(messageModel);
 
+        public static void UpdateMessage(int chatId, MessageModel messageModel)
+        {
+            if (SelectedChat?.ChatId == chatId)
+            {
+                _messages.First(m => m.MessageId == messageModel.MessageId).TextMessage = messageModel.TextMessage;
+            }
 
+            Chats.First(c => c.ChatId == chatId).Messages.First(m => m.MessageId == messageModel.MessageId).TextMessage = messageModel.TextMessage;
         }
 
 

@@ -1,8 +1,8 @@
 ﻿using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.DeleteMessage;
-using TeamTaskClient.ApplicationLayer.CQRS.Message.Commands.UpdateMessage;
+using TeamTaskClient.ApplicationLayer.UseCases.Message.Commands.DeleteMessage;
+using TeamTaskClient.ApplicationLayer.UseCases.Message.Commands.UpdateMessage;
 using TeamTaskClient.ApplicationLayer.DTOs.Message.Command.SendMessage;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Storages;
@@ -10,6 +10,8 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
 using TeamTaskClient.Infrastructure.ServerClients.HubClients;
+using TeamTaskClient.Domain.Entities;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -17,10 +19,11 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
     {
 
         private static IMediator _mediator;
+        public event EventHandler InterfaceRefresh;
 
         public static string WatermarkText { get => "Enter message.."; }
 
-        public MessagesPageVM(IMediator mediator) 
+        public MessagesPageVM(IMediator mediator, IMessengerEvents messengerEvents)
         {
 
             _mediator = mediator;
@@ -30,15 +33,26 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
 
             MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
-            ChatHubClient.OnMessageReceived += ChatService_OnMessageReceived;
-            ChatHubClient.OnMessageDeleted += ChatService_OnMessageDeleted;
-            ChatHubClient.OnMessageUpdated += ChatService_OnMessageUpdated;
+            messengerEvents.OnMessageReceived += OnMessageReceived;
+            messengerEvents.OnMessageDeleted += OnMessageDeleted;
+            messengerEvents.OnMessageUpdated += OnMessageUpdated;
         }
 
-        private void ChatService_OnMessageUpdated(object? sender, string e)
+
+
+
+        private void OnMessageUpdated(object? sender, MessageEntity e)
         {
-           App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.First(m => m.MessageId == (int)sender).TextMessage = e);
-            OnPropertyChanged(nameof(Messages));
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (MessengerStorage.SelectedChat.ChatId == e.ChatId)
+                {
+                    MessengerStorage.UpdateMessage(e.ChatId, new MessageModel { TextMessage = e.TextMessage, MessageId = e.ID });
+                }
+                MessengerStorage.Messages.First(m => m.MessageId == e.ID).TextMessage = e.TextMessage;
+            });
+            InterfaceRefresh?.Invoke(null, new EventArgs());
+
         }
 
         private void OnSelectedChatChanged(object? sender, ChatModel e)
@@ -46,16 +60,14 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             OnPropertyChanged(nameof(Messages));
         }
 
-        private void ChatService_OnMessageDeleted(object? sender, EventArgs e)
+        private void OnMessageDeleted(object? sender, EventArgs e)
         {
             App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.Remove(MessengerStorage.Messages.First(m => m.MessageId == (int)sender)));
-            OnPropertyChanged(nameof(Messages));
         }
 
-        private void ChatService_OnMessageReceived(object? sender, MessageModel e)
+        private void OnMessageReceived(object? sender, MessageModel e)
         {
             App.Current.Dispatcher.Invoke(() => MessengerStorage.AddMessage((int)sender, e));
-            OnPropertyChanged(nameof(Messages));
         }
 
 
@@ -110,9 +122,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var newTextMessage = updatePropertiesDialogWindow.GetInputValue()[0];
-                               await _mediator.Send(new UpdateMessageCommand { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
-                                vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId).TextMessage = newTextMessage;
-                                vm.OnPropertyChanged(nameof(Messages));
+                                await _mediator.Send(new UpdateMessageCommand { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
                             }
 
 
@@ -120,8 +130,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         case "Delete":
                             try
                             {
-                               await _mediator.Send(new DeleteMessageCommand() { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
-                                vm.Messages.Remove(vm.Messages.First(m => m.MessageId == ((MessageModel)parameter).MessageId));
+                                await _mediator.Send(new DeleteMessageCommand() { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
                             }
                             catch (Exception)
                             {

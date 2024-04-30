@@ -58,43 +58,43 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
             });
 
 
-            HubClient.On<ProjectModel>("UpdateProjectReply", (projectModel) =>
+            HubClient.On<ProjectEntity>("UpdateProjectReply", (projectModel) =>
             {
                 ProjectUpdated?.Invoke(null, projectModel);
             });
 
 
-            HubClient.On<ProjectTaskModel>("UpdateProjectTaskReply", (projectTaskModel) =>
+            HubClient.On<ProjectTaskEntity>("UpdateProjectTaskReply", (projectTaskEntity) =>
             {
-                ProjectTaskUpdated?.Invoke(null, projectTaskModel);
+                ProjectTaskUpdated?.Invoke(null, projectTaskEntity);
             });
 
 
-            HubClient.On<ProjectTaskModel>("ChangeStatusProjectTaskReply", (projectTaskModel) =>
+            HubClient.On<ProjectTaskEntity>("ChangeStatusProjectTaskReply", (projectTaskEntity) =>
             {
-                StatusProjectTaskChanged?.Invoke(null, projectTaskModel);
-            });
-
-
-
-            HubClient.On<ProjectTaskModel>("SetExecutorProjectTaskReply", (projectTaskModel) =>
-            {
-                StatusProjectTaskChanged?.Invoke(null, projectTaskModel);
+                StatusProjectTaskChanged?.Invoke(null, projectTaskEntity);
             });
 
 
 
-            HubClient.On<int>("DeleteProjectTaskReply", (projectTaskId) =>
+            HubClient.On<ProjectTaskEntity>("SetExecutorProjectTaskReply", (projectTaskEntity) =>
             {
-                ProjectTaskDeleted?.Invoke(null, projectTaskId);
+                ExecuterProjectTaskChanged?.Invoke(null, projectTaskEntity);
             });
 
 
-            HubClient.On<ProjectTaskModel>("AddNewProjectTaskReply", (projectTaskModel) =>
+
+            HubClient.On<int, int>("DeleteProjectTaskReply", (projectId, projectTaskId) =>
             {
-                ProjectTaskCreated?.Invoke(null, projectTaskModel);
+                ProjectTaskDeleted?.Invoke(projectId, projectTaskId);
             });
 
+
+            HubClient.On<ProjectTaskEntity>("AddNewProjectTaskReply", (projectTaskEntity) =>
+            {
+                ProjectTaskCreated?.Invoke(null, projectTaskEntity);
+            });
+            
 
 
             HubClient.On<SprintEntity>("UpdateDateStartSprintReply", (sprintEntity) =>
@@ -103,44 +103,52 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
             });
 
 
-            HubClient.On<SprintEntity>("UpdateDateEndSprint", (sprintEntity) =>
+            HubClient.On<SprintEntity>("UpdateDateEndSprintReply", (sprintEntity) =>
             {
                 DateEndSprintUpdated?.Invoke(null, sprintEntity);
             });
 
 
-            HubClient.On<SprintModel>("CreateSprintReply", (sprintModel) =>
+            HubClient.On<int, SprintModel>("CreateSprintReply", (projectId, sprintModel) =>
             {
-                SprintCreated?.Invoke(null, sprintModel); 
+                SprintCreated?.Invoke(projectId, sprintModel); 
             });
             
 
-            HubClient.On<int>("DeleteSprintReply", (sprintId) =>
+            HubClient.On<int, int>("DeleteSprintReply", (projectId, sprintId) =>
             {
-                SprintDeleted?.Invoke(null, sprintId);
+                SprintDeleted?.Invoke(projectId, sprintId);
             });
 
 
+            HubClient.On<NotificationModel>("NotificationReply", (notificationModel) =>
+            {
+                NotificationAdded?.Invoke(null, notificationModel);
+            });
 
         }
 
 
         public static event EventHandler<ProjectModel> NewProjectAdded;
-        public static event EventHandler<ProjectModel> ProjectUpdated;
+        public static event EventHandler<ProjectEntity> ProjectUpdated;
         public static event EventHandler<int> ProjectDeleted;
         public static event EventHandler<UserModel> UserInProjectAdded;
         public static event EventHandler<string> UserFromProjectDeleted;
 
-        public static event EventHandler<ProjectTaskModel> ProjectTaskUpdated;
-        public static event EventHandler<ProjectTaskModel> ProjectTaskCreated;
+
+        public static event EventHandler<ProjectTaskEntity> ProjectTaskUpdated;
+        public static event EventHandler<ProjectTaskEntity> ProjectTaskCreated;
         public static event EventHandler<int> ProjectTaskDeleted;
-        public static event EventHandler<ProjectTaskModel> StatusProjectTaskChanged;
-        public static event EventHandler<ProjectTaskModel> ExecuterProjectTaskChanged;
+        public static event EventHandler<ProjectTaskEntity> StatusProjectTaskChanged;
+        public static event EventHandler<ProjectTaskEntity> ExecuterProjectTaskChanged;
 
 
         public static event EventHandler<SprintEntity> DateStartSprintUpdated;
         public static event EventHandler<SprintEntity> DateEndSprintUpdated;
         public static event EventHandler<SprintModel> SprintCreated;
         public static event EventHandler<int> SprintDeleted;
+
+        public static event EventHandler<NotificationModel> NotificationAdded;
+
     }
 }

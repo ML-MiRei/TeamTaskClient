@@ -2,10 +2,9 @@
 using Newtonsoft.Json.Linq;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.AddInSprintProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.ChangeStatusProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.CreateProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.Sprint.Commands.CreateSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.ChangeStatusProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.ProjectTask.Commands.CreateProjectTask;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.CreateSprint;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Storages;
@@ -14,6 +13,9 @@ using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Main;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClientUI.Main;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.DeleteSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.ChangeDateEndSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.ChangeDateStartSprint;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
@@ -28,19 +30,51 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
             _mediator = mediator;
 
             SelectSprint = new SelectSprintCommand(this);
+            EditSprint = new EditSprintCommand(this);
 
             ProjectsStorage.SelectedSprintChanged += OnSelectedSprintChanged;
+            ProjectsStorage.TasksInterfaceRefresh += ProjectsStorage_TasksInterfaceRefresh;
+        }
+
+        private void ProjectsStorage_TasksInterfaceRefresh(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(SprintNumber));
+            OnPropertyChanged(nameof(DateEnd));
+            OnPropertyChanged(nameof(DateStart));
+            OnPropertyChanged(nameof(ProjectTasksDone));
+            OnPropertyChanged(nameof(ProjectTasksInProcess));
+            OnPropertyChanged(nameof(ProjectTasksTesting));
+            OnPropertyChanged(nameof(ProjectTasksTodo));
         }
 
         private void OnSelectedSprintChanged(object? sender, SprintModel e)
         {
-            //OnPropertyChanged(nameof(SprintNumber));
-            //OnPropertyChanged(nameof(ProjectTasksDone));
-            //OnPropertyChanged(nameof(ProjectTasksInProcess));
-            //OnPropertyChanged(nameof(ProjectTasksTesting));
-            //OnPropertyChanged(nameof(ProjectTasksTodo));
+            OnPropertyChanged(nameof(SprintNumber));
+            OnPropertyChanged(nameof(ProjectTasksDone));
+            OnPropertyChanged(nameof(ProjectTasksInProcess));
+            OnPropertyChanged(nameof(ProjectTasksTesting));
+            OnPropertyChanged(nameof(ProjectTasksTodo));
         }
 
+        public async void StatusProjectTaskChange(ProjectTaskModel projectTaskModel, StatusProjectTaskEnum newStatus)
+        {
+
+            try
+            {
+                await _mediator.Send(new ChangeStatusProjectTaskCommand
+                {
+                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                    ProjectTaskId = projectTaskModel.ProjectTaskId,
+                    Status = (int)newStatus,
+                    SprintId = ProjectsStorage.SelectedSprint.SprintId
+                });
+            }
+            catch
+            {
+                ErrorWindow.Show("Error change status");
+            }
+
+        }
 
         public int UserRole => ProjectsStorage.SelectedProject.UserRole;
 
@@ -48,46 +82,26 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
         public string SprintNumber { get => (ProjectsStorage.Sprints.IndexOf(ProjectsStorage.SelectedSprint) + 1).ToString(); }
 
 
-        public event EventHandler<ProjectTaskModel> ChangeStatus;
-        public static event EventHandler<SprintModel> AddSprintEvent;
-
-
-        private ObservableCollection<ProjectTaskModel> _projectTasksTodo;
         public ObservableCollection<ProjectTaskModel> ProjectTasksTodo
         {
             get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.TODO)); }
-            set { _projectTasksTodo = value; }
         }
 
-
-
-        private ObservableCollection<ProjectTaskModel> _projectTasksInProcess;
         public ObservableCollection<ProjectTaskModel> ProjectTasksInProcess
         {
-            get
-            {
-                return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.IN_PROGRESS));
-            }
-
-
-            set { _projectTasksInProcess = value; }
+            get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.IN_PROGRESS)); }
         }
 
-
-        private ObservableCollection<ProjectTaskModel> _projectTasksTesting;
         public ObservableCollection<ProjectTaskModel> ProjectTasksTesting
         {
             get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.TESTING)); }
-            set { _projectTasksTesting = value; }
         }
 
 
 
-        private ObservableCollection<ProjectTaskModel> _projectTasksDone;
         public ObservableCollection<ProjectTaskModel> ProjectTasksDone
         {
             get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.DONE)); }
-            set { _projectTasksDone = value; }
         }
 
 
@@ -96,179 +110,72 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
         public string DateEnd => ProjectsStorage.SelectedSprint.DateEnd.ToString("d");
 
 
-        //public ICommand AddProjectTaskTodo { get; }
-        //public ICommand AddProjectTaskInProcess { get; }
-        //public ICommand AddProjectTaskTesting { get; }
-        //public ICommand AddProjectTaskDone { get; }
-
-
         public ICommand AddSprint { get; } = new AddSprintCommand();
         public ICommand SelectSprint { get; }
+        public ICommand EditSprint { get; }
 
-
-        //private class AddProjectTaskTodoCommand(TasksVM vm) : CommandBase
-        //{
-        //    public override void Execute(object? parameter)
-        //    {
-        //        CreateSubjectDialogWindow createSubject = new CreateSubjectDialogWindow("Input task data", new List<string> { "Title: ", "Details: " });
-        //        if (createSubject.ShowDialog().Value)
-        //        {
-        //            var inputData = createSubject.GetCreatingProperties();
-
-        //            try
-        //            {
-        //                var projectTask = _mediator.Send(new CreateProjectTaskCommand
-        //                {
-        //                    Detail = inputData[1],
-        //                    Title = inputData[0],
-        //                    SprintId = ProjectsStorage.SelectedSprint.SprintId,
-        //                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-        //                    Status = (int)StatusProjectTaskEnum.TODO
-
-
-        //                }).Result;
-
-        //                ProjectsStorage.SelectedSprint.Tasks.Add(projectTask);
-
-        //                if (vm.ProjectTasksTodo == null)
-        //                    vm.ProjectTasksTodo = new ObservableCollection<ProjectTaskModel>();
-
-
-        //                vm.ProjectTasksTodo.Add(projectTask);
-
-        //                ProjectsStorage.Tasks.Add(projectTask);
+        private class EditSprintCommand(TasksVM vm) : CommandBase
+        {
+            public override async void Execute(object? parameter)
+            {
 
 
 
+                SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select sprint", new List<string> { "Change date start", "Change date end", "Delete" });
 
-        //            }
-        //            catch
-        //            {
-        //                ErrorWindow.Show("Create task error");
-        //            }
+                if (selectActionsDialogWindow.ShowDialog().Value)
+                {
+                    var action = selectActionsDialogWindow.GetSelectedAction();
 
-        //        }
-        //    }
-        //}
+                    switch (action)
+                    {
+                        case "Change date start":
 
-        //private class AddProjectTaskInProcessCommand(TasksVM vm) : CommandBase
-        //{
-        //    public override void Execute(object? parameter)
-        //    {
-        //        CreateSubjectDialogWindow createSubject = new CreateSubjectDialogWindow("Input task data", new List<string> { "Title: ", "Details: " });
-        //        if (createSubject.ShowDialog().Value)
-        //        {
-        //            var inputData = createSubject.GetCreatingProperties();
-
-        //            try
-        //            {
-        //                var projectTask = _mediator.Send(new CreateProjectTaskCommand
-        //                {
-        //                    Detail = inputData[1],
-        //                    Title = inputData[0],
-        //                    SprintId = ProjectsStorage.SelectedSprint.SprintId,
-        //                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-        //                    Status = (int)StatusProjectTaskEnum.IN_PROGRESS
-        //                }).Result;
-
-        //                ProjectsStorage.SelectedSprint.Tasks.Add(projectTask);
-
-        //                if (vm.ProjectTasksInProcess == null)
-        //                    vm.ProjectTasksInProcess = new ObservableCollection<ProjectTaskModel>();
+                            ChangeDateWindow changeDateWindow = new ChangeDateWindow(ProjectsStorage.SelectedSprint.DateStart);
+                            if (changeDateWindow.ShowDialog().Value)
+                            {
+                                await _mediator.Send(new ChangeDateStartSprintCommand
+                                {
+                                    DateStart = changeDateWindow.SelectedDate,
+                                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                                    SprintId = ProjectsStorage.SelectedSprint.SprintId
+                                });
+                            }
 
 
-        //                vm.ProjectTasksInProcess.Add(projectTask);
+                            break;
 
-        //                ProjectsStorage.Tasks.Add(projectTask);
+                        case "Change date end":
 
-        //            }
-        //            catch
-        //            {
-        //                ErrorWindow.Show("Create task error");
-        //            }
+                            ChangeDateWindow changeDateEndWindow = new ChangeDateWindow(ProjectsStorage.SelectedSprint.DateEnd);
+                            if (changeDateEndWindow.ShowDialog().Value)
+                            {
+                                await _mediator.Send(new ChangeDateEndSprintCommand
+                                {
+                                    DateEnd = changeDateEndWindow.SelectedDate,
+                                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                                    SprintId = ProjectsStorage.SelectedSprint.SprintId
+                                });
+                            }
 
-        //        }
-        //    }
-        //}
 
-        //private class AddProjectTaskTestingCommand(TasksVM vm) : CommandBase
-        //{
-        //    public override void Execute(object? parameter)
-        //    {
-        //        CreateSubjectDialogWindow createSubject = new CreateSubjectDialogWindow("Input task data", new List<string> { "Title: ", "Details: " });
-        //        if (createSubject.ShowDialog().Value)
-        //        {
-        //            var inputData = createSubject.GetCreatingProperties();
+                            break;
 
-        //            try
-        //            {
-        //                var projectTask = _mediator.Send(new CreateProjectTaskCommand
-        //                {
-        //                    Detail = inputData[1],
-        //                    Title = inputData[0],
-        //                    SprintId = ProjectsStorage.SelectedSprint.SprintId,
-        //                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-        //                    Status = (int)StatusProjectTaskEnum.TESTING
-        //                }).Result;
+                        case "Delete":
 
-        //                ProjectsStorage.SelectedSprint.Tasks.Add(projectTask);
+                            AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Delete", "Cancel");
+                            if (alertDialogWindow.ShowDialog().Value)
+                            {
+                                _mediator.Send(new DeleteSprintCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, SprintId = ProjectsStorage.SelectedSprint.SprintId });
+                            }
+                            break;
+                    }
 
-        //                if (vm.ProjectTasksTesting == null)
-        //                    vm.ProjectTasksTesting = new ObservableCollection<ProjectTaskModel>();
+                }
 
-        //                vm.ProjectTasksTesting.Add(projectTask);
 
-        //                ProjectsStorage.Tasks.Add(projectTask);
-
-        //            }
-        //            catch
-        //            {
-        //                ErrorWindow.Show("Create task error");
-        //            }
-
-        //        }
-        //    }
-        //}
-
-        //private class AddProjectTaskDoneCommand(TasksVM vm) : CommandBase
-        //{
-        //    public override void Execute(object? parameter)
-        //    {
-        //        CreateSubjectDialogWindow createSubject = new CreateSubjectDialogWindow("Input task data", new List<string> { "Title: ", "Details: " });
-        //        if (createSubject.ShowDialog().Value)
-        //        {
-        //            var inputData = createSubject.GetCreatingProperties();
-
-        //            try
-        //            {
-        //                var projectTask = _mediator.Send(new CreateProjectTaskCommand
-        //                {
-        //                    Detail = inputData[1],
-        //                    Title = inputData[0],
-        //                    SprintId = ProjectsStorage.SelectedSprint.SprintId,
-        //                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-        //                    Status = (int)StatusProjectTaskEnum.DONE
-
-        //                }).Result;
-
-        //                ProjectsStorage.SelectedSprint.Tasks.Add(projectTask);
-
-        //                if (vm.ProjectTasksDone == null)
-        //                    vm.ProjectTasksDone = new ObservableCollection<ProjectTaskModel>();
-
-        //                vm.ProjectTasksDone.Add(projectTask);
-
-        //                ProjectsStorage.Tasks.Add(projectTask);
-
-        //            }
-        //            catch
-        //            {
-        //                ErrorWindow.Show("Create task error");
-        //            }
-
-        //        }
-        //    }
-        //}
+            }
+        }
 
 
         private class SelectSprintCommand(TasksVM vm) : CommandBase
@@ -280,7 +187,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                 for (int i = 0; i < ProjectsStorage.Sprints.Count; i++)
                 {
-                    list.Add($"Sprint №{i + 1}, {ProjectsStorage.Sprints[i].DateStart.ToString("d")} - {ProjectsStorage.Sprints[i].DateEnd.ToString("d")}");
+                    list.Add($"Sprint №{i + 1},    {ProjectsStorage.Sprints[i].DateStart.ToString("d")} - {ProjectsStorage.Sprints[i].DateEnd.ToString("d")}");
                 }
 
 
@@ -299,7 +206,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         private class AddSprintCommand : CommandBase
         {
-            public override void Execute(object? parameter)
+            public async override void Execute(object? parameter)
             {
                 CreateSprintWindow createSprintWindow = new CreateSprintWindow();
                 if (createSprintWindow.ShowDialog().Value)
@@ -309,32 +216,17 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                     try
                     {
 
-                        var sprint = _mediator.Send(new CreateSprintCommand
+                        await _mediator.Send(new CreateSprintCommand
                         {
-                            SprintEntity = new Domain.Entities.SprintEntity
+                            SprintModel = new SprintModel
                             {
                                 DateEnd = newSprint.DateEnd,
                                 DateStart = newSprint.DateStart,
-                                ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                            }
-                        }).Result;
+                                Tasks = createSprintWindow.GetSelectedTasks()
+                            },
+                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
 
-                        ProjectsStorage.Sprints.Add(sprint);
-
-                        ProjectsStorage.SelectedSprint = sprint;
-
-
-                        var tasks = createSprintWindow.GetSelectedTasks();
-
-                        foreach (var task in tasks)
-                        {
-                            _mediator.Send(new AddInSprintProjectTaskCommand { ProjectTaskId = task.ProjectTaskId, SprintId = sprint.SprintId });
-
-                            task.Status = (int)StatusProjectTaskEnum.TODO;
-                            sprint.Tasks.Add(task);
-
-                            ProjectsStorage.AddTasks(task);
-                        }
+                        });
 
                     }
                     catch

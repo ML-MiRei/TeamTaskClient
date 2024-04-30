@@ -17,7 +17,7 @@ namespace TeamTaskClient.UI.Modules.Projects.Converters
             if (value == null)
                 return null;
 
-            if ((int)value == (int)UserRole.LEAD)
+            if ((int)value == (int)UserRoleEnum.LEAD)
                 return Visibility.Visible;
             
             return Visibility.Collapsed;

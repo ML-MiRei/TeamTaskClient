@@ -1,14 +1,16 @@
 ﻿using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.AddUserInTeam;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.CreateTeam;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.DeleteUserFromTeam;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.LeaveTeam;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.UpdateTeam;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Queries.GetTeamsByUserId;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreateGroupChat;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreateGroupChatByProject;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.AddUserInTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.CreateTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.DeleteUserFromTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.LeaveTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.UpdateTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Queries.GetTeamsByUserId;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserById;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.Infrastructure.ServerClients.HubClients;
@@ -27,11 +29,16 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 
         public event EventHandler InterfaceRefresh;
 
+        public static TeamPageVM Instance { get; set; }
+
 
         public TeamPageVM(IMediator mediator)
         {
             _mediator = mediator;
             Teams = new ObservableCollection<TeamModel>(mediator.Send(new GetTeamsByUserIdCommand { UserId = Properties.Settings.Default.userId }).Result);
+
+
+            Instance = this;
 
             CreateTeam = new NewTeamCommand(this);
             InputSearchString = "Team name..";
@@ -85,11 +92,11 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
             {
                 _teams.First(t => t.TeamId == e.TeamId).TeamLeadName = e.TeamLeadName;
                 _teams.First(t => t.TeamId == e.TeamId).TeamName = e.TeamName;
-                _teams.First(t => t.TeamId == e.TeamId).UserRole = e.UserRole;
+                _teams.First(t => t.TeamId == e.TeamId).UserRole = (string)sender == Properties.Settings.Default.userTag ? (int)UserRoleEnum.LEAD : (int)UserRoleEnum.EMPLOYEE;
 
             });
 
-            OnPropertyChanged(nameof(Teams));
+            InterfaceRefresh?.Invoke(null, new EventArgs());
         }
 
 
@@ -122,7 +129,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 
         public async void SettingsTeam(TeamModel teamModel)
         {
-            if (teamModel.UserRole == (int)UserRole.EMPLOYEE)
+            if (teamModel.UserRole == (int)UserRoleEnum.EMPLOYEE)
             {
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", new List<string> { "Leave" });
                 if (selectActionsDialogWindow.ShowDialog().Value)
@@ -144,7 +151,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
             else
             {
 
-                var listActions = new List<string> { "Add user", "Change name", "Change lead" };
+                var listActions = new List<string> { "Add user", "Change name", "Change lead", "Create chat" };
 
                 if (teamModel.Users.Count > 1)
                     listActions.Add("Delete user from team");
@@ -188,7 +195,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 
                                 if (inputPropertiesDialogWindow.ShowDialog().Value)
                                 {
-                                  await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, Name = inputPropertiesDialogWindow.GetInputValue()[0], LeaderTag = Properties.Settings.Default.userTag });
+                                    await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, Name = inputPropertiesDialogWindow.GetInputValue()[0], LeaderTag = Properties.Settings.Default.userTag });
 
                                 }
                             }
@@ -212,7 +219,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                                 {
                                     var userTag = selectLead.GetSelectedAction().Substring(selectLead.GetSelectedAction().IndexOf(": ") + 2);
 
-                                   await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, LeaderTag = userTag });
+                                    await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, LeaderTag = userTag, Name = teamModel.TeamName });
 
                                 }
 
@@ -236,9 +243,6 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                                 var userTag = selectActions.GetSelectedAction().Substring(selectActions.GetSelectedAction().IndexOf(": ") + 2);
 
                                 await _mediator.Send(new DeleteUserFromTeamCommand { TeamId = teamModel.TeamId, Tag = userTag });
-
-                                var deletedUser = Teams.First(c => c.TeamId == teamModel.TeamId).Users.First(u => u.UserTag == userTag);
-
                             }
 
 
@@ -257,6 +261,18 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                             catch (Exception)
                             {
                                 ErrorWindow.Show("Error leave team");
+                            }
+
+                            break;
+
+
+                        case "Create chat":
+
+                            AlertDialogWindow alertDialogWindow2 = new AlertDialogWindow("Are you sure?", "Complete", "Cancel");
+
+                            if (alertDialogWindow2.ShowDialog().Value)
+                            {
+                                await _mediator.Send(new CreateGroupChatByTeamCommand { TeamId = teamModel.TeamId, UserId = Properties.Settings.Default.userId });
                             }
 
                             break;

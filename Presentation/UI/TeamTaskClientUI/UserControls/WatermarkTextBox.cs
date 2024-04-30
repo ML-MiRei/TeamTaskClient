@@ -12,13 +12,6 @@ namespace TeamTaskClient.UI.UserControls
         public bool CanNull { get; set; } = false;
 
 
-        //public DependencyProperty WatermarkTextProperty = DependencyProperty.Register("WatermarkText", typeof(string), typeof(WatermarkTextBox));
-        //public string WatermarkText
-        //{
-        //    get {  return (string)GetValue(WatermarkTextProperty);}
-        //    set { SetValue(WatermarkTextProperty, value);}
-        //}
-
         private string _watermarkText;
         public string WatermarkText
         {
@@ -51,7 +44,7 @@ namespace TeamTaskClient.UI.UserControls
         }
 
 
-        private void SetErrorInput()
+        protected void SetErrorInput()
         {
             if (string.IsNullOrEmpty(Text))
             {

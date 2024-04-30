@@ -2,19 +2,21 @@
 
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.AddUserInGroupChat;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreateGroupChat;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.CreatePrivateChat;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.LeaveChat;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Commands.UpdateGroupChat;
-using TeamTaskClient.ApplicationLayer.CQRS.Chat.Queries.GetChats;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserByTag;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.AddUserInGroupChat;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreateGroupChat;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreatePrivateChat;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.LeaveChat;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.UpdateGroupChat;
+using TeamTaskClient.ApplicationLayer.UseCases.Chat.Queries.GetChats;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserByTag;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
+using TeamTaskClient.UI.Modules.Messanger.View;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -22,10 +24,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
     {
 
         private static IMediator _mediator;
+        private static IMessengerEvents _messengerEvents;
 
-        public ChatsListPageVM(IMediator mediator)
+        public ChatsListPageVM(IMediator mediator, IMessengerEvents messengerEvents)
         {
             _mediator = mediator;
+            _messengerEvents = messengerEvents;
             MessengerStorage.Chats = new ObservableCollection<ChatModel>(mediator.Send(new GetChatsQuery() { UserId = Properties.Settings.Default.userId }).Result.ToList());
 
         }
@@ -36,9 +40,6 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             get { return MessengerStorage.Chats; }
         }
 
-
-
-        public ICommand AddButton { get; set; } = new AddChatCommand();
 
 
         public async void SettingsChatOpen(ChatModel chatModel)
@@ -54,8 +55,8 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Complete", "Cancel");
                         if (alertDialogWindow.ShowDialog().Value)
                         {
-                            _mediator.Send(new LeaveChatCommand { ChatId = chatModel.ChatId, UserId = Properties.Settings.Default.userId });
-                            MessengerStorage.Chats.Remove(chatModel);
+
+                            await _mediator.Send(new LeaveChatCommand { ChatId = chatModel.ChatId, UserId = Properties.Settings.Default.userId });
                         }
                     }
                     catch (Exception)
@@ -68,11 +69,15 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             else
             {
 
-                var listActions = new List<string> { "Leave", "Add user" };
-                if (chatModel.UserRole == (int)UserRole.LEAD)
+                var listActions = new List<string> { "Leave", "Add user", "Users" };
+                if (chatModel.UserRole == (int)UserRoleEnum.LEAD)
                 {
                     listActions.Add("Change name");
-                    listActions.Add("Change admin");
+
+                    if (chatModel.Users.Count > 1)
+                    {
+                        listActions.Remove("Leave");
+                    }
                 }
 
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", listActions);
@@ -87,11 +92,14 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
-                                await _mediator.Send(new AddUserInGroupChatCommand { ChatId = chatModel.ChatId, UserTag = userTag });
-
-                                var newUser = await _mediator.Send(new GetUserByTagQuery { UserTag = userTag });
-
-                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Add(newUser);
+                                if (MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Any(u => u.UserTag == userTag))
+                                {
+                                    ErrorWindow.Show("This user is already\n a member of the chat");
+                                }
+                                else
+                                {
+                                    await _mediator.Send(new AddUserInGroupChatCommand { ChatId = chatModel.ChatId, UserTag = userTag });
+                                }
                             }
 
 
@@ -102,8 +110,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                                 AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Complete", "Cancel");
                                 if (alertDialogWindow.ShowDialog().Value)
                                 {
-                                    _mediator.Send(new LeaveChatCommand { ChatId = chatModel.ChatId, UserId = Properties.Settings.Default.userId });
-                                    MessengerStorage.Chats.Remove(Chats.First(c => c.ChatId == chatModel.ChatId));
+                                    await _mediator.Send(new LeaveChatCommand { ChatId = chatModel.ChatId, UserId = Properties.Settings.Default.userId });
                                 }
                             }
                             catch (Exception)
@@ -119,9 +126,8 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             {
                                 var name = changeNameDialogWindow.GetInputValue()[0];
 
-                                _mediator.Send(new UpdateGroupChatCommand { ChatId = chatModel.ChatId, ChatName = name });
+                                await _mediator.Send(new UpdateGroupChatCommand { ChatId = chatModel.ChatId, ChatName = name, AdminTag = Properties.Settings.Default.userTag });
 
-                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).ChatName = name;
                             }
                             break;
 
@@ -132,11 +138,16 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             {
                                 var tag = changeAdminDialogWindow.GetInputValue()[0];
 
-                                _mediator.Send(new UpdateGroupChatCommand { ChatId = chatModel.ChatId, AdminTag = tag });
-
-                                MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).UserRole = (int)UserRole.EMPLOYEE;
+                                await _mediator.Send(new UpdateGroupChatCommand { ChatId = chatModel.ChatId, AdminTag = tag });
                             }
                             break;
+                        case "Users":
+
+                            UsersChatWindow usersChatWindow = new UsersChatWindow(chatModel.ChatId, _mediator, _messengerEvents);
+                            usersChatWindow.ShowDialog();
+
+                            break;
+
                     }
                 }
 
@@ -146,6 +157,9 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
         }
 
 
+
+
+        public ICommand AddButton { get; set; } = new AddChatCommand();
         private class AddChatCommand : CommandBase
         {
             public async override void Execute(object? parameter)
@@ -162,7 +176,8 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             {
                                 string userTag = window.GetInputValue()[0];
 
-                                if(MessengerStorage.Chats.Any(c => c.Type == (int)ChatTypeEnum.PRIVATE && c.Users.Any(u => u.UserTag == userTag))){
+                                if (MessengerStorage.Chats.Any(c => c.Type == (int)ChatTypeEnum.PRIVATE && c.Users.Any(u => u.UserTag == userTag)))
+                                {
 
                                     ErrorWindow.Show("There is already such a chat");
                                     return;
@@ -176,10 +191,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                                     {
                                         try
                                         {
-                                            //var chat = await _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId });
-                                             await _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId });
-                                           // MessengerStorage.Chats.Add(chat);
-
+                                            await _mediator.Send(new CreatePrivateChatCommand { SecondUserTag = userTag, UserId = Properties.Settings.Default.userId });
                                         }
                                         catch
                                         {
@@ -208,8 +220,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
                                 try
                                 {
-                                    var chat = _mediator.Send(new CreateGroupChatCommand { Name = nameGroup, UserId = Properties.Settings.Default.userId }).Result;
-                                    MessengerStorage.AddChat(chat);
+                                    await _mediator.Send(new CreateGroupChatCommand { Name = nameGroup, UserId = Properties.Settings.Default.userId });
 
                                 }
                                 catch

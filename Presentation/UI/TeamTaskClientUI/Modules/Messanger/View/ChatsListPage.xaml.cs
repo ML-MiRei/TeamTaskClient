@@ -5,6 +5,7 @@ using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
 {
@@ -15,24 +16,19 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
     {
         ChatsListPageVM chatListPageVM;
 
-        public ChatsListPage(IMediator mediator)
+        public ChatsListPage(IMediator mediator, IMessengerEvents messengerEvents)
         {
             InitializeComponent();
-            chatListPageVM = new ChatsListPageVM(mediator);
+            chatListPageVM = new ChatsListPageVM(mediator, messengerEvents);
             DataContext = chatListPageVM;
-            MessengerStorage.SelectedChatChanged += OnSelectedChatChanged; ;
+            MessengerStorage.ChatsRefresh += MessengerStorage_ChatsRefresh;
         }
 
-        private void OnSelectedChatChanged(object? sender, ChatModel e)
+        private void MessengerStorage_ChatsRefresh(object? sender, EventArgs e)
         {
-            ChatList.Items.Refresh();
+            App.Current.Dispatcher.Invoke(() => ChatList.Items.Refresh());
         }
 
-        public void Refresh()
-        {
-            ChatList.Items.Refresh();
-
-        }
 
         private void ChatList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -43,7 +39,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
                 else
                     MessengerStorage.SelectedChat = (((ListBox)sender).SelectedItem as ChatModel);
             }
-            catch(Exception) { }
+            catch (Exception) { }
         }
 
         private void ChatTemplate_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

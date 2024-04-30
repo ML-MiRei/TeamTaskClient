@@ -7,6 +7,7 @@ namespace TeamTaskClient.Domain.Entities
         public int ID { get; set; }
         public int? ProjectLeadId { get; set; }
         public string? ProjectLeadTag { get; set; }
+        public string? ProjectLeadName { get; set; }
         public string? ProjectName { get; set; }
     }
 }

@@ -11,7 +11,7 @@
         public List<ProjectTaskModel> Tasks { get; set; }
 
 
-        public int AmountTasks => (Sprints == null ? 0 : Sprints.Sum(s => s.Tasks.Count)) + (Tasks == null? 0 : Tasks.Count);
+        public int AmountTasks => Tasks == null? 0 : Tasks.Count;
         
     }
 }

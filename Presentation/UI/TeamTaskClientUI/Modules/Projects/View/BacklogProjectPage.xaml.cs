@@ -37,16 +37,23 @@ namespace TeamTaskClient.UI.Modules.Projects.View
             DataContext = vm;
 
             ProjectsStorage.SelectedProjectChanged += ProjectsStorage_SelectedProjectChanged;
+            ProjectsStorage.BacklogInterfaceRefresh += OnBacklogInterfaceRefresh;
         }
+
+        private void OnBacklogInterfaceRefresh(object? sender, EventArgs e)
+        {
+            App.Current.Dispatcher.Invoke(() => TasksStories.Items.Refresh());
+        }
+
 
         private void ProjectsStorage_SelectedProjectChanged(object? sender, ProjectModel e)
         {
-            TasksStories.Items.Refresh();
+            App.Current.Dispatcher.Invoke(() => TasksStories.Items.Refresh());
         }
 
         private void UsersProject_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD)
+            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
             {
                 vm.ChangeTask((ProjectTaskModel)((ProjectTaskTemplate)sender).DataContext);
             }
@@ -54,10 +61,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         private void ProjectTaskTemplate_MouseEnter(object sender, MouseEventArgs e)
         {
-            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD)
-            {
-                Cursor = Cursors.Hand;
-            }
+            Cursor = Cursors.Hand;
         }
 
         private void ProjectTaskTemplate_MouseLeave(object sender, MouseEventArgs e)
@@ -67,9 +71,17 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         private void UserTemplate_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRole.LEAD)
+            if ( ((UserModel)((UserTemplate)sender).DataContext).UserTag != Properties.Settings.Default.userTag)
             {
                 vm.ActionWithUser((UserModel)((UserTemplate)sender).DataContext);
+            }
+        }
+
+        private void UserTemplate_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (((UserModel)((UserTemplate)sender).DataContext).UserTag != Properties.Settings.Default.userTag)
+            {
+                Cursor = Cursors.Hand;
             }
         }
     }

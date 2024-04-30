@@ -162,7 +162,7 @@
                                 <DataTemplate>
 
                                     <usercontrols1:UserTemplate Margin="6"
-                                                                MouseEnter="ProjectTaskTemplate_MouseEnter"
+                                                                MouseEnter="UserTemplate_MouseEnter"
                                                                 MouseLeave="ProjectTaskTemplate_MouseLeave"
                                                                 MouseLeftButtonDown="UserTemplate_MouseLeftButtonDown"
                                                                 FirstName="{Binding FirstName}" />

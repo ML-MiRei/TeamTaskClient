@@ -7,6 +7,7 @@ using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
 {
@@ -18,17 +19,22 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
 
         MessagesPageVM vm;
 
-        public MessagePage(IMediator mediator)
+        public MessagePage(IMediator mediator, IMessengerEvents messengerEvents)
         {
             InitializeComponent();
-            vm = new MessagesPageVM(mediator);
+            vm = new MessagesPageVM(mediator, messengerEvents);
             DataContext = vm;
 
-
+            vm.InterfaceRefresh += Vm_InterfaceRefresh;
             MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
 
             ((INotifyCollectionChanged)ListMessages.Items).CollectionChanged += ChatMessagePage_CollectionChanged;
 
+        }
+
+        private void Vm_InterfaceRefresh(object? sender, EventArgs e)
+        {
+           App.Current.Dispatcher.Invoke(() => ListMessages.Items.Refresh());
         }
 
         private void OnSelectedChatChanged(object? sender, ChatModel e)
@@ -48,10 +54,6 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
             }
         }
 
-        private void OnSelectedChatChanged(object? sender, EventArgs e)
-        {
-            InputPanel.Visibility = Visibility.Visible;
-        }
 
         private void ChatMessagePage_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {

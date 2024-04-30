@@ -19,30 +19,13 @@ namespace TeamTaskClient.UI
 
 
 
-
         [STAThread]
         public static void Main()
         {
 
-
-
-            var host = Host.CreateDefaultBuilder()
-                .ConfigureServices(services =>
-                {
-                    services.AddSingleton<App>();
-                    services.AddSingleton<MainWindow>();
-                    services.AddSingleton<IAuthorizationService, AuthorizationService>();
-                    services.AddApplication();
-                    services.AddInfrastructure(System.Configuration.ConfigurationManager.ConnectionStrings["DbConnection"].ConnectionString);
-                })
-                .Build();
-
-
-
-
             if (Properties.Settings.Default.userId == 0)
             {
-                LoginWindow = new LoginWindow(host.Services.GetService<IAuthorizationService>());
+                LoginWindow = new LoginWindow(new AuthorizationService());
 
                 if (!LoginWindow.ShowDialog().Value)
                 {
@@ -51,6 +34,18 @@ namespace TeamTaskClient.UI
 
             }
 
+
+            var host = Host.CreateDefaultBuilder()
+                .ConfigureServices(services =>
+                {
+                    services.AddApplication();
+                    services.AddInfrastructure(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
+                    services.AddSingleton<App>();
+                    services.AddSingleton<MainWindow>();
+                })
+                .Build();
+
+
             IHttpClient httpClient = host.Services.GetService<IHttpClient>();
 
 
@@ -58,8 +53,8 @@ namespace TeamTaskClient.UI
             var canConnection = httpClient.TryConnection(Properties.Settings.Default.userId);
             if (canConnection)
             {
-                ChatHubClient chatService = ChatHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
                 TeamHubClient teamHubClient = TeamHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
+                ProjectHubClient projectHubClient = ProjectHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
                 var app = host.Services.GetService<App>();
                 app?.Run();
             }

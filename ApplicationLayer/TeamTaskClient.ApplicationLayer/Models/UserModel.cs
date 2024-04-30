@@ -13,6 +13,7 @@ namespace TeamTaskClient.ApplicationLayer.Models
         public int ColorNumber {  get; set; }
 
         public string FullName => FirstName + " " + SecondName;
+        public string FullUserName => FirstName + " " + SecondName + " " + LastName;
         public string Lit => FirstName[0] + "";
 
         public string FormatedPhoneNumber => Regex.Replace(PhoneNumber, @"(\d{1})(\d{3})(\d{3})(\d{2})(\d{2})", "+$1-($2)-$3-$4-$5");

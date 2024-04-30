@@ -25,12 +25,19 @@
                                       Width="60"
                                       ColorNumber="{Binding ColorNumber}"
                                       Lit="{Binding Lit}" />
+            <TextBox Text="{Binding UserTag, FallbackValue=FirstName}"
+                     Style="{StaticResource SimpleBlackOnlyReadTextBox}"
+                     HorizontalAlignment="Center"
+                     Background="Transparent"
+                     FontSize="8"
+                     Margin="5,3,5,2" />
 
             <TextBlock Text="{Binding FirstName, FallbackValue=FirstName}"
                        Style="{StaticResource SimpleBlackText}"
                        HorizontalAlignment="Center"
                        FontSize="10"
-                       Margin="5" />
+                       Margin="5,0,5,5" />
+
 
         </StackPanel>
     </Grid>

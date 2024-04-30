@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.CreateProject;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.DeleteProject;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Commands.LeaveProject;
-using TeamTaskClient.ApplicationLayer.CQRS.Project.Queries.GetProjectsByUserId;
-using TeamTaskClient.ApplicationLayer.CQRS.Team.Commands.CreateTeam;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.CreateProject;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.DeleteProject;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.LeaveProject;
+using TeamTaskClient.ApplicationLayer.UseCases.Project.Queries.GetProjectsByUserId;
+using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.CreateTeam;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Storages;
@@ -52,7 +52,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         public async void DeleteProject(ProjectModel projectModel)
         {
-            if (projectModel.UserRole == (int)UserRole.LEAD)
+            if (projectModel.UserRole == (int)UserRoleEnum.LEAD)
             {
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", new List<string> { "Delete" });
                 if (selectActionsDialogWindow.ShowDialog().Value)
@@ -95,8 +95,6 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                 }
             }
-            ProjectsStorage.Projects.Remove(projectModel);
-
         }
 
 
@@ -107,16 +105,14 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         private class NewProjectCommand(ObserverProjectPageVM vM) : CommandBase
         {
-            public override void Execute(object? parameter)
+            public override async void Execute(object? parameter)
             {
                 CreateSubjectDialogWindow dialogWindow = new CreateSubjectDialogWindow("Creating a project", new List<string> { "Project name:" });
                 if (dialogWindow.ShowDialog().Value)
                 {
                     try
                     {
-                        var project = _mediator.Send(new CreateProjectCommand { ProjectName = (dialogWindow.GetCreatingProperties()[0]) }).Result;
-
-                        vM.Projects.Add(project);
+                        await _mediator.Send(new CreateProjectCommand { ProjectName = (dialogWindow.GetCreatingProperties()[0]), UserId = Properties.Settings.Default.userId });
                     }
                     catch
                     {

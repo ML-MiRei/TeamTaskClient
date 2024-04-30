@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Sprint.Commands.CreateSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.CreateSprint;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
@@ -64,16 +64,8 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                 }
                 else
                 {
-                    var win = System.Windows.Application.Current.Windows.OfType<CreateSprintWindow>().ToList();
-                    foreach (var w in win)
-                    {
-                        try
-                        {
-                            w.DialogResult = true;
-                        }
-                        catch { }
-                    }
-
+                    System.Windows.Application.Current.Windows.OfType<CreateSprintWindow>().First().DialogResult = true;
+                  
                 }
 
 

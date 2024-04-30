@@ -21,34 +21,7 @@
                 <ResourceDictionary Source="/TeamTaskClient.UI;component/Resources/AppStyles.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <converters:EmptyListConverter x:Key="EmptyListConverter" />
-            <Style x:Key="UserInfoUCStyle1"
-                   TargetType="{x:Type usercontrols:UserInfoUC}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type usercontrols:UserInfoUC}">
-                            <Border Background="{TemplateBinding Background}"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}"
-                                    Padding="{TemplateBinding Padding}"
-                                    SnapsToDevicePixels="true">
-                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
-                            </Border>
-
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver"
-                                         Value="true">
-
-                                    <Setter Property="Cursor"
-                                            Value="Hand" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-
-                </Setter>
-            </Style>
+      
         </ResourceDictionary>
     </Page.Resources>
 

@@ -29,7 +29,10 @@ namespace TeamTaskClient.UI.Dialogs.ViewModels
         {
             public override void Execute(object? parameter)
             {
-                System.Windows.Application.Current.Windows.OfType<SelectActionsDialogWindow>().First().DialogResult = true;
+                if (!String.IsNullOrEmpty(SelectedAction))
+                    System.Windows.Application.Current.Windows.OfType<SelectActionsDialogWindow>().First().DialogResult = true;
+                else
+                    System.Windows.Application.Current.Windows.OfType<SelectActionsDialogWindow>().First().DialogResult = false;
             }
         }
 

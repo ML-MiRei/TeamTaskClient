@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,22 +7,22 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
+using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Profile.ViewModels;
+using TeamTaskClient.UI.Modules.Projects.View;
 
 namespace TeamTaskClient.UI.Storages
 {
     public class ProjectsStorage
     {
+        public static event EventHandler BacklogInterfaceRefresh;
+        public static event EventHandler TasksInterfaceRefresh;
 
         static ProjectsStorage()
         {
-            Sprints.CollectionChanged += OnSprintsCollectionChanged;
-            Tasks.CollectionChanged += OnTasksCollectionChanged;
-            Users.CollectionChanged += OnUsersCollectionChanged;
-
 
             ProjectHubClient.NewProjectAdded += OnNewProjectAdded;
             ProjectHubClient.UserInProjectAdded += OnAddUserInProject;
@@ -49,18 +50,17 @@ namespace TeamTaskClient.UI.Storages
             {
                 _projects.First(p => p.ProjectId == e.ProjectId).Sprints.First(s => s.SprintId == e.ID).DateStart = e.DateStart;
 
-                if(SelectedProject.ProjectId == e.ProjectId)
+                if (SelectedProject.ProjectId == e.ProjectId)
                 {
-                    SelectedProject.Sprints.First(s => s.SprintId == e.ID).DateStart = e.DateStart;
-                    SelectedProjectChanged?.Invoke(null, SelectedProject);
+                    Sprints.First(s => s.SprintId == e.ID).DateStart = e.DateStart;
                 }
 
                 if (SelectedSprint.SprintId == e.ID)
                 {
                     SelectedSprint.DateStart = e.DateStart;
-                    SelectedSprintChanged?.Invoke(null, SelectedSprint);
                 }
 
+                TasksInterfaceRefresh?.Invoke(sender, EventArgs.Empty);
             });
         }
 
@@ -70,33 +70,56 @@ namespace TeamTaskClient.UI.Storages
 
             if (SelectedProject.ProjectId == e.ProjectId)
             {
-                SelectedProject.Sprints.First(s => s.SprintId == e.ID).DateEnd = e.DateEnd;
-                SelectedProjectChanged?.Invoke(null, SelectedProject);
+                Sprints.First(s => s.SprintId == e.ID).DateEnd = e.DateEnd;
             }
 
             if (SelectedSprint.SprintId == e.ID)
             {
                 SelectedSprint.DateEnd = e.DateEnd;
-                SelectedSprintChanged?.Invoke(null, SelectedSprint);
             }
+            TasksInterfaceRefresh?.Invoke(sender, EventArgs.Empty);
+
         }
 
         private static void OnSprintDeleted(object? sender, int e)
         {
+
+
+            if (Projects.First(p => p.ProjectId == (int)sender).Sprints.First(s => s.SprintId == e).Tasks.Count > 0)
+            {
+                Projects.First(p => p.ProjectId == (int)sender).Sprints.First(s => s.SprintId == e).Tasks.ForEach(t =>
+                Projects.First(p => p.ProjectId == (int)sender).Tasks.First(ts => ts.ProjectTaskId == t.ProjectTaskId).Status = (int)StatusProjectTaskEnum.STORIES
+                );
+            }
+
+
             var sprint = _projects.First(p => p.ProjectId == (int)sender).Sprints.First(s => s.SprintId == e);
             _projects.First(p => p.ProjectId == (int)sender).Sprints.Remove(sprint);
 
+
             if (SelectedProject.ProjectId == (int)sender)
             {
-                SelectedProject.Sprints.Remove(sprint);
+                Sprints.Remove(sprint);
                 SelectedProjectChanged?.Invoke(null, SelectedProject);
             }
 
             if (SelectedSprint.SprintId == e)
             {
-                ErrorWindow.Show("The selected sprint has been deleted");
-                SelectedSprint = null;
-                SelectedSprintChanged?.Invoke(null, SelectedSprint);
+
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    ErrorWindow.Show("The selected sprint has been deleted");
+                    if (SelectedProject.Sprints.Count > 0)
+                    {
+                        SelectedSprint = SelectedProject.Sprints.First(s => s.DateStart <= DateTime.Now && s.DateEnd >= DateTime.Now);
+                    }
+                    else
+                    {
+                        SelectedSprint = null;
+                    }
+                });
+
+
             }
         }
 
@@ -106,53 +129,88 @@ namespace TeamTaskClient.UI.Storages
 
             if (SelectedProject.ProjectId == (int)sender)
             {
-                SelectedProject.Sprints.Add(e);
-                SelectedProjectChanged?.Invoke(null, SelectedProject);
+                Sprints.Add(e);
+
+                if (SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
+                {
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        SelectedSprint = e;
+                        ProjectPage.Instance.ToTasksButton.IsChecked = true;
+                    });
+
+                }
+                App.Current.Dispatcher.Invoke(() => SelectedProjectChanged?.Invoke(null, SelectedProject));
             }
+
         }
 
-        private static void OnProjectTaskCreated(object? sender, ProjectTaskModel e)
+
+
+
+
+        private static void OnProjectTaskCreated(object? sender, ProjectTaskEntity e)
         {
             App.Current.Dispatcher.Invoke(() => AddTasks(e));
         }
 
         private static void OnProjectTaskDeleted(object? sender, int e)
         {
-            App.Current.Dispatcher.Invoke(() => RemoveTasks(e));
+            App.Current.Dispatcher.Invoke(() => RemoveTasks((int)sender, e));
+            TasksInterfaceRefresh?.Invoke(e, EventArgs.Empty);
         }
 
-        private static void OnExecuterProjectTaskChanged(object? sender, ProjectTaskModel e)
+        private static void OnExecuterProjectTaskChanged(object? sender, ProjectTaskEntity e)
         {
             App.Current.Dispatcher.Invoke(() => ChangeExecutorProjectTask(e));
+            BacklogInterfaceRefresh?.Invoke(e, EventArgs.Empty);
+            TasksInterfaceRefresh?.Invoke(e, EventArgs.Empty);
 
         }
 
-        private static void OnStatusProjectTaskChanged(object? sender, ProjectTaskModel e)
+        private static void OnStatusProjectTaskChanged(object? sender, ProjectTaskEntity e)
         {
             App.Current.Dispatcher.Invoke(() => ChangeStatusProjectTask(e));
+            TasksInterfaceRefresh?.Invoke(e, EventArgs.Empty);
         }
 
-        private static void OnProjectTaskUpdated(object? sender, ProjectTaskModel e)
+        private static void OnProjectTaskUpdated(object? sender, ProjectTaskEntity e)
         {
             App.Current.Dispatcher.Invoke(() => UpdateProjectTask(e));
+            BacklogInterfaceRefresh?.Invoke(e, EventArgs.Empty);
         }
 
-        private static void OnProjectUpdated(object? sender, ProjectModel e)
+
+
+
+
+        private static void OnProjectUpdated(object? sender, ProjectEntity e)
         {
             App.Current.Dispatcher.Invoke(() =>
             {
+                if (e.ProjectName != null)
+                    Projects.First(p => p.ProjectId == e.ID).ProjectName = e.ProjectName;
+                if (e.ProjectLeadName != null)
+                    Projects.First(p => p.ProjectId == e.ID).ProjectLeaderName = e.ProjectLeadName;
+                if (e.ProjectLeadTag != null)
+                    Projects.First(p => p.ProjectId == e.ID).UserRole = e.ProjectLeadTag == Properties.Settings.Default.userTag ? (int)UserRoleEnum.LEAD : (int)UserRoleEnum.EMPLOYEE;
 
-                Projects.First(p => p.ProjectId == e.ProjectId).ProjectName = e.ProjectName;
-                Projects.First(p => p.ProjectId == e.ProjectId).ProjectLeaderName = e.ProjectLeaderName;
-                Projects.First(p => p.ProjectId == e.ProjectId).UserRole = e.UserRole;
-
-                if (SelectedProject.ProjectId == e.ProjectId)
+                if (SelectedProject.ProjectId == e.ID)
                 {
-                    SelectedProject.ProjectLeaderName = e.ProjectLeaderName;
-                    SelectedProject.ProjectName = e.ProjectName;
-                    SelectedProject.UserRole = e.UserRole;
+                    if (e.ProjectLeadName != null)
+                        SelectedProject.ProjectLeaderName = e.ProjectLeadName;
+                    if (e.ProjectName != null)
+                        SelectedProject.ProjectName = e.ProjectName;
+                    if (e.ProjectLeadTag != null)
+                        SelectedProject.UserRole = e.ProjectLeadTag == Properties.Settings.Default.userTag ? (int)UserRoleEnum.LEAD : (int)UserRoleEnum.EMPLOYEE;
 
-                    SelectedProjectChanged?.Invoke(null, e);
+                    SelectedProjectChanged?.Invoke(null, new ProjectModel
+                    {
+                        ProjectId = e.ID,
+                        ProjectLeaderName = e.ProjectLeadName,
+                        ProjectName = e.ProjectName,
+                        UserRole = e.ProjectLeadTag == Properties.Settings.Default.userTag ? (int)UserRoleEnum.LEAD : (int)UserRoleEnum.EMPLOYEE
+                    });
                 }
 
             });
@@ -199,61 +257,6 @@ namespace TeamTaskClient.UI.Storages
         {
             App.Current.Dispatcher.Invoke(() => _projects.Add(e));
         }
-
-
-
-
-        private static void OnUsersCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                SelectedProject.Users.Add((UserModel)sender);
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Users.Add((UserModel)sender);
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                SelectedProject.Users.Remove((UserModel)sender);
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Users.Remove((UserModel)sender);
-            }
-
-            SelectedProjectChanged?.Invoke(sender, null);
-        }
-
-
-        private static void OnTasksCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                SelectedSprint.Tasks.Add((ProjectTaskModel)sender);
-                SelectedProject.Tasks.Add((ProjectTaskModel)sender);
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.Add((ProjectTaskModel)sender);
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                SelectedSprint.Tasks.Remove((ProjectTaskModel)sender);
-                SelectedProject.Tasks.Remove((ProjectTaskModel)sender);
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.Remove((ProjectTaskModel)sender);
-            }
-
-            SelectedSprintChanged?.Invoke(sender, null);
-        }
-
-        private static void OnSprintsCollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Add)
-            {
-                SelectedProject.Sprints.Add((SprintModel)sender);
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Sprints.Add((SprintModel)sender);
-            }
-            else if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Remove)
-            {
-                SelectedProject.Sprints.Remove((SprintModel)sender);
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Sprints.Remove((SprintModel)sender);
-            }
-
-            SelectedProjectChanged?.Invoke(sender, null);
-        }
-
 
 
 
@@ -337,7 +340,7 @@ namespace TeamTaskClient.UI.Storages
             {
                 _selectedSprint = value;
 
-                if (value.Tasks != null)
+                if (value != null && value.Tasks != null)
                     Tasks = new ObservableCollection<ProjectTaskModel>(value.Tasks);
 
                 SelectedSprintChanged?.Invoke(SelectedSprintChanged, value);
@@ -345,24 +348,6 @@ namespace TeamTaskClient.UI.Storages
         }
 
 
-
-        public static void AddBacklogTasks(ProjectTaskModel projectTaskModel)
-        {
-            _backlogTasks.Add(projectTaskModel);
-            SelectedProject.Tasks.Add(projectTaskModel);
-            Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.Add(projectTaskModel);
-            SelectedProjectChanged?.Invoke(projectTaskModel, null);
-        }
-
-        public static void RemoveBacklogTasks(ProjectTaskModel projectTaskModel)
-        {
-            _backlogTasks.Remove(projectTaskModel);
-            _tasks.Remove(projectTaskModel);
-            SelectedProject.Tasks.Remove(projectTaskModel);
-            Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.Remove(projectTaskModel);
-            SelectedProjectChanged?.Invoke(projectTaskModel, null);
-            SelectedSprintChanged?.Invoke(projectTaskModel, SelectedSprint);
-        }
 
         private static ObservableCollection<ProjectTaskModel> _backlogTasks = new ObservableCollection<ProjectTaskModel>();
         public static ObservableCollection<ProjectTaskModel> BacklogTasks
@@ -376,103 +361,138 @@ namespace TeamTaskClient.UI.Storages
         }
 
 
-        public static void ChangeStatusProjectTask(ProjectTaskModel projectTaskModel)
+        public static void ChangeStatusProjectTask(ProjectTaskEntity projectTaskEntity)
         {
-            Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).Status = projectTaskModel.Status;
-            SelectedSprint.Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).Status = projectTaskModel.Status;
 
-            try
+            if (projectTaskEntity.ProjectId == SelectedProject?.ProjectId)
             {
-                SelectedProject.Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).Status = projectTaskModel.Status;
-                SelectedProjectChanged?.Invoke(projectTaskModel, SelectedProject);
-            }
-            catch (Exception) { }
+                BacklogTasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).Status = projectTaskEntity.Status.Value;
 
-            SelectedSprintChanged?.Invoke(projectTaskModel, SelectedSprint);
+                if (SelectedSprint?.SprintId == projectTaskEntity.SprintId)
+                {
+                    Tasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).Status = projectTaskEntity.Status.Value;
+                }
+
+            }
+
+            Projects.First(p => p.ProjectId == projectTaskEntity.ProjectId)
+                .Tasks
+                .First(t => t.ProjectTaskId == projectTaskEntity.ID)
+                .Status = projectTaskEntity.Status.Value;
+
+
         }
 
-        public static void ChangeExecutorProjectTask(ProjectTaskModel projectTaskModel)
+        public static void ChangeExecutorProjectTask(ProjectTaskEntity projectTaskEntity)
         {
-            Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
-            Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).IsUserExecutor = projectTaskModel.IsUserExecutor;
-            SelectedSprint.Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
-            SelectedSprint.Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).IsUserExecutor = projectTaskModel.IsUserExecutor;
 
-            try
+            if (projectTaskEntity.ProjectId == SelectedProject?.ProjectId)
             {
-                SelectedProject.Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
-                SelectedProject.Tasks.First(t => t.ProjectTaskId == projectTaskModel.ProjectTaskId).IsUserExecutor = projectTaskModel.IsUserExecutor;
-                SelectedProjectChanged?.Invoke(projectTaskModel, SelectedProject);
-            }
-            catch (Exception) { }
+                BacklogTasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).ExecutorName = projectTaskEntity.ExecutorName;
+                BacklogTasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).ExecutorTag = projectTaskEntity.ExecutorTag;
 
-            SelectedSprintChanged?.Invoke(projectTaskModel, SelectedSprint);
+
+                if (SelectedProject.Sprints.Count > 0)
+                {
+                    if (SelectedSprint != null)
+                    {
+                        var sprint = SelectedProject.Sprints.First(s => s.Tasks.Any(t => t.ProjectTaskId == projectTaskEntity.ID));
+
+                        if (SelectedSprint.SprintId == sprint.SprintId)
+                        {
+                            Tasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).ExecutorName = projectTaskEntity.ExecutorName;
+                            Tasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).ExecutorTag = projectTaskEntity.ExecutorTag;
+                        }
+
+                    }
+
+                }
+            }
+            Projects.First(p => p.ProjectId == projectTaskEntity.ProjectId).Tasks
+                .First(t => t.ProjectTaskId == projectTaskEntity.ID).ExecutorName = projectTaskEntity.ExecutorName;
+
+            Projects.First(p => p.ProjectId == projectTaskEntity.ProjectId).Tasks
+                .First(t => t.ProjectTaskId == projectTaskEntity.ID).ExecutorTag = projectTaskEntity.ExecutorTag;
         }
 
-        public static void UpdateProjectTask(ProjectTaskModel projectTaskModel)
+        public static void UpdateProjectTask(ProjectTaskEntity projectTaskEntity)
         {
-            try
+
+            if (projectTaskEntity.ProjectId == SelectedProject?.ProjectId)
             {
-                if (!String.IsNullOrEmpty(projectTaskModel.Details))
-                    SelectedSprint.Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Details = projectTaskModel.Details;
-                if (!String.IsNullOrEmpty(projectTaskModel.Title))
-                    SelectedSprint.Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Title = projectTaskModel.Title;
-                if (!String.IsNullOrEmpty(projectTaskModel.ExecutorName))
-                    SelectedSprint.Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
+                if (!String.IsNullOrEmpty(projectTaskEntity.Detail))
+                    BacklogTasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).Details = projectTaskEntity.Detail;
+                if (!String.IsNullOrEmpty(projectTaskEntity.Title))
+                    BacklogTasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).Title = projectTaskEntity.Title;
+
+                if (SelectedProject.Sprints.Count > 0)
+                {
+
+                    var sprint = SelectedProject.Sprints.First(s => s.Tasks.Any(t => t.ProjectTaskId == projectTaskEntity.ID));
+
+                    if (SelectedSprint?.SprintId == sprint.SprintId)
+                    {
+                        if (!String.IsNullOrEmpty(projectTaskEntity.Detail))
+                            Tasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).Details = projectTaskEntity.Detail;
+                        if (!String.IsNullOrEmpty(projectTaskEntity.Title))
+                            Tasks.First(t => t.ProjectTaskId == projectTaskEntity.ID).Title = projectTaskEntity.Title;
+                    }
+                }
             }
-            catch (Exception) { }
 
+            if (!String.IsNullOrEmpty(projectTaskEntity.Detail))
+                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.First(p => p.ProjectTaskId == projectTaskEntity.ID).Details = projectTaskEntity.Detail;
+            if (!String.IsNullOrEmpty(projectTaskEntity.Title))
+                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.First(p => p.ProjectTaskId == projectTaskEntity.ID).Title = projectTaskEntity.Title;
 
-            try
-            {
-                if (!String.IsNullOrEmpty(projectTaskModel.Details))
-                    BacklogTasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Details = projectTaskModel.Details;
-                if (!String.IsNullOrEmpty(projectTaskModel.Title))
-                    BacklogTasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Title = projectTaskModel.Title;
-                if (!String.IsNullOrEmpty(projectTaskModel.ExecutorName))
-                    BacklogTasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
-            }
-            catch (Exception) { }
-
-            if (!String.IsNullOrEmpty(projectTaskModel.Details))
-                SelectedProject.Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Details = projectTaskModel.Details;
-            if (!String.IsNullOrEmpty(projectTaskModel.Title))
-                SelectedProject.Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Title = projectTaskModel.Title;
-            if (!String.IsNullOrEmpty(projectTaskModel.ExecutorName))
-                SelectedProject.Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
-
-            if (!String.IsNullOrEmpty(projectTaskModel.Details))
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Details = projectTaskModel.Details;
-            if (!String.IsNullOrEmpty(projectTaskModel.Title))
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).Title = projectTaskModel.Title;
-            if (!String.IsNullOrEmpty(projectTaskModel.ExecutorName))
-                Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.First(p => p.ProjectTaskId == projectTaskModel.ProjectTaskId).ExecutorName = projectTaskModel.ExecutorName;
-
-            SelectedProjectChanged?.Invoke(null, SelectedProject);
         }
 
-        public static void AddTasks(ProjectTaskModel projectTaskModel)
+        public static void AddTasks(ProjectTaskEntity projectTaskEntity)
         {
-            _tasks.Add(projectTaskModel);
-            SelectedSprint.Tasks.Add(projectTaskModel);
-            SelectedProject.Tasks.Add(projectTaskModel);
-            Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.Add(projectTaskModel);
+            var projectTaskModel = new ProjectTaskModel
+            {
+                Status = projectTaskEntity.Status.Value,
+                Details = projectTaskEntity.Detail,
+                Title = projectTaskEntity.Title,
+                ExecutorName = null,
+                ExecutorTag = null,
+                ProjectTaskId = projectTaskEntity.ID
+            };
 
-            SelectedProjectChanged?.Invoke(projectTaskModel, null);
-            SelectedSprintChanged?.Invoke(projectTaskModel, null);
+
+            if (SelectedProject?.ProjectId == projectTaskEntity.ProjectId)
+            {
+                BacklogTasks.Add(projectTaskModel);
+
+                if (SelectedSprint?.SprintId == projectTaskEntity.SprintId)
+                {
+                    Tasks.Add(projectTaskModel);
+                }
+
+            }
+
+            Projects.First(p => p.ProjectId == projectTaskEntity.ProjectId).Tasks.Add(projectTaskModel);
         }
 
-        public static void RemoveTasks(int projectTaskId)
+        public static void RemoveTasks(int projectId, int projectTaskId)
         {
-            var projectTaskModel = _tasks.First(t => t.ProjectTaskId == projectTaskId);
 
-            _tasks.Remove(projectTaskModel);
-            SelectedSprint.Tasks.Remove(projectTaskModel);
-            SelectedProject.Tasks.Remove(projectTaskModel);
-            Projects.First(p => p.ProjectId == SelectedProject.ProjectId).Tasks.Remove(projectTaskModel);
+            var deletedTask = Projects.First(p => p.ProjectId == projectId).Tasks.First(t => t.ProjectTaskId == projectTaskId);
 
-            SelectedProjectChanged?.Invoke(projectTaskModel, null);
-            SelectedSprintChanged?.Invoke(projectTaskModel, null);
+            if (SelectedProject?.ProjectId == projectId)
+            {
+                BacklogTasks.Remove(deletedTask);
+
+                if (SelectedSprint != null && Tasks.Any(t => t.ProjectTaskId == projectId))
+                {
+                    Tasks.Remove(deletedTask);
+                }
+
+            }
+
+
+            Projects.First(p => p.ProjectId == projectId).Tasks.Remove(deletedTask);
+
         }
 
 

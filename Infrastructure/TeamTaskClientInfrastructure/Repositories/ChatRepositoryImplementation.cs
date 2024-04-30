@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http.Json;
+using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.LocalDB.Models;
 using TeamTaskClient.Infrastructure.ServerClients.Connections;
+using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class ChatRepositoryImplementation(IHttpClient client) : IChatRepository
+    public class ChatRepositoryImplementation(IHttpClient client, IChatHubConnection chatHubClient) : IChatRepository
     {
 
-        private HubConnection HubClient = ChatHubConnection.Instance.GetClient();
+        private HubConnection HubClient = chatHubClient.HubConnection;
 
         public async Task AddUserGroupChatByTag(string userTag, int chatId)
         {
@@ -62,7 +63,7 @@ namespace TeamTaskClient.Infrastructure.Repositories
         }
 
 
-        public async void CreatePrivateChat(int userId, string secondUserTag)
+        public async Task CreatePrivateChat(int userId, string secondUserTag)
         {
 
             await HubClient.SendAsync("CreatePrivateChat", userId, secondUserTag);
@@ -70,23 +71,20 @@ namespace TeamTaskClient.Infrastructure.Repositories
         }
 
 
-        public async Task<ChatModel> CreateGroupChat(int userId, string name)
+        public async Task CreateGroupChat(int userId, string name)
         {
-            var content = JsonContent.Create(name);
+            await HubClient.SendAsync("CreateGroupChat", userId, name);
 
-            var httpReply = client.CurrentHttpClient
-                .PostAsync($"{client.ConnectionString}/Chat/group", content).Result;
+        }
 
-            if (httpReply.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                throw new NotFoundException();
-            }
-            else if (httpReply.IsSuccessStatusCode)
-            {
-                var chat = await httpReply.Content.ReadFromJsonAsync<ChatModel>();
-                return chat;
-            }
-            throw new ConnectionException();
+        public async Task CreateGroupChatByTeam(int userId, int teamId)
+        {
+            await HubClient.SendAsync("CreateGroupChatByTeam", userId, teamId);
+        }
+
+        public async Task CreateGroupChatByProject(int userId, int projectId)
+        {
+            await HubClient.SendAsync("CreateGroupChatByProject", userId, projectId);
         }
     }
 }

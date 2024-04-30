@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
-using TeamTaskClient.Infrastructure.LocalDB.Context;
 using TeamTaskClient.Infrastructure.Repositories;
 using TeamTaskClient.Infrastructure.ServerClients.Connections;
+using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.ServerClients.Implementation;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 using TeamTaskClient.Infrastructure.Services.Implementation;
@@ -13,19 +14,11 @@ namespace TeamTaskClient.Infrastructure
 {
     public static class DependencyInjection
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, string dbConnection)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, int userId, string userTag)
         {
-
-            services.AddDbContext<SqlLiteDbContext>(opt =>
-            {
-                opt.UseSqlite(dbConnection);
-            });
 
             services.AddSingleton<IHttpClient, TeamTaskSeverHttpClient>();
 
-            services.AddScoped<SqlLiteDbContext>(prov =>
-                prov.GetService<SqlLiteDbContext>()
-            );
             services.AddTransient<IChatRepository, ChatRepositoryImplementation>()
                                                 .AddTransient<IMessageRepository, MessageRepositoryImplementation>()
 
@@ -40,7 +33,9 @@ namespace TeamTaskClient.Infrastructure
                                                 .AddTransient<IAuthorizationService, AuthorizationService>()
 
                                                 .AddTransient<IHttpClient, TeamTaskSeverHttpClient>()
-                                                .AddTransient<INotificationHubClient, NotificationHubClient>();
+
+                                                .AddSingleton<IChatHubConnection, ChatHubConnection>()
+                                                .AddSingleton<IMessengerEvents>(m => new ChatHubClient(m.GetService<IChatHubConnection>(), userId, userTag));
             return services;
         }
     }

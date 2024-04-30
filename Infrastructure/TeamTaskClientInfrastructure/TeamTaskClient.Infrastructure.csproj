@@ -21,11 +21,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ApplicationLayer\TeamTaskClient.ApplicationLayer\TeamTaskClient.ApplicationLayer.csproj" />
+    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="..\..\ApplicationLayer\TeamTaskClient.ApplicationLayer\TeamTaskClient.ApplicationLayer.csproj" />
   </ItemGroup>
 
 </Project>

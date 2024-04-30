@@ -56,12 +56,11 @@
 
             <Button Style="{StaticResource RedButton}" 
                     Width="30"
-                    Command="{Binding CloseWindow}"
                     Height="30"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Right"
                     Content="x"
-                    />
+                    Click="Button_Click" />
 
         </Grid>
     </Border>

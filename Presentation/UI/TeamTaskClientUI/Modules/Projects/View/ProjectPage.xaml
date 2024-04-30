@@ -144,7 +144,7 @@
     <Grid Background="{StaticResource BackgroundGreen}">
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
+            <ColumnDefinition MaxWidth="120"/>
             <ColumnDefinition Width="7*"/>
         </Grid.ColumnDefinitions>
         
@@ -190,9 +190,9 @@
                          Style="{StaticResource {x:Type ToggleButton}}"
                          GroupName="navigationProject"
                          Background="Transparent"
-                         HorizontalAlignment="Stretch"
                          Foreground="White"
                          Height="70"
+                         MaxWidth="120"
                          BorderBrush="Transparent"
                          Checked="ToBacklog">
 
@@ -214,7 +214,7 @@
 
 
 
-            <RadioButton 
+            <RadioButton x:Name="ToTasksButton"
                          Template="{DynamicResource RadioButtonTemplate1}"
                          Style="{StaticResource {x:Type ToggleButton}}"
                          GroupName="navigationProject"

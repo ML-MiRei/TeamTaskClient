@@ -1,15 +1,12 @@
 ﻿using MediatR;
 using System.Windows.Controls;
-using TeamTaskClient.ApplicationLayer.CQRS.ProjectTask.Commands.AddInSprintProjectTask;
-using TeamTaskClient.ApplicationLayer.CQRS.Sprint.Commands.CreateSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.CreateSprint;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
-using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Dialogs.View;
-using TeamTaskClient.UI.Modules.Profile.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
-using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
+using TeamTaskClient.UI.Storages;
 
 namespace TeamTaskClient.UI.Modules.Projects.View
 {
@@ -19,19 +16,22 @@ namespace TeamTaskClient.UI.Modules.Projects.View
     public partial class ProjectPage : Page
     {
         private static IMediator _mediator;
-        //    private static ProjectModel _project;
+        public static ProjectPage Instance { get; set; }
+
 
         public ProjectPage(IMediator mediator)
         {
             _mediator = mediator;
-            //  _project = project;
 
             InitializeComponent();
             DataContext = ProjectPageVM.GetInstance(mediator);
 
             ToBacklogButton.IsChecked = true;
+            Instance = this;
 
         }
+
+
 
         private void ToBacklog(object sender, System.Windows.RoutedEventArgs e)
         {
@@ -39,13 +39,14 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         }
 
-        private void ToSprints(object sender, System.Windows.RoutedEventArgs e)
+        private async void ToSprints(object sender, System.Windows.RoutedEventArgs e)
         {
             if (ProjectsStorage.Sprints.Count > 0)
                 frameLayuot.NavigationService.Navigate(new TasksPage(_mediator));
             else
             {
-                if (ProjectsStorage.SelectedProject.UserRole != (int)UserRole.LEAD)
+                ToTasksButton.IsChecked = false;
+                if (ProjectsStorage.SelectedProject.UserRole != (int)UserRoleEnum.LEAD)
                 {
                     ErrorWindow.Show("There are no sprints");
                 }
@@ -59,33 +60,16 @@ namespace TeamTaskClient.UI.Modules.Projects.View
                         try
                         {
 
-                            var sprint = _mediator.Send(new CreateSprintCommand
+                            await _mediator.Send(new CreateSprintCommand
                             {
-                                SprintEntity = new Domain.Entities.SprintEntity
+                                SprintModel = new SprintModel
                                 {
                                     DateEnd = newSprint.DateEnd,
                                     DateStart = newSprint.DateStart,
-                                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                                }
-                            }).Result;
-
-                            ProjectsStorage.Sprints.Add(sprint);
-                            ProjectsStorage.SelectedSprint = sprint;
-
-
-
-                            var tasks = createSprintWindow.GetSelectedTasks();
-
-                            foreach (var task in tasks)
-                            {
-                                _mediator.Send(new AddInSprintProjectTaskCommand { ProjectTaskId = task.ProjectTaskId, SprintId = sprint.SprintId });
-
-                                task.Status = (int)StatusProjectTaskEnum.TODO;
-                                sprint.Tasks.Add(task);
-
-                                ProjectsStorage.AddTasks(task);
-                            }
-                            frameLayuot.NavigationService.Navigate(new TasksPage(_mediator));
+                                    Tasks = createSprintWindow.GetSelectedTasks()
+                                },
+                                ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                            });
 
                         }
                         catch

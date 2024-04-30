@@ -74,7 +74,7 @@
 
                 <usercontrols:WatermarkTextBox Text="{Binding Password, Mode=TwoWay}"
                                                FontSize="18"
-                                               Padding="5"
+                                               Padding="5"        
                                                BorderThickness="0"
                                                WatermarkForeground="{StaticResource Green}"
                                                WatermarkText="Enter password"

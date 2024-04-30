@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Sprint.Commands.CreateSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.CreateSprint;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;

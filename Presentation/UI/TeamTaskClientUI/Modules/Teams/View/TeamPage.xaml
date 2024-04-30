@@ -78,31 +78,29 @@
 
         </Grid>
 
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      ScrollViewer.CanContentScroll="False"
+                      Margin="10,0,10,10">
+            <ItemsControl Background="White"
+                          Name="TeamList"
+                          BorderThickness="0"
+                          HorizontalContentAlignment="Stretch"
+                         
+                          ItemsSource="{Binding Teams}">
 
-        <ListBox Grid.Row="1"
-                 Background="White"
-                 Name="TeamList"
-                 BorderThickness="0"
-                 HorizontalContentAlignment="Stretch"
-                 ScrollViewer.CanContentScroll="False"
-                 Margin="10,0,10,10"
-                 ItemsSource="{Binding Teams}">
-
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <usercontrols1:TeamTemplate MouseEnter="TeamTemplate_MouseEnter"
-                                                MouseLeave="TeamTemplate_MouseLeave"
-                                                MouseLeftButtonDown="TeamTemplate_MouseLeftButtonDown"
-                                                HorizontalAlignment="Stretch"
-                                                TeamLeadName="{Binding TeamLeadName}"
-                                                TeamName="{Binding TeamName}"
-                                                Users="{Binding Users}" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <usercontrols1:TeamTemplate HorizontalAlignment="Stretch"
+                                                    TeamLeadName="{Binding TeamLeadName}"
+                                                    TeamName="{Binding TeamName}"
+                                                    Users="{Binding Users}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
 
 
-        </ListBox>
-
+            </ItemsControl>
+        </ScrollViewer>
 
 
 

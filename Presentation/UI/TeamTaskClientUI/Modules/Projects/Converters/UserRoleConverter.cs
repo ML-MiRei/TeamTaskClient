@@ -16,7 +16,7 @@ namespace TeamTaskClient.UI.Modules.Projects.Converters
             if (value == null)
                 return null;
 
-            if ((int)value == (int)UserRole.EMPLOYEE)
+            if ((int)value == (int)UserRoleEnum.EMPLOYEE)
                 return "Employee";
             return "Lead";
         }

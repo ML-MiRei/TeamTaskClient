@@ -2,18 +2,20 @@
 using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Notification.Commands.DeleteNotification;
-using TeamTaskClient.ApplicationLayer.CQRS.Notification.Queries.GetNotifications;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Commands.DeleteUser;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Commands.UpdateUser;
-using TeamTaskClient.ApplicationLayer.CQRS.User.Queries.GetUserById;
+using TeamTaskClient.ApplicationLayer.UseCases.Notification.Commands.DeleteNotification;
+using TeamTaskClient.ApplicationLayer.UseCases.Notification.Queries.GetNotifications;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Commands.DeleteUser;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Commands.UpdateUser;
+using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserById;
 using TeamTaskClient.ApplicationLayer.Models;
+using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
 using TeamTaskClient.UI.Storages;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 
 namespace TeamTaskClient.UI.Modules.Profile.ViewModels
@@ -25,7 +27,7 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
 
         public static ProfileVM profile;
 
-        public ProfileVM(IMediator mediator)
+        public ProfileVM(IMediator mediator, IMessengerEvents messengerEvents)
         {
 
             _mediator = mediator;
@@ -35,15 +37,23 @@ namespace TeamTaskClient.UI.Modules.Profile.ViewModels
             NotificationStorage.Notifications =
                 new ObservableCollection<NotificationModel>(mediator.Send(new GetNotificationsQuery { UserId = Properties.Settings.Default.userId }).Result);
 
-            NotificationStorage.Notifications = new ObservableCollection<NotificationModel>()
-            {
-                new NotificationModel{ Details = "A new user has been added to the chat", Title = "Chats"},
-                new NotificationModel{ Details = "The project has been updated", Title = "Projects"},
-            };
-
             Logout = new LogoutCommand();
             DeleteAccount = new DeleteAccountCommand();
             EditProfile = new EditProfileCommand(this);
+
+            TeamHubClient.NotificationAdded += OnNotificationAdded;
+            messengerEvents.NotificationAdded += OnNotificationAdded;
+            ProjectHubClient.NotificationAdded += OnNotificationAdded;
+        }
+
+        private void OnNotificationAdded(object? sender, NotificationModel e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if(!Notifications.Any(n => n.NotificationId == e.NotificationId))
+                    Notifications.Add(e);
+
+            });
         }
 
         public string Lit => User.Lit;

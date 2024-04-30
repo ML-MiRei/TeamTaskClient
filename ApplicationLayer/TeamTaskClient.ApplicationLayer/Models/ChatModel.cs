@@ -21,10 +21,15 @@
             get
             {
                 if (Messages != null && Messages.Count != 0)
-                    return Messages.FirstOrDefault(m => m.MessageId == Messages.Max(m => m.MessageId)).TextMessage;
+                {
+                    int max = Messages.Max(m => m.MessageId);
+                    return Messages.FirstOrDefault(m => m.MessageId == max).TextMessage;
+
+                }
                 return "";
 
             }
+
         }
 
         public string CreatorLastMessage

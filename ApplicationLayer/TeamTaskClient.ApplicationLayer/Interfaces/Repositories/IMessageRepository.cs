@@ -7,7 +7,7 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.Repositories
     {
         Task DeleteMessage(int chatId, int messageId);
         Task UpdateMessage(MessageEntity message);
-        void CreateMessage(MessageDTO message);
+        Task CreateMessage(MessageEntity message);
 
     }
 }

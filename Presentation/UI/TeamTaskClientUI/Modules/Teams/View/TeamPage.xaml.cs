@@ -29,29 +29,12 @@ namespace TeamTaskClient.UI.Modules.Teams.View
 
         private void Vm_InterfaceRefresh(object? sender, EventArgs e)
         {
-            App.Current.Dispatcher.Invoke(()=> TeamList.Items.Refresh());
-        }
-
-        private void TeamTemplate_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            vm.SettingsTeam((TeamModel)(((TeamTemplate)sender).DataContext));
-            TeamList.Items.Refresh();
+            App.Current.Dispatcher.Invoke(() => TeamList.Items.Refresh());
         }
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             TeamList.ItemsSource = vm.Teams.Where(t => t.TeamName.Contains(vm.InputSearchString.Trim()));
-        }
-
-        private void TeamTemplate_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if (((TeamModel)(((TeamTemplate)sender).DataContext)).UserRole == (int)UserRole.LEAD)
-                Cursor = Cursors.Hand;
-        }
-
-        private void TeamTemplate_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Cursor = Cursors.Arrow;
         }
     }
 }

@@ -38,9 +38,9 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
             HubClient.SendAsync("ConnectUserWithTeams", userId, userTag).Wait();
 
 
-            HubClient.On<TeamModel>("TeamUpdatedReply", (teamModel) =>
+            HubClient.On<string, TeamModel>("TeamUpdatedReply", (teamLeadTag, teamModel) =>
             {
-                TeamUpdated?.Invoke(null, teamModel);
+                TeamUpdated?.Invoke(teamLeadTag, teamModel);
             });
 
 
@@ -75,6 +75,10 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
             });
 
 
+            HubClient.On<NotificationModel>("NotificationReply", (notificationModel) =>
+            {
+                NotificationAdded?.Invoke(null, notificationModel);
+            });
 
         }
 
@@ -85,6 +89,8 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
         public static event EventHandler<TeamModel> AddNewTeam;
         public static event EventHandler<UserModel> AddNewUserInTeam;
         public static event EventHandler<string> DeleteUserFromTeam;
+
+        public static event EventHandler<NotificationModel> NotificationAdded;
 
     }
 }

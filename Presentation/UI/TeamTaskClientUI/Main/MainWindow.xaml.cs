@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System.Windows;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI;
 using TeamTaskClient.UI.Main;
@@ -14,16 +15,15 @@ namespace TeamTaskClientUI.Main
     {
         private static IMediator m;
 
-        public MainWindow(IMediator mediator)
+        public MainWindow(IMediator mediator, IMessengerEvents messengerEvents)
         {
             InitializeComponent();
             m = mediator;
 
-            DataContext = new MainWindowVM(this, mediator);
-
+            DataContext = new MainWindowVM(this, mediator, messengerEvents);
             profileButton.IsChecked = true;
 
-            frameLayuot.NavigationService.Navigate(new ProfilePage(mediator));
+            frameLayuot.NavigationService.Navigate(new ProfilePage(mediator, messengerEvents));
 
         }
 

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.CQRS.Sprint.Commands.CreateSprint;
+using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.CreateSprint;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Enums;
@@ -34,7 +34,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         private void OnSelectedProjectChanged(object? sender, ProjectModel e)
         {
-            ListProjects.Items.Refresh();
+            App.Current.Dispatcher.Invoke(() => ListProjects.Items.Refresh());
         }
 
 
@@ -57,7 +57,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
             var projectModel = (((ProjectTemplate)sender).DataContext as ProjectModel);
 
-                vm.DeleteProject(projectModel);
+            vm.DeleteProject(projectModel);
 
         }
 
