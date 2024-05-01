@@ -18,7 +18,8 @@ using TeamTaskClient.Domain.Enums;
 using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
-using TeamTaskClient.UI.Modules.Teams.UserControls;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
+using TeamTaskClient.UI.UserControls;
 
 namespace TeamTaskClient.UI.Modules.Projects.View
 {
@@ -29,31 +30,26 @@ namespace TeamTaskClient.UI.Modules.Projects.View
     {
 
         BacklogProjectPageVM vm;
+        IProjectsCash _projectsCash;
 
-        public BacklogProjectPage(IMediator mediator)
+        public BacklogProjectPage(IMediator mediator, IProjectsCash projectsCash)
         {
             InitializeComponent();
-            vm = new BacklogProjectPageVM(mediator);
+            vm = new BacklogProjectPageVM(mediator, projectsCash);
             DataContext = vm;
+            _projectsCash = projectsCash;
 
-            ProjectsStorage.SelectedProjectChanged += ProjectsStorage_SelectedProjectChanged;
-            ProjectsStorage.BacklogInterfaceRefresh += OnBacklogInterfaceRefresh;
+            projectsCash.TaskChanged += OnTasksRefresh;
         }
 
-        private void OnBacklogInterfaceRefresh(object? sender, EventArgs e)
+        private void OnTasksRefresh(object? sender, EventArgs e)
         {
-            App.Current.Dispatcher.Invoke(() => TasksStories.Items.Refresh());
-        }
-
-
-        private void ProjectsStorage_SelectedProjectChanged(object? sender, ProjectModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => TasksStories.Items.Refresh());
+            TasksStories.Items.Refresh();
         }
 
         private void UsersProject_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
+            if (_projectsCash.SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
             {
                 vm.ChangeTask((ProjectTaskModel)((ProjectTaskTemplate)sender).DataContext);
             }

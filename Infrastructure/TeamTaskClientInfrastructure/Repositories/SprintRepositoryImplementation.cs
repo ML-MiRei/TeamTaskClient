@@ -1,25 +1,14 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
-using TeamTaskClient.Domain.Entities;
-using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class SprintRepositoryImplementation(IHttpClient client) : ISprintRepositoryInterface
+    public class SprintRepositoryImplementation(IHttpClient client, IProjectHubConnection projectHubConnection) : ISprintRepositoryInterface
     {
 
-        private HubConnection HubClient = ProjectHubConnection.Instance.GetClient();
+        private HubConnection HubClient = projectHubConnection.HubConnection;
 
 
         public async Task ChangeDateEndSprint(int projectId, int sprintId, DateTime dateEnd)

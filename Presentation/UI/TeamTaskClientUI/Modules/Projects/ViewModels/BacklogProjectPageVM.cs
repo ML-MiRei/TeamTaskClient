@@ -23,49 +23,51 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClient.UI.Modules.Profile.View;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
     public class BacklogProjectPageVM : ViewModelBase
     {
         private static IMediator _mediator;
+        private static IProjectsCash _projectsCash;
 
 
-        public BacklogProjectPageVM(IMediator mediator)
+        public BacklogProjectPageVM(IMediator mediator, IProjectsCash projectsCash)
         {
             _mediator = mediator;
+            _projectsCash = projectsCash;
 
             AddProjectTaskInBacklog = new AddProjectTaskInBacklogCommand(this);
             AddUser = new AddUserCommand(this);
 
-            ProjectsStorage.SelectedProjectChanged += OnSelectedProjectChanged;
-
+            _projectsCash.TaskChanged += OnTaskChanged;
         }
 
-
-        public int UserRole => ProjectsStorage.SelectedProject.UserRole;
-
-        private void OnSelectedProjectChanged(object? sender, ProjectModel e)
+        private void OnTaskChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(BacklogProjectTasks));
         }
 
 
+
+        public int UserRole => _projectsCash.SelectedProject.UserRole;
+
         public ObservableCollection<ProjectTaskModel> BacklogProjectTasks
         {
-            get { return ProjectsStorage.BacklogTasks; }
+            get { return _projectsCash.BacklogTasks; }
         }
 
         public ObservableCollection<UserModel> Users
         {
-            get { return ProjectsStorage.Users; }
+            get { return _projectsCash.Users; }
         }
 
 
 
         public async void ActionWithUser(UserModel user)
         {
-            if (ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
+            if (_projectsCash.SelectedProject.UserRole == (int)UserRoleEnum.LEAD)
             {
                 SelectActionsDialogWindow window = new SelectActionsDialogWindow("Select action", new List<string> { "Info", "Delete user" });
                 if (window.ShowDialog().Value)
@@ -82,7 +84,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                         {
                             try
                             {
-                                await _mediator.Send(new DeleteUserFromProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, UserTag = user.UserTag });
+                                await _mediator.Send(new DeleteUserFromProjectCommand { ProjectId = _projectsCash.SelectedProject.ProjectId, UserTag = user.UserTag });
                             }
                             catch
                             {
@@ -115,7 +117,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                             try
                             {
-                                await _mediator.Send(new DeleteProjectTaskCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, ProjectTaskId = projectTask.ProjectTaskId });
+                                await _mediator.Send(new DeleteProjectTaskCommand { ProjectId = _projectsCash.SelectedProject.ProjectId, ProjectTaskId = projectTask.ProjectTaskId });
                             }
                             catch
                             {
@@ -143,7 +145,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                             Detail = details,
                                             Title = title,
                                             ProjectTaskId = projectTask.ProjectTaskId,
-                                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                            ProjectId = _projectsCash.SelectedProject.ProjectId
                                         });
 
                                     }
@@ -155,7 +157,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                             Title = title,
                                             Detail = projectTask.Details,
                                             ProjectTaskId = projectTask.ProjectTaskId,
-                                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                            ProjectId = _projectsCash.SelectedProject.ProjectId
                                         });
                                     }
 
@@ -169,7 +171,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                             Detail = details,
                                             Title = projectTask.Title,
                                             ProjectTaskId = projectTask.ProjectTaskId,
-                                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                            ProjectId = _projectsCash.SelectedProject.ProjectId
                                         });
                                     }
                                 }
@@ -183,7 +185,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                     }
                     else
                     {
-                        SelectUserWindow setExecutorWindow = new SelectUserWindow();
+                        SelectUserWindow setExecutorWindow = new SelectUserWindow(_projectsCash);
                         if (setExecutorWindow.ShowDialog().Value)
                         {
                             var executor = setExecutorWindow.GetExecutor();
@@ -191,7 +193,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                             {
                                 try
                                 {
-                                    await _mediator.Send(new SetExecutorProjectTaskCommand { ProjectTaskId = projectTask.ProjectTaskId, User = executor, ProjectId = ProjectsStorage.SelectedProject.ProjectId });
+                                    await _mediator.Send(new SetExecutorProjectTaskCommand { ProjectTaskId = projectTask.ProjectTaskId, User = executor, ProjectId = _projectsCash.SelectedProject.ProjectId });
                                 }
                                 catch
                                 {
@@ -228,7 +230,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                         {
                             Detail = inputData[1],
                             Title = inputData[0],
-                            ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                            ProjectId = _projectsCash.SelectedProject.ProjectId,
                             Status = (int)StatusProjectTaskEnum.STORIES
 
 
@@ -259,34 +261,41 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                         {
                             var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
 
-                            try
+                            if (userTag == Properties.Settings.Default.userTag)
                             {
-                                var user = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
-
-                                AlertDialogWindow alertDialogWindow = new AlertDialogWindow($"Founded user: {user.FirstName} {user.SecondName} {user.LastName}", "Complete", "Cancel");
-                                if (alertDialogWindow.ShowDialog().Value)
-                                {
-                                    if (ProjectsStorage.SelectedProject.Users.Any(u => u.UserTag == userTag))
-                                    {
-                                        ErrorWindow.Show("This user is already\n a member of the project");
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                            _mediator.Send(new AddUserInProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, UserTag = userTag });
-                                        }
-                                        catch
-                                        {
-                                            ErrorWindow.Show("Add user error");
-
-                                        }
-                                    }
-                                }
+                                ErrorWindow.Show("You can't add \nyourself to the team");
                             }
-                            catch
+                            else
                             {
-                                ErrorWindow.Show("User not found");
+                                if (_projectsCash.SelectedProject.Users.Any(u => u.UserTag == userTag))
+                                {
+                                    ErrorWindow.Show("This user is already\n a member of the project");
+                                }
+                                else
+                                {
+                                    try
+                                    {
+                                        var user = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
+
+                                        AlertDialogWindow alertDialogWindow = new AlertDialogWindow($"Founded user: {user.FirstName} {user.SecondName} {user.LastName}", "Complete", "Cancel");
+                                        if (alertDialogWindow.ShowDialog().Value)
+                                        {
+                                            try
+                                            {
+                                                await _mediator.Send(new AddUserInProjectCommand { ProjectId = _projectsCash.SelectedProject.ProjectId, UserTag = userTag });
+                                            }
+                                            catch
+                                            {
+                                                ErrorWindow.Show("Error adding a user");
+                                            }
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        ErrorWindow.Show("User not found");
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -298,7 +307,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                             try
                             {
                                 var teamTag = inputDialogWindow.GetInputValue()[0];
-                                await _mediator.Send(new AddTeamProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, TeamTag = teamTag });
+                                await _mediator.Send(new AddTeamProjectCommand { ProjectId = _projectsCash.SelectedProject.ProjectId, TeamTag = teamTag });
                             }
                             catch
                             {

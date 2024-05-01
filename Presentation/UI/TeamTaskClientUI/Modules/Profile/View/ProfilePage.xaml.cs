@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using System.Windows.Controls;
 using System.Windows.Input;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
@@ -16,9 +17,9 @@ namespace TeamTaskClient.UI.Modules.Profile.View
     {
         ProfileVM vm;
 
-        public ProfilePage(IMediator mediator, IMessengerEvents messengerEvents)
+        public ProfilePage(IMediator mediator, INotificationCash notificationCash )
         {
-            vm = new ProfileVM(mediator, messengerEvents);
+            vm = new ProfileVM(mediator, notificationCash);
             InitializeComponent();
             DataContext = vm;
         }

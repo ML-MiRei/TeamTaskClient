@@ -101,6 +101,7 @@
                 <usercontrols:WatermarkTextBox Text="{Binding Phone}"
                                                WatermarkText="Enter phone number"
                                                Background="Transparent"
+                                               MaxLength="11"
                                                FontSize="18"
                                                CanNull="True"
                                                Padding="5"

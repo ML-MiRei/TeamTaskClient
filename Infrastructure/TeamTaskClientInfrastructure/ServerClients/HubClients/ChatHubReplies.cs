@@ -3,28 +3,17 @@ using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
-using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
 {
-    public class ChatHubClient : IMessengerEvents
+    public class ChatHubReplies : IMessengerEvents
     {
         private HubConnection _hubConnection;
 
 
-
-        private static ChatHubClient _instance;
-        public static ChatHubClient GetInstance()
+        public ChatHubReplies(IChatHubConnection chatHubConnection, int userId, string userTag)
         {
-            return _instance;
-        }
-
-
-
-        public ChatHubClient(IChatHubConnection chatHubConnection, int userId, string userTag)
-        {
-            _instance = this;
             _hubConnection = chatHubConnection.HubConnection;
 
             _hubConnection.SendAsync("ConnectUserWithChats", userId, userTag).Wait();
@@ -32,19 +21,19 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
 
             _hubConnection.On<int, MessageModel>("Receive", (chatId, messageModel) =>
             {
-                OnMessageReceived?.Invoke(chatId, messageModel);
+                MessageReceived?.Invoke(chatId, messageModel);
             });
 
 
             _hubConnection.On<MessageEntity>("MessageUpdated", (messageEntity) =>
             {
-                OnMessageUpdated?.Invoke(null, messageEntity);
+                MessageUpdated?.Invoke(null, messageEntity);
             });
 
 
             _hubConnection.On<int>("MessageIsDeleted", (messageId) =>
             {
-                OnMessageDeleted?.Invoke(messageId, new EventArgs());
+                MessageDeleted?.Invoke(messageId, new EventArgs());
             });
 
 
@@ -66,7 +55,7 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
 
             _hubConnection.On<int, string>("DeleteUserFromChatReply", (chatId, userTag) =>
             {
-                DeleteUserFromChat?.Invoke(chatId, userTag);
+                UserFromChatDeleted?.Invoke(chatId, userTag);
             });
 
             _hubConnection.On<ChatModel>("UpdateChatReply", (chatModel) =>
@@ -77,7 +66,7 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
 
             _hubConnection.On<int>("DeleteChatReply", (chatId) =>
             {
-                DeleteChat?.Invoke(null, chatId);
+                ChatDeleted?.Invoke(null, chatId);
             });
 
 
@@ -89,15 +78,15 @@ namespace TeamTaskClient.Infrastructure.ServerClients.HubClients
         }
 
 
-        public event EventHandler<MessageModel> OnMessageReceived;
-        public event EventHandler OnMessageDeleted;
-        public event EventHandler<MessageEntity> OnMessageUpdated;
+        public event EventHandler<MessageModel> MessageReceived;
+        public event EventHandler MessageDeleted;
+        public event EventHandler<MessageEntity> MessageUpdated;
         public event EventHandler<ChatModel> PrivateChatCreated;
         public event EventHandler<ChatModel> GroupChatCreated;
         public event EventHandler<ChatModel> ChatUpdated;
         public event EventHandler<UserModel> AddNewUserChat;
-        public event EventHandler<string> DeleteUserFromChat;
-        public event EventHandler<int> DeleteChat;
+        public event EventHandler<string> UserFromChatDeleted;
+        public event EventHandler<int> ChatDeleted;
 
         public event EventHandler<NotificationModel> NotificationAdded;
     }

@@ -8,6 +8,7 @@ using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
 {
@@ -18,15 +19,19 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
     {
 
         MessagesPageVM vm;
+        IMessengerCash _messengerCash;
 
-        public MessagePage(IMediator mediator, IMessengerEvents messengerEvents)
+
+        public MessagePage(IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
             InitializeComponent();
-            vm = new MessagesPageVM(mediator, messengerEvents);
+            _messengerCash = messengerCash;
+
+            vm = new MessagesPageVM(mediator, messengerEvents, messengerCash);
             DataContext = vm;
 
             vm.InterfaceRefresh += Vm_InterfaceRefresh;
-            MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
+            messengerCash.SelectedChatChanged += OnSelectedChatChanged;
 
             ((INotifyCollectionChanged)ListMessages.Items).CollectionChanged += ChatMessagePage_CollectionChanged;
 
@@ -39,7 +44,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
 
         private void OnSelectedChatChanged(object? sender, ChatModel e)
         {
-            if(MessengerStorage.SelectedChat == null)
+            if(_messengerCash.SelectedChat == null)
                 InputPanel.Visibility = Visibility.Hidden;
             else
                 InputPanel.Visibility = Visibility.Visible;
@@ -57,8 +62,6 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
 
         private void ChatMessagePage_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-
-            //мб убрать первое условие
             if (e.Action == NotifyCollectionChangedAction.Add)
             {
                 ListMessages.ScrollIntoView(e.NewItems[0]);

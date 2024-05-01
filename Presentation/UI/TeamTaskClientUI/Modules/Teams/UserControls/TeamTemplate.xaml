@@ -132,7 +132,7 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <local:UserTemplate ColorNumber="{Binding ColorNumber}"
+                            <usercontrols:UserTemplate ColorNumber="{Binding ColorNumber}"
                                                 Margin="10,-10,10,0"
                                                 MouseEnter="UserTemplate_MouseEnter"
                                                 MouseLeave="UserTemplate_MouseLeave"

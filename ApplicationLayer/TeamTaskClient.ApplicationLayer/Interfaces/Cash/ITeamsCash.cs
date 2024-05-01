@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using TeamTaskClient.ApplicationLayer.Models;
 
-namespace TeamTaskClient.UI.Storages
+namespace TeamTaskClient.ApplicationLayer.Interfaces.Cash
 {
-    public class NotificationStorage
+    public interface ITeamsCash
     {
-        public static ObservableCollection<NotificationModel> Notifications { get; set; }
-
+        public ObservableCollection<TeamModel> Teams { get; set; }
+        public event EventHandler TeamUpdated;
 
     }
 }

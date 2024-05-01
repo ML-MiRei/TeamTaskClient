@@ -1,36 +1,31 @@
 ﻿using MediatR;
-using System.Diagnostics;
 using System.Windows.Controls;
-using System.Windows.Input;
-using TeamTaskClient.ApplicationLayer.Models;
-using TeamTaskClient.Domain.Enums;
-using TeamTaskClient.UI.Modules.Teams.UserControls;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.UI.Modules.Teams.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Teams.View
 {
-    /// <summary>
-    /// Логика взаимодействия для TeamPage.xaml
-    /// </summary>
+
     public partial class TeamPage : Page
     {
 
         TeamPageVM vm;
 
-        public TeamPage(IMediator mediator)
+        public TeamPage(IMediator mediator, ITeamsCash teamsCash)
         {
             InitializeComponent();
 
-            vm = new TeamPageVM(mediator);
+            vm = new TeamPageVM(mediator, teamsCash);
             DataContext = vm;
 
-            vm.InterfaceRefresh += Vm_InterfaceRefresh;
+            teamsCash.TeamUpdated += OnTeamUpdated;
         }
 
-        private void Vm_InterfaceRefresh(object? sender, EventArgs e)
+        private void OnTeamUpdated(object? sender, EventArgs e)
         {
-            App.Current.Dispatcher.Invoke(() => TeamList.Items.Refresh());
+            TeamList.Items.Refresh();
         }
+
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {

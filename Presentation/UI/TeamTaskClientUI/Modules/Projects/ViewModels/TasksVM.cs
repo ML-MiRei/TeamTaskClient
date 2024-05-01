@@ -16,46 +16,44 @@ using TeamTaskClientUI.Main;
 using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.DeleteSprint;
 using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.ChangeDateEndSprint;
 using TeamTaskClient.ApplicationLayer.UseCases.Sprint.Commands.ChangeDateStartSprint;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
     internal class TasksVM : ViewModelBase
     {
         private static IMediator _mediator;
+        private static IProjectsCash _projectsCash;
 
 
-
-        public TasksVM(IMediator mediator)
+        public TasksVM(IMediator mediator, IProjectsCash projectsCash)
         {
             _mediator = mediator;
+            _projectsCash = projectsCash;
 
             SelectSprint = new SelectSprintCommand(this);
             EditSprint = new EditSprintCommand(this);
 
-            ProjectsStorage.SelectedSprintChanged += OnSelectedSprintChanged;
-            ProjectsStorage.TasksInterfaceRefresh += ProjectsStorage_TasksInterfaceRefresh;
+            projectsCash.TaskChanged += OnTasksRefresh;
+            projectsCash.SprintChanged += OnSprintChanged;
         }
 
-        private void ProjectsStorage_TasksInterfaceRefresh(object? sender, EventArgs e)
+        private void OnSprintChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(SprintNumber));
             OnPropertyChanged(nameof(DateEnd));
             OnPropertyChanged(nameof(DateStart));
-            OnPropertyChanged(nameof(ProjectTasksDone));
-            OnPropertyChanged(nameof(ProjectTasksInProcess));
-            OnPropertyChanged(nameof(ProjectTasksTesting));
-            OnPropertyChanged(nameof(ProjectTasksTodo));
         }
 
-        private void OnSelectedSprintChanged(object? sender, SprintModel e)
+        private void OnTasksRefresh(object? sender, EventArgs e)
         {
-            OnPropertyChanged(nameof(SprintNumber));
             OnPropertyChanged(nameof(ProjectTasksDone));
             OnPropertyChanged(nameof(ProjectTasksInProcess));
             OnPropertyChanged(nameof(ProjectTasksTesting));
             OnPropertyChanged(nameof(ProjectTasksTodo));
         }
 
+     
         public async void StatusProjectTaskChange(ProjectTaskModel projectTaskModel, StatusProjectTaskEnum newStatus)
         {
 
@@ -63,10 +61,10 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
             {
                 await _mediator.Send(new ChangeStatusProjectTaskCommand
                 {
-                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                    ProjectId = _projectsCash.SelectedProject.ProjectId,
                     ProjectTaskId = projectTaskModel.ProjectTaskId,
                     Status = (int)newStatus,
-                    SprintId = ProjectsStorage.SelectedSprint.SprintId
+                    SprintId = _projectsCash.SelectedSprint.SprintId
                 });
             }
             catch
@@ -76,38 +74,38 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
         }
 
-        public int UserRole => ProjectsStorage.SelectedProject.UserRole;
+        public int UserRole => _projectsCash.SelectedProject.UserRole;
 
 
-        public string SprintNumber { get => (ProjectsStorage.Sprints.IndexOf(ProjectsStorage.SelectedSprint) + 1).ToString(); }
+        public string SprintNumber { get => (_projectsCash.Sprints.IndexOf(_projectsCash.SelectedSprint) + 1).ToString(); }
 
 
         public ObservableCollection<ProjectTaskModel> ProjectTasksTodo
         {
-            get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.TODO)); }
+            get { return new ObservableCollection<ProjectTaskModel>(_projectsCash.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.TODO)); }
         }
 
         public ObservableCollection<ProjectTaskModel> ProjectTasksInProcess
         {
-            get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.IN_PROGRESS)); }
+            get { return new ObservableCollection<ProjectTaskModel>(_projectsCash.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.IN_PROGRESS)); }
         }
 
         public ObservableCollection<ProjectTaskModel> ProjectTasksTesting
         {
-            get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.TESTING)); }
+            get { return new ObservableCollection<ProjectTaskModel>(_projectsCash.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.TESTING)); }
         }
 
 
 
         public ObservableCollection<ProjectTaskModel> ProjectTasksDone
         {
-            get { return new ObservableCollection<ProjectTaskModel>(ProjectsStorage.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.DONE)); }
+            get { return new ObservableCollection<ProjectTaskModel>(_projectsCash.Tasks.Where(t => t.Status == (int)StatusProjectTaskEnum.DONE)); }
         }
 
 
 
-        public string DateStart => ProjectsStorage.SelectedSprint.DateStart.ToString("d");
-        public string DateEnd => ProjectsStorage.SelectedSprint.DateEnd.ToString("d");
+        public string DateStart => _projectsCash.SelectedSprint.DateStart.ToString("d");
+        public string DateEnd => _projectsCash.SelectedSprint.DateEnd.ToString("d");
 
 
         public ICommand AddSprint { get; } = new AddSprintCommand();
@@ -131,14 +129,14 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                     {
                         case "Change date start":
 
-                            ChangeDateWindow changeDateWindow = new ChangeDateWindow(ProjectsStorage.SelectedSprint.DateStart);
+                            ChangeDateWindow changeDateWindow = new ChangeDateWindow(_projectsCash.SelectedSprint.DateStart);
                             if (changeDateWindow.ShowDialog().Value)
                             {
                                 await _mediator.Send(new ChangeDateStartSprintCommand
                                 {
                                     DateStart = changeDateWindow.SelectedDate,
-                                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                                    SprintId = ProjectsStorage.SelectedSprint.SprintId
+                                    ProjectId = _projectsCash.SelectedProject.ProjectId,
+                                    SprintId = _projectsCash.SelectedSprint.SprintId
                                 });
                             }
 
@@ -147,14 +145,14 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                         case "Change date end":
 
-                            ChangeDateWindow changeDateEndWindow = new ChangeDateWindow(ProjectsStorage.SelectedSprint.DateEnd);
+                            ChangeDateWindow changeDateEndWindow = new ChangeDateWindow(_projectsCash.SelectedSprint.DateEnd);
                             if (changeDateEndWindow.ShowDialog().Value)
                             {
                                 await _mediator.Send(new ChangeDateEndSprintCommand
                                 {
                                     DateEnd = changeDateEndWindow.SelectedDate,
-                                    ProjectId = ProjectsStorage.SelectedProject.ProjectId,
-                                    SprintId = ProjectsStorage.SelectedSprint.SprintId
+                                    ProjectId = _projectsCash.SelectedProject.ProjectId,
+                                    SprintId = _projectsCash.SelectedSprint.SprintId
                                 });
                             }
 
@@ -166,7 +164,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                             AlertDialogWindow alertDialogWindow = new AlertDialogWindow("Are you sure?", "Delete", "Cancel");
                             if (alertDialogWindow.ShowDialog().Value)
                             {
-                                _mediator.Send(new DeleteSprintCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, SprintId = ProjectsStorage.SelectedSprint.SprintId });
+                                _mediator.Send(new DeleteSprintCommand { ProjectId = _projectsCash.SelectedProject.ProjectId, SprintId = _projectsCash.SelectedSprint.SprintId });
                             }
                             break;
                     }
@@ -185,9 +183,9 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                 List<string> list = new List<string>();
 
-                for (int i = 0; i < ProjectsStorage.Sprints.Count; i++)
+                for (int i = 0; i < _projectsCash.Sprints.Count; i++)
                 {
-                    list.Add($"Sprint №{i + 1},    {ProjectsStorage.Sprints[i].DateStart.ToString("d")} - {ProjectsStorage.Sprints[i].DateEnd.ToString("d")}");
+                    list.Add($"Sprint №{i + 1},    {_projectsCash.Sprints[i].DateStart.ToString("d")} - {_projectsCash.Sprints[i].DateEnd.ToString("d")}");
                 }
 
 
@@ -195,8 +193,8 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 
                 if (selectActionsDialogWindow.ShowDialog().Value)
                 {
-                    var selectedSprint = ProjectsStorage.Sprints[list.IndexOf(selectActionsDialogWindow.GetSelectedAction())];
-                    ProjectsStorage.SelectedSprint = selectedSprint;
+                    var selectedSprint = _projectsCash.Sprints[list.IndexOf(selectActionsDialogWindow.GetSelectedAction())];
+                    _projectsCash.SelectedSprint = selectedSprint;
 
                 }
 
@@ -208,7 +206,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
         {
             public async override void Execute(object? parameter)
             {
-                CreateSprintWindow createSprintWindow = new CreateSprintWindow();
+                CreateSprintWindow createSprintWindow = new CreateSprintWindow(_projectsCash);
                 if (createSprintWindow.ShowDialog().Value)
                 {
 
@@ -224,7 +222,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                 DateStart = newSprint.DateStart,
                                 Tasks = createSprintWindow.GetSelectedTasks()
                             },
-                            ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                            ProjectId = _projectsCash.SelectedProject.ProjectId
 
                         });
 

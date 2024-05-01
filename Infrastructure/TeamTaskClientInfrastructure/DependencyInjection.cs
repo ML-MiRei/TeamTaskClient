@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.Infrastructure.Repositories;
-using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.ServerClients.Implementation;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
@@ -35,7 +34,12 @@ namespace TeamTaskClient.Infrastructure
                                                 .AddTransient<IHttpClient, TeamTaskSeverHttpClient>()
 
                                                 .AddSingleton<IChatHubConnection, ChatHubConnection>()
-                                                .AddSingleton<IMessengerEvents>(m => new ChatHubClient(m.GetService<IChatHubConnection>(), userId, userTag));
+                                                .AddSingleton<IProjectHubConnection, ProjectHubConnection>()
+                                                .AddSingleton<ITeamHubConnection, TeamHubConnection>()
+
+                                                .AddSingleton<IProjectsEvents>(m => new ProjectHubReplies(m.GetService<IProjectHubConnection>(), userId, userTag))
+                                                .AddSingleton<ITeamsEvents>(m => new TeamHubReplies(m.GetService<ITeamHubConnection>(), userId, userTag))
+                                                .AddSingleton<IMessengerEvents>(m => new ChatHubReplies(m.GetService<IChatHubConnection>(), userId, userTag));
             return services;
         }
     }

@@ -14,16 +14,17 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClient.UI.Storages;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
     public class SetExecutorWindowVM : ViewModelBase
     {
 
-        public SetExecutorWindowVM()
+        public SetExecutorWindowVM(IProjectsCash projectsCash)
         {
 
-            Users = ProjectsStorage.Users;
+            Users = projectsCash.Users;
         }
 
 

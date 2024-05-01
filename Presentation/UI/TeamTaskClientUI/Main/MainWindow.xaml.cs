@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System.Windows;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI;
@@ -13,17 +14,15 @@ namespace TeamTaskClientUI.Main
     /// </summary>
     public partial class MainWindow : Window
     {
-        private static IMediator m;
-
-        public MainWindow(IMediator mediator, IMessengerEvents messengerEvents)
+        public MainWindow(IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash, 
+            IProjectsCash projectsCash, INotificationCash notificationCash, ITeamsCash teamsCash)
         {
             InitializeComponent();
-            m = mediator;
 
-            DataContext = new MainWindowVM(this, mediator, messengerEvents);
+            DataContext = new MainWindowVM(this, mediator, messengerEvents, messengerCash, projectsCash, notificationCash, teamsCash);
             profileButton.IsChecked = true;
 
-            frameLayuot.NavigationService.Navigate(new ProfilePage(mediator, messengerEvents));
+            frameLayuot.NavigationService.Navigate(new ProfilePage(mediator, notificationCash));
 
         }
 

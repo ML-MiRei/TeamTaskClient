@@ -6,6 +6,7 @@ using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Modules.Messanger.UserControls;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
 {
@@ -15,13 +16,15 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
     public partial class ChatsListPage : Page
     {
         ChatsListPageVM chatListPageVM;
+        IMessengerCash _messengerCash;
 
-        public ChatsListPage(IMediator mediator, IMessengerEvents messengerEvents)
+        public ChatsListPage(IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
             InitializeComponent();
-            chatListPageVM = new ChatsListPageVM(mediator, messengerEvents);
+            _messengerCash = messengerCash;
+            chatListPageVM = new ChatsListPageVM(mediator, messengerEvents, messengerCash);
             DataContext = chatListPageVM;
-            MessengerStorage.ChatsRefresh += MessengerStorage_ChatsRefresh;
+            MessengerCash.ChatsRefresh += MessengerStorage_ChatsRefresh;
         }
 
         private void MessengerStorage_ChatsRefresh(object? sender, EventArgs e)
@@ -35,9 +38,9 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
             try
             {
                 if ((((ListBox)sender).SelectedItem as ChatModel) == null)
-                    MessengerStorage.SelectedChat = null;
+                    _messengerCash.SelectedChat = null;
                 else
-                    MessengerStorage.SelectedChat = (((ListBox)sender).SelectedItem as ChatModel);
+                    _messengerCash.SelectedChat = (((ListBox)sender).SelectedItem as ChatModel);
             }
             catch (Exception) { }
         }

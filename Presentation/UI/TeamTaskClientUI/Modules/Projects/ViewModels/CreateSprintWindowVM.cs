@@ -13,19 +13,20 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClient.UI.Storages;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
     public class CreateSprintWindowVM : ViewModelBase
     {
 
-        public CreateSprintWindowVM()
+        public CreateSprintWindowVM(IProjectsCash projectsCash)
         {
 
             DateStart = DateTime.Now;
             DateEnd = DateTime.Now.AddDays(7);
 
-            Tasks = ProjectsStorage.BacklogTasks.Where(t => t.Status == (int)StatusProjectTaskEnum.STORIES).ToList();
+            Tasks = projectsCash.BacklogTasks.Where(t => t.Status == (int)StatusProjectTaskEnum.STORIES).ToList();
         }
 
 

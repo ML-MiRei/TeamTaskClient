@@ -13,19 +13,57 @@ using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.UI.Modules.Profile.ViewModels;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Storages
 {
-    public class MessengerStorage
+    public class MessengerCash : IMessengerCash
     {
-        public MessengerStorage(IMessengerEvents messengerEvents)
+        public MessengerCash(IMessengerEvents messengerEvents)
         {
             messengerEvents.PrivateChatCreated += OnPrivateChatCreated;
             messengerEvents.AddNewUserChat += OnAddNewUserChat;
             messengerEvents.ChatUpdated += OnChatUpdated;
-            messengerEvents.DeleteUserFromChat += OnDeleteUserFromChat;
-            messengerEvents.DeleteChat += OnDeleteChat;
+            messengerEvents.UserFromChatDeleted += OnDeleteUserFromChat;
+            messengerEvents.ChatDeleted += OnDeleteChat;
             messengerEvents.GroupChatCreated += OnGroupChatCreated;
+
+            messengerEvents.MessageDeleted += OnMessageDeleted;
+            messengerEvents.MessageReceived += OnMessageReceived;
+            messengerEvents.MessageUpdated += OnMessageUpdated;
+        }
+
+        private void OnMessageUpdated(object? sender, Domain.Entities.MessageEntity e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (SelectedChat?.ChatId == (int)sender)
+                {
+                    _messages.First(m => m.MessageId == e.ID).TextMessage = e.TextMessage;
+                    ChatsRefresh?.Invoke((int)sender, new EventArgs());
+                }
+
+                Chats.First(c => c.ChatId == (int)sender).Messages.First(m => m.MessageId == e.ID).TextMessage = e.TextMessage;
+            });
+        }
+
+        private void OnMessageReceived(object? sender, MessageModel e)
+        {
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                if (SelectedChat?.ChatId == (int)sender)
+                {
+                    _messages.Add(e);
+                    ChatsRefresh?.Invoke((int)sender, new EventArgs());
+                }
+
+                Chats.First(c => c.ChatId == (int)sender).Messages.Add(e);
+            });
+        }
+
+        private void OnMessageDeleted(object? sender, EventArgs e)
+        {
+            App.Current.Dispatcher.Invoke(() => Messages.Remove(Messages.First(m => m.MessageId == (int)sender)));
         }
 
         public static event EventHandler ChatsRefresh;
@@ -67,15 +105,9 @@ namespace TeamTaskClient.UI.Storages
 
 
 
-        public static void AddChat(ChatModel chatModel)
-        {
-            _chats.Add(chatModel);
-            SelectedChat = chatModel;
-            SelectedChatChanged?.Invoke(null, chatModel);
-        }
 
         private static ObservableCollection<ChatModel> _chats;
-        public static ObservableCollection<ChatModel> Chats
+        public ObservableCollection<ChatModel> Chats
         {
             get => _chats;
 
@@ -90,7 +122,7 @@ namespace TeamTaskClient.UI.Storages
 
 
         private static ChatModel _selectedChat { get; set; }
-        public static ChatModel SelectedChat
+        public ChatModel SelectedChat
         {
             get => _selectedChat;
             set
@@ -106,19 +138,9 @@ namespace TeamTaskClient.UI.Storages
         }
 
 
-        public static void AddMessage(int chatId, MessageModel messageModel)
-        {
-            if (SelectedChat?.ChatId == chatId)
-            {
-                _messages.Add(messageModel);
-                ChatsRefresh?.Invoke(chatId, new EventArgs());
-            }
-
-            Chats.First(c => c.ChatId == chatId).Messages.Add(messageModel);
-        }
 
 
-        public static void UpdateMessage(int chatId, MessageModel messageModel)
+        public void UpdateMessage(int chatId, MessageModel messageModel)
         {
             if (SelectedChat?.ChatId == chatId)
             {
@@ -130,7 +152,7 @@ namespace TeamTaskClient.UI.Storages
 
 
         private static ObservableCollection<MessageModel> _messages = new ObservableCollection<MessageModel>();
-        public static ObservableCollection<MessageModel> Messages
+        public ObservableCollection<MessageModel> Messages
         {
             get => _messages;
 
@@ -142,6 +164,6 @@ namespace TeamTaskClient.UI.Storages
 
 
 
-        public static event EventHandler<ChatModel> SelectedChatChanged;
+        public event EventHandler<ChatModel> SelectedChatChanged;
     }
 }

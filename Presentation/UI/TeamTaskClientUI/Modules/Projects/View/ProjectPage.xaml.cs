@@ -7,6 +7,7 @@ using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
 using TeamTaskClient.UI.Storages;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.View
 {
@@ -16,15 +17,17 @@ namespace TeamTaskClient.UI.Modules.Projects.View
     public partial class ProjectPage : Page
     {
         private static IMediator _mediator;
+        private static IProjectsCash _projectsCash;
         public static ProjectPage Instance { get; set; }
 
 
-        public ProjectPage(IMediator mediator)
+        public ProjectPage(IMediator mediator, IProjectsCash projectsCash)
         {
             _mediator = mediator;
+            _projectsCash = projectsCash;
 
             InitializeComponent();
-            DataContext = ProjectPageVM.GetInstance(mediator);
+            DataContext = new ProjectPageVM(mediator, projectsCash);
 
             ToBacklogButton.IsChecked = true;
             Instance = this;
@@ -35,24 +38,24 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         private void ToBacklog(object sender, System.Windows.RoutedEventArgs e)
         {
-            frameLayuot.NavigationService.Navigate(new BacklogProjectPage(_mediator));
+            frameLayuot.NavigationService.Navigate(new BacklogProjectPage(_mediator, _projectsCash));
 
         }
 
         private async void ToSprints(object sender, System.Windows.RoutedEventArgs e)
         {
-            if (ProjectsStorage.Sprints.Count > 0)
-                frameLayuot.NavigationService.Navigate(new TasksPage(_mediator));
+            if (_projectsCash.Sprints.Count > 0)
+                frameLayuot.NavigationService.Navigate(new TasksPage(_mediator, _projectsCash));
             else
             {
                 ToTasksButton.IsChecked = false;
-                if (ProjectsStorage.SelectedProject.UserRole != (int)UserRoleEnum.LEAD)
+                if (_projectsCash.SelectedProject.UserRole != (int)UserRoleEnum.LEAD)
                 {
                     ErrorWindow.Show("There are no sprints");
                 }
                 else
                 {
-                    CreateSprintWindow createSprintWindow = new CreateSprintWindow();
+                    CreateSprintWindow createSprintWindow = new CreateSprintWindow(_projectsCash);
                     if (createSprintWindow.ShowDialog().Value)
                     {
 
@@ -68,7 +71,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
                                     DateStart = newSprint.DateStart,
                                     Tasks = createSprintWindow.GetSelectedTasks()
                                 },
-                                ProjectId = ProjectsStorage.SelectedProject.ProjectId,
+                                ProjectId = _projectsCash.SelectedProject.ProjectId,
                             });
 
                         }

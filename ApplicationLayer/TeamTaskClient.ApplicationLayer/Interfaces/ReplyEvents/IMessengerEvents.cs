@@ -12,15 +12,17 @@ namespace TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents
     {
 
 
-         event EventHandler<MessageModel> OnMessageReceived;
-         event EventHandler OnMessageDeleted;
-         event EventHandler<MessageEntity> OnMessageUpdated;
+         event EventHandler<MessageModel> MessageReceived;
+         event EventHandler MessageDeleted;
+         event EventHandler<MessageEntity> MessageUpdated;
+
+
          event EventHandler<ChatModel> PrivateChatCreated;
          event EventHandler<ChatModel> GroupChatCreated;
          event EventHandler<ChatModel> ChatUpdated;
          event EventHandler<UserModel> AddNewUserChat;
-         event EventHandler<string> DeleteUserFromChat;
-         event EventHandler<int> DeleteChat;
+         event EventHandler<string> UserFromChatDeleted;
+         event EventHandler<int> ChatDeleted;
 
          event EventHandler<NotificationModel> NotificationAdded;
     }

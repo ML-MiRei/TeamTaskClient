@@ -1,13 +1,9 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http.Json;
-using System.Xml.Linq;
-using TeamTaskClient.ApplicationLayer.DTOs;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.ServerClients.Connections;
-using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories

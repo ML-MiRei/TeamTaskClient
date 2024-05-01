@@ -13,6 +13,7 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.View;
 using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreateGroupChatByProject;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
@@ -20,36 +21,29 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
     {
 
         private static IMediator _mediator;
-        private static ProjectPageVM _instance;
+        private static IProjectsCash _projectsCash;
 
 
 
-
-        public static ProjectPageVM GetInstance(IMediator mediator)
-        {
-            if (_instance == null)
-                _instance = new ProjectPageVM(mediator);
-            return _instance;
-        }
-
-
-        private ProjectPageVM(IMediator mediator)
+        public ProjectPageVM(IMediator mediator, IProjectsCash projectsCash)
         {
             _mediator = mediator;
+            _projectsCash = projectsCash;
 
             EditProjectName = new EditProjectNameCommand(this);
-            ProjectsStorage.SelectedProjectChanged += OnSelectedProjectChanged;
+
+            _projectsCash.ProjectChanged += OnProjectChanged;
         }
 
-        private void OnSelectedProjectChanged(object? sender, ProjectModel e)
+        private void OnProjectChanged(object? sender, EventArgs e)
         {
             OnPropertyChanged(nameof(ProjectName));
+            OnPropertyChanged(nameof(UserRole));
         }
 
+        public int UserRole => _projectsCash.SelectedProject.UserRole;
 
-        public int UserRole => ProjectsStorage.SelectedProject.UserRole;
-
-        public string ProjectName { get => ProjectsStorage.SelectedProject.ProjectName; }
+        public string ProjectName { get => _projectsCash.SelectedProject.ProjectName; }
 
 
         public ICommand EditProjectName { get; }
@@ -65,12 +59,12 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                     {
                         case "Change name":
 
-                            InputDialogWindow inputDialog = new InputDialogWindow("Edit project", "Save", new List<string> { ProjectsStorage.SelectedProject.ProjectName });
+                            InputDialogWindow inputDialog = new InputDialogWindow("Edit project", "Save", new List<string> { _projectsCash.SelectedProject.ProjectName });
                             if (inputDialog.ShowDialog().Value)
                             {
                                 try
                                 {
-                                    await _mediator.Send(new UpdateProjectCommand { ProjectId = ProjectsStorage.SelectedProject.ProjectId, ProjectName = inputDialog.GetInputValue()[0] });
+                                    await _mediator.Send(new UpdateProjectCommand { ProjectId = _projectsCash.SelectedProject.ProjectId, ProjectName = inputDialog.GetInputValue()[0] });
                                 }
                                 catch
                                 {
@@ -91,7 +85,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                                     await _mediator.Send(new CreateGroupChatByProjectCommand
                                     {
                                         UserId = Properties.Settings.Default.userId,
-                                        ProjectId = ProjectsStorage.SelectedProject.ProjectId
+                                        ProjectId = _projectsCash.SelectedProject.ProjectId
                                     });
                                 }
                                 catch (Exception)

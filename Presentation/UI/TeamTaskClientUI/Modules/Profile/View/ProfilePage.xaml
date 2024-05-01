@@ -302,6 +302,7 @@
 
                 <TextBlock Text="No notifications"
                            Grid.Row="1"
+                           x:Name="TextNotification"
                            Visibility="{Binding Notifications, Converter={StaticResource EmptyListConverter}}"
                            Style="{StaticResource GreenHeader}"
                            VerticalAlignment="Center"

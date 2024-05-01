@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
@@ -25,11 +26,11 @@ namespace TeamTaskClient.UI.Modules.Projects.Dialogs
 
 
         CreateSprintWindowVM vm;
-        public CreateSprintWindow()
+        public CreateSprintWindow(IProjectsCash projectsCash)
         {
             InitializeComponent();
 
-            vm = new CreateSprintWindowVM();
+            vm = new CreateSprintWindowVM(projectsCash);
             DataContext = vm;
 
 

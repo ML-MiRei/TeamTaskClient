@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System.Windows.Controls;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
@@ -13,12 +14,12 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
         ChatsListPage chats;
         MessagePage message;
 
-        public MessangerPage(IMediator mediator, IMessengerEvents messengerEvents)
+        public MessangerPage(IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
             InitializeComponent();
 
-            chats = new ChatsListPage(mediator, messengerEvents);
-            message = new MessagePage(mediator, messengerEvents);
+            chats = new ChatsListPage(mediator, messengerEvents, messengerCash);
+            message = new MessagePage(mediator, messengerEvents, messengerCash);
 
             ChatPageLayout.NavigationService.Navigate(chats);
             MessagePageLayout.NavigationService.Navigate(message);

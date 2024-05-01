@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace TeamTaskClient.UI.Modules.Teams.UserControls
+namespace TeamTaskClient.UI.UserControls
 {
     /// <summary>
     /// Логика взаимодействия для UserTemplate.xaml

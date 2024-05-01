@@ -10,6 +10,7 @@ using TeamTaskClient.UI.Main;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.View
 {
@@ -18,17 +19,19 @@ namespace TeamTaskClient.UI.Modules.Projects.View
     /// </summary>
     public partial class ObserveProjectsPage : Page
     {
-        ObserverProjectPageVM vm;
+        private static ObserverProjectPageVM vm;
+        private static IProjectsCash _projectsCash;
 
-        public ObserveProjectsPage(IMediator mediator)
+        public ObserveProjectsPage(IMediator mediator, IProjectsCash projectsCash)
         {
             InitializeComponent();
+            _projectsCash = projectsCash;
 
-            vm = new ObserverProjectPageVM(mediator);
+            vm = new ObserverProjectPageVM(mediator, _projectsCash);
             DataContext = vm;
 
 
-            ProjectsStorage.SelectedProjectChanged += OnSelectedProjectChanged;
+            _projectsCash.SelectedProjectChanged += OnSelectedProjectChanged;
 
         }
 
@@ -40,13 +43,13 @@ namespace TeamTaskClient.UI.Modules.Projects.View
 
         private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
         {
-            ListProjects.ItemsSource = ProjectsStorage.Projects.Where(p => p.ProjectName.Contains(vm.InputSearchString.Trim()));
+            ListProjects.ItemsSource = _projectsCash.Projects.Where(p => p.ProjectName.Contains(vm.InputSearchString.Trim()));
         }
 
         private void ProjectTemplate_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
 
-            ProjectsStorage.SelectedProject = (((ProjectTemplate)sender).DataContext as ProjectModel);
+            _projectsCash.SelectedProject = (((ProjectTemplate)sender).DataContext as ProjectModel);
 
 
             MainWindowVM.ToProjectTaskButton();

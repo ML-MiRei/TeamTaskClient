@@ -1,114 +1,53 @@
 ﻿using MediatR;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
+using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreateGroupChat;
-using TeamTaskClient.ApplicationLayer.UseCases.Chat.Commands.CreateGroupChatByProject;
 using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.AddUserInTeam;
 using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.CreateTeam;
 using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.DeleteUserFromTeam;
 using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.LeaveTeam;
 using TeamTaskClient.ApplicationLayer.UseCases.Team.Commands.UpdateTeam;
 using TeamTaskClient.ApplicationLayer.UseCases.Team.Queries.GetTeamsByUserId;
-using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserById;
 using TeamTaskClient.ApplicationLayer.UseCases.User.Queries.GetUserByTag;
-using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Enums;
-using TeamTaskClient.Infrastructure.ServerClients.HubClients;
-using TeamTaskClient.Infrastructure.Services.Implementation;
 using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
-using TeamTaskClient.UI.Modules.Profile.ViewModels;
 
 namespace TeamTaskClient.UI.Modules.Teams.ViewModels
 {
     class TeamPageVM : ViewModelBase
     {
         private static IMediator _mediator;
+        private static ITeamsCash _teamsCash;
 
+        public static TeamPageVM Instance;
 
-        public event EventHandler InterfaceRefresh;
-
-        public static TeamPageVM Instance { get; set; }
-
-
-        public TeamPageVM(IMediator mediator)
+        public TeamPageVM(IMediator mediator, ITeamsCash teamsCash)
         {
             _mediator = mediator;
-            Teams = new ObservableCollection<TeamModel>(mediator.Send(new GetTeamsByUserIdCommand { UserId = Properties.Settings.Default.userId }).Result);
-
+            _teamsCash = teamsCash;
 
             Instance = this;
+
+            teamsCash.Teams = new ObservableCollection<TeamModel>(mediator.Send(new GetTeamsByUserIdCommand { UserId = Properties.Settings.Default.userId }).Result);
+            teamsCash.TeamUpdated += OnTeamUpdated;
 
             CreateTeam = new NewTeamCommand(this);
             InputSearchString = "Team name..";
 
-
-            TeamHubClient.TeamUpdated += OnTeamUpdated;
-            TeamHubClient.AddNewUserInTeam += OnAddNewUserInTeam;
-            TeamHubClient.AddNewTeam += OnAddNewTeam;
-            TeamHubClient.TeamDeleted += OnTeamDeleted;
-            TeamHubClient.DeleteUserFromTeam += OnDeleteUserFromTeam;
-            TeamHubClient.TeamCreated += OnTeamCreated;
-
         }
 
-        private void OnTeamCreated(object? sender, TeamModel e)
+        private void OnTeamUpdated(object? sender, EventArgs e)
         {
-            App.Current.Dispatcher.Invoke(() => _teams.Add(e));
+            OnPropertyChanged(nameof(Teams));
         }
 
-        private void OnDeleteUserFromTeam(object? sender, string e)
-        {
-            App.Current.Dispatcher.Invoke(() => _teams.First(t => t.TeamId == (int)sender)
-            .Users
-            .Remove(_teams.First(t => t.TeamId == (int)sender).Users.First(u => u.UserTag == e)));
-            InterfaceRefresh?.Invoke(null, new EventArgs());
-
-        }
-
-        private void OnTeamDeleted(object? sender, int e)
-        {
-            App.Current.Dispatcher.Invoke(() => _teams.Remove(_teams.First(t => t.TeamId == e)));
-        }
-
-        private void OnAddNewTeam(object? sender, TeamModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => _teams.Add(e));
-        }
-
-        private void OnAddNewUserInTeam(object? sender, UserModel e)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                _teams.First(t => t.TeamId == (int)sender).Users.Add(e);
-            });
-            InterfaceRefresh?.Invoke(null, new EventArgs());
-        }
-
-        private void OnTeamUpdated(object? sender, TeamModel e)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                _teams.First(t => t.TeamId == e.TeamId).TeamLeadName = e.TeamLeadName;
-                _teams.First(t => t.TeamId == e.TeamId).TeamName = e.TeamName;
-                _teams.First(t => t.TeamId == e.TeamId).UserRole = (string)sender == Properties.Settings.Default.userTag ? (int)UserRoleEnum.LEAD : (int)UserRoleEnum.EMPLOYEE;
-
-            });
-
-            InterfaceRefresh?.Invoke(null, new EventArgs());
-        }
-
-
-        private ObservableCollection<TeamModel> _teams;
         public ObservableCollection<TeamModel> Teams
         {
-            get { return _teams; }
-            set
-            {
-                _teams = value;
-                OnPropertyChanged(nameof(Teams));
-            }
+            get { return _teamsCash.Teams; }
         }
 
 
@@ -150,16 +89,17 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
             }
             else
             {
-
-                var listActions = new List<string> { "Add user", "Change name", "Change lead", "Create chat" };
+                var listActions = new List<string> { "Add user", "Change name" };
 
                 if (teamModel.Users.Count > 1)
-                    listActions.Add("Delete user from team");
-
-                if (Teams.First(t => t.TeamId == teamModel.TeamId).Users.Count == 1)
                 {
-                    listActions.Add("Leave");
+                    listActions.Add("Delete user from team");
+                    listActions.Add("Change lead");
+                    listActions.Add("Create chat");
                 }
+                else
+                    listActions.Add("Leave");
+
 
                 SelectActionsDialogWindow selectActionsDialogWindow = new SelectActionsDialogWindow("Select action", listActions);
 
@@ -169,20 +109,46 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                     {
                         case "Add user":
 
-                            InputDialogWindow updatePropertiesDialogWindow = new InputDialogWindow("User tag", "Add", new List<string> { "" });
-                            if (updatePropertiesDialogWindow.ShowDialog().Value)
+                            CreateSubjectDialogWindow createSubjectDialogWindow = new CreateSubjectDialogWindow("Find user", new List<string> { "Tag: " });
+                            if (createSubjectDialogWindow.ShowDialog().Value)
                             {
-                                var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
+                                var userTag = createSubjectDialogWindow.GetCreatingProperties()[0];
 
-                                if (userTag != Properties.Settings.Default.userTag)
+                                if (userTag == Properties.Settings.Default.userTag)
                                 {
-                                    _mediator.Send(new AddUserInTeamCommand { TeamId = teamModel.TeamId, UserTag = userTag });
+                                    ErrorWindow.Show("You can't add \nyourself to the team");
                                 }
                                 else
                                 {
-                                    ErrorWindow.Show("You can't add \nyourself to the team\r\n");
-                                }
+                                    if (teamModel.Users.Select(u => u.UserTag).Any(t => t == userTag))
+                                    {
+                                        ErrorWindow.Show("This user is already\n a member of the team");
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            var user = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
+                                            AlertDialogWindow alertDialogWindow = new AlertDialogWindow($"Founded user: {user.FirstName} {user.SecondName} {user.LastName}", "Complete", "Cancel");
 
+                                            if (alertDialogWindow.ShowDialog().Value)
+                                            {
+                                                try
+                                                {
+                                                    await _mediator.Send(new AddUserInTeamCommand { TeamId = teamModel.TeamId, UserTag = userTag });
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    ErrorWindow.Show("Error adding a user");
+                                                }
+                                            }
+                                        }
+                                        catch (Exception)
+                                        {
+                                            ErrorWindow.Show("User not found");
+                                        }
+                                    }
+                                }
                             }
 
 
@@ -196,7 +162,6 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                                 if (inputPropertiesDialogWindow.ShowDialog().Value)
                                 {
                                     await _mediator.Send(new UpdateTeamCommand { TeamId = teamModel.TeamId, Name = inputPropertiesDialogWindow.GetInputValue()[0], LeaderTag = Properties.Settings.Default.userTag });
-
                                 }
                             }
                             catch (Exception)
@@ -210,7 +175,7 @@ namespace TeamTaskClient.UI.Modules.Teams.ViewModels
                             try
                             {
                                 SelectActionsDialogWindow selectLead =
-                               new SelectActionsDialogWindow("Select user", Teams.First(t => t.TeamId == teamModel.TeamId).Users
+                                    new SelectActionsDialogWindow("Select user", Teams.First(t => t.TeamId == teamModel.TeamId).Users
                                                                                  .Where(u => u.UserTag != Properties.Settings.Default.userTag)
                                                                                  .Select(u => u.FirstName + ", tag: " + u.UserTag)
                                                                                  .ToList());

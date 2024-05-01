@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
-namespace TeamTaskClient.Infrastructure.ServerClients.Connections
+namespace TeamTaskClient.Infrastructure.ServerClients.Implementation
 {
-    public class ChatHubConnection : IDisposable, IChatHubConnection
+    public class TeamHubConnection : ITeamHubConnection
     {
 
         private static HubConnection _hubConnection;
-
         public HubConnection HubConnection => _hubConnection;
 
-        public ChatHubConnection()
+        public TeamHubConnection()
         {
             _hubConnection = new HubConnectionBuilder()
-                .WithUrl("https://localhost:7130/online-chat")
+                .WithUrl("https://localhost:7130/online-teams")
             .Build();
 
             _hubConnection.StartAsync();

@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using System.Net.Http.Json;
-using System.Xml.Linq;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class ProjectRepositoryImplementation(IHttpClient client) : IProjectRepository
+    public class ProjectRepositoryImplementation(IHttpClient client, IProjectHubConnection projectHubConnection) : IProjectRepository
     {
 
-        private HubConnection HubClient = ProjectHubConnection.Instance.GetClient();
+        private HubConnection HubClient = projectHubConnection.HubConnection;
 
 
         public async Task AddTeamInProject(int projectId, string teamTag)

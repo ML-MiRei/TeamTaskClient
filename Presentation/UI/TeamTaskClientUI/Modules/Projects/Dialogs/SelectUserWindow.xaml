@@ -8,6 +8,7 @@
         xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
         xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.Modules.Projects.UserControls"
         xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Teams.UserControls"
+        xmlns:usercontrols2="clr-namespace:TeamTaskClient.UI.UserControls"
         d:DataContext="{d:DesignInstance Type=viewmodels:SetExecutorWindowVM}"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
@@ -77,7 +78,7 @@
 
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <usercontrols1:UserTemplate Margin="5" />
+                            <usercontrols2:UserTemplate Margin="5" />
                         </DataTemplate>
                     </ListBox.ItemTemplate>
 
@@ -105,7 +106,8 @@
                     Margin="0,5,5,0"
                     VerticalAlignment="Top"
                     HorizontalAlignment="Right"
-                    Content="x" />
+                    Content="x"
+                    Click="Button_Click" />
 
 
 

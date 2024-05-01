@@ -1,18 +1,16 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
-using System.Net;
 using System.Net.Http.Json;
 using TeamTaskClient.ApplicationLayer.Interfaces.Repositories;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.Domain.Exceptions;
-using TeamTaskClient.Infrastructure.ServerClients.Connections;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 
 namespace TeamTaskClient.Infrastructure.Repositories
 {
-    public class TeamRepositoryImplementation(IHttpClient httpClient) : ITeamRepository
+    public class TeamRepositoryImplementation(IHttpClient httpClient, ITeamHubConnection teamHubConnection) : ITeamRepository
     {
-        private HubConnection HubClient = TeamHubConnection.Instance.GetClient();
+        private HubConnection HubClient = teamHubConnection.HubConnection;
 
 
 

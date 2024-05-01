@@ -12,10 +12,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Modules.Messanger.ViewModels;
-using TeamTaskClient.UI.Modules.Teams.UserControls;
+using TeamTaskClient.UI.UserControls;
 
 namespace TeamTaskClient.UI.Modules.Messanger.View
 {
@@ -24,10 +25,10 @@ namespace TeamTaskClient.UI.Modules.Messanger.View
     /// </summary>
     public partial class UsersChatWindow : Window
     {
-        public UsersChatWindow(int chatId, IMediator mediator, IMessengerEvents messengerEvents)
+        public UsersChatWindow(int chatId, IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
             InitializeComponent();
-            DataContext = new UsersChatWindowVM(chatId, mediator, messengerEvents);
+            DataContext = new UsersChatWindowVM(chatId, mediator, messengerEvents, messengerCash);
         }
 
         private void UserTemplate_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

@@ -8,6 +8,7 @@
       xmlns:viewmodels="clr-namespace:TeamTaskClient.UI.Modules.Projects.ViewModels"
       xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Teams.UserControls"
       xmlns:converters="clr-namespace:TeamTaskClient.UI.Modules.Projects.Converters"
+      xmlns:usercontrols2="clr-namespace:TeamTaskClient.UI.UserControls"
       d:DataContext="{d:DesignInstance Type=viewmodels:BacklogProjectPageVM}"
       mc:Ignorable="d"
       d:DesignHeight="450"
@@ -161,7 +162,7 @@
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
 
-                                    <usercontrols1:UserTemplate Margin="6"
+                                    <usercontrols2:UserTemplate Margin="6"
                                                                 MouseEnter="UserTemplate_MouseEnter"
                                                                 MouseLeave="ProjectTaskTemplate_MouseLeave"
                                                                 MouseLeftButtonDown="UserTemplate_MouseLeftButtonDown"

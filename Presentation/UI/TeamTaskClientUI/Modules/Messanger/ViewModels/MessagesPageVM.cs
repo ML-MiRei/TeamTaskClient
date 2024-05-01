@@ -12,6 +12,7 @@ using TeamTaskClient.UI.Dialogs.ViewModels;
 using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Domain.Entities;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -19,59 +20,30 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
     {
 
         private static IMediator _mediator;
+        private static IMessengerCash _messengerCash;
+
         public event EventHandler InterfaceRefresh;
 
         public static string WatermarkText { get => "Enter message.."; }
 
-        public MessagesPageVM(IMediator mediator, IMessengerEvents messengerEvents)
+        public MessagesPageVM(IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
-
+            _messengerCash = messengerCash;
             _mediator = mediator;
             InputMessage = WatermarkText;
             SendMessage = new SendMessageButton(this);
             DoubleClick = new DoubleClickCommand(this);
 
 
-            MessengerStorage.SelectedChatChanged += OnSelectedChatChanged;
-            messengerEvents.OnMessageReceived += OnMessageReceived;
-            messengerEvents.OnMessageDeleted += OnMessageDeleted;
-            messengerEvents.OnMessageUpdated += OnMessageUpdated;
+            messengerCash.SelectedChatChanged += OnSelectedChatChanged;
         }
 
 
-
-
-        private void OnMessageUpdated(object? sender, MessageEntity e)
-        {
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                if (MessengerStorage.SelectedChat.ChatId == e.ChatId)
-                {
-                    MessengerStorage.UpdateMessage(e.ChatId, new MessageModel { TextMessage = e.TextMessage, MessageId = e.ID });
-                }
-                MessengerStorage.Messages.First(m => m.MessageId == e.ID).TextMessage = e.TextMessage;
-            });
-            InterfaceRefresh?.Invoke(null, new EventArgs());
-
-        }
 
         private void OnSelectedChatChanged(object? sender, ChatModel e)
         {
             OnPropertyChanged(nameof(Messages));
         }
-
-        private void OnMessageDeleted(object? sender, EventArgs e)
-        {
-            App.Current.Dispatcher.Invoke(() => MessengerStorage.Messages.Remove(MessengerStorage.Messages.First(m => m.MessageId == (int)sender)));
-        }
-
-        private void OnMessageReceived(object? sender, MessageModel e)
-        {
-            App.Current.Dispatcher.Invoke(() => MessengerStorage.AddMessage((int)sender, e));
-        }
-
-
-
 
 
 
@@ -80,7 +52,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
             get
             {
 
-                return MessengerStorage.Messages;
+                return _messengerCash.Messages;
             }
 
         }
@@ -122,7 +94,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var newTextMessage = updatePropertiesDialogWindow.GetInputValue()[0];
-                                await _mediator.Send(new UpdateMessageCommand { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
+                                await _mediator.Send(new UpdateMessageCommand { ChatId = _messengerCash.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId, TextMessage = newTextMessage });
                             }
 
 
@@ -130,7 +102,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                         case "Delete":
                             try
                             {
-                                await _mediator.Send(new DeleteMessageCommand() { ChatId = MessengerStorage.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
+                                await _mediator.Send(new DeleteMessageCommand() { ChatId = _messengerCash.SelectedChat.ChatId, MessageId = ((MessageModel)parameter).MessageId });
                             }
                             catch (Exception)
                             {
@@ -151,7 +123,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                 {
                     await _mediator.Send(new SendMessageCommand
                     {
-                        ChatId = MessengerStorage.SelectedChat.ChatId,
+                        ChatId = _messengerCash.SelectedChat.ChatId,
                         TextMessage = _inputMessage.Trim(),
                         UderId = Properties.Settings.Default.userId
                     });

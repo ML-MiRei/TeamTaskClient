@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TeamTaskClient.ApplicationLayer;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
+using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
 using TeamTaskClient.Infrastructure;
-using TeamTaskClient.Infrastructure.ServerClients.HubClients;
 using TeamTaskClient.Infrastructure.ServerClients.Interfaces;
 using TeamTaskClient.Infrastructure.Services.Implementation;
-using TeamTaskClient.Infrastructure.Services.Interfaces;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Login;
+using TeamTaskClient.UI.Storages;
 using TeamTaskClientUI.Main;
 
 namespace TeamTaskClient.UI
@@ -34,13 +35,16 @@ namespace TeamTaskClient.UI
 
             }
 
-
             var host = Host.CreateDefaultBuilder()
                 .ConfigureServices(services =>
                 {
                     services.AddApplication();
                     services.AddInfrastructure(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
                     services.AddSingleton<App>();
+                    services.AddSingleton<IMessengerCash>(m => new MessengerCash(m.GetService<IMessengerEvents>()));
+                    services.AddSingleton<IProjectsCash>(m => new ProjectsCash(m.GetService<IProjectsEvents>()));
+                    services.AddSingleton<ITeamsCash>(m => new TeamsCash(m.GetService<ITeamsEvents>()));
+                    services.AddSingleton<INotificationCash>(m => new NotificationCash(m.GetService<IMessengerEvents>(), m.GetService<IProjectsEvents>(), m.GetService<ITeamsEvents>()));
                     services.AddSingleton<MainWindow>();
                 })
                 .Build();
@@ -53,8 +57,6 @@ namespace TeamTaskClient.UI
             var canConnection = httpClient.TryConnection(Properties.Settings.Default.userId);
             if (canConnection)
             {
-                TeamHubClient teamHubClient = TeamHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
-                ProjectHubClient projectHubClient = ProjectHubClient.GetInstance(Properties.Settings.Default.userId, Properties.Settings.Default.userTag);
                 var app = host.Services.GetService<App>();
                 app?.Run();
             }

@@ -17,6 +17,7 @@ using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Dialogs.ViewModels;
 using TeamTaskClient.UI.Modules.Messanger.View;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
@@ -25,19 +26,21 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 
         private static IMediator _mediator;
         private static IMessengerEvents _messengerEvents;
+        private static IMessengerCash _messengerCash;
 
-        public ChatsListPageVM(IMediator mediator, IMessengerEvents messengerEvents)
+        public ChatsListPageVM(IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
             _mediator = mediator;
             _messengerEvents = messengerEvents;
-            MessengerStorage.Chats = new ObservableCollection<ChatModel>(mediator.Send(new GetChatsQuery() { UserId = Properties.Settings.Default.userId }).Result.ToList());
+            _messengerCash = messengerCash;
+            messengerCash.Chats = new ObservableCollection<ChatModel>(mediator.Send(new GetChatsQuery() { UserId = Properties.Settings.Default.userId }).Result.ToList());
 
         }
 
 
         public ObservableCollection<ChatModel> Chats
         {
-            get { return MessengerStorage.Chats; }
+            get { return _messengerCash.Chats; }
         }
 
 
@@ -92,18 +95,47 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             if (updatePropertiesDialogWindow.ShowDialog().Value)
                             {
                                 var userTag = updatePropertiesDialogWindow.GetInputValue()[0];
-                                if (MessengerStorage.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Any(u => u.UserTag == userTag))
+
+                                if (userTag == Properties.Settings.Default.userTag)
                                 {
-                                    ErrorWindow.Show("This user is already\n a member of the chat");
+                                    ErrorWindow.Show("You can't add \nyourself to the team");
                                 }
                                 else
                                 {
-                                    await _mediator.Send(new AddUserInGroupChatCommand { ChatId = chatModel.ChatId, UserTag = userTag });
+                                    if (_messengerCash.Chats.First(c => c.ChatId == chatModel.ChatId).Users.Any(u => u.UserTag == userTag))
+                                    {
+                                        ErrorWindow.Show("This user is already\n a member of the chat");
+                                    }
+                                    else
+                                    {
+                                        try
+                                        {
+                                            var user = _mediator.Send(new GetUserByTagQuery { UserTag = userTag }).Result;
+                                            AlertDialogWindow alertDialogWindow = new AlertDialogWindow($"Founded user: {user.FirstName} {user.SecondName} {user.LastName}", "Complete", "Cancel");
+
+                                            if (alertDialogWindow.ShowDialog().Value)
+                                            {
+                                                try
+                                                {
+                                                    await _mediator.Send(new AddUserInGroupChatCommand { ChatId = chatModel.ChatId, UserTag = userTag });
+                                                }
+                                                catch (Exception)
+                                                {
+                                                    ErrorWindow.Show("Error adding a user");
+                                                }
+                                            }
+                                        }
+                                        catch (Exception)
+                                        {
+                                            ErrorWindow.Show("User not found");
+                                        }
+
+                                    }
                                 }
                             }
 
-
                             break;
+
                         case "Leave":
                             try
                             {
@@ -143,7 +175,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             break;
                         case "Users":
 
-                            UsersChatWindow usersChatWindow = new UsersChatWindow(chatModel.ChatId, _mediator, _messengerEvents);
+                            UsersChatWindow usersChatWindow = new UsersChatWindow(chatModel.ChatId, _mediator, _messengerEvents, _messengerCash);
                             usersChatWindow.ShowDialog();
 
                             break;
@@ -176,7 +208,7 @@ namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
                             {
                                 string userTag = window.GetInputValue()[0];
 
-                                if (MessengerStorage.Chats.Any(c => c.Type == (int)ChatTypeEnum.PRIVATE && c.Users.Any(u => u.UserTag == userTag)))
+                                if (_messengerCash.Chats.Any(c => c.Type == (int)ChatTypeEnum.PRIVATE && c.Users.Any(u => u.UserTag == userTag)))
                                 {
 
                                     ErrorWindow.Show("There is already such a chat");

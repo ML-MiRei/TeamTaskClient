@@ -20,6 +20,7 @@ using TeamTaskClient.UI.Storages;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.View
 {
@@ -29,19 +30,20 @@ namespace TeamTaskClient.UI.Modules.Projects.View
     public partial class TasksPage : Page
     {
         IMediator _mediator;
-        ProjectModel _projectModel;
+        IProjectsCash _projectsCash;
 
         TasksVM vm;
 
-        public TasksPage(IMediator mediator)
+        public TasksPage(IMediator mediator, IProjectsCash projectsCash)
         {
             InitializeComponent();
-            vm = new TasksVM(mediator);
+            vm = new TasksVM(mediator, projectsCash);
             DataContext = vm;
 
+            _projectsCash = projectsCash;
             _mediator = mediator;
 
-            ProjectsStorage.SelectedSprintChanged += OnSelectedSprintChanged;
+            _projectsCash.SelectedSprintChanged += OnSelectedSprintChanged;
         }
 
 
@@ -49,7 +51,7 @@ namespace TeamTaskClient.UI.Modules.Projects.View
         private void OnSelectedSprintChanged(object? sender, SprintModel e)
         {
             if (e != null)
-                DataContext = new TasksVM(_mediator);
+                DataContext = new TasksVM(_mediator, _projectsCash);
             else
                 ProjectPage.Instance.ToBacklogButton.IsChecked = true;
         }
@@ -80,18 +82,18 @@ namespace TeamTaskClient.UI.Modules.Projects.View
             ProjectTaskTemplate projectTaskTemplate = (ProjectTaskTemplate)sender;
 
 
-            if ((ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date) &&
+            if ((_projectsCash.SelectedSprint.DateEnd.Date > DateTime.Now.Date) &&
                 (((ProjectTaskModel)projectTaskTemplate.DataContext).ExecutorTag == Properties.Settings.Default.userTag ||
-                ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD))
+                _projectsCash.SelectedProject.UserRole == (int)UserRoleEnum.LEAD))
                 DragDrop.DoDragDrop(projectTaskTemplate, projectTaskTemplate.DataContext, DragDropEffects.Move);
         }
 
         private void ProjectTaskTemplate_MouseEnter(object sender, MouseEventArgs e)
         {
             ProjectTaskTemplate projectTaskTemplate = (ProjectTaskTemplate)sender;
-            if ((ProjectsStorage.SelectedSprint.DateEnd.Date > DateTime.Now.Date) &&
+            if ((_projectsCash.SelectedSprint.DateEnd.Date > DateTime.Now.Date) &&
                           (((ProjectTaskModel)projectTaskTemplate.DataContext).ExecutorTag == Properties.Settings.Default.userTag ||
-                          ProjectsStorage.SelectedProject.UserRole == (int)UserRoleEnum.LEAD))
+                          _projectsCash.SelectedProject.UserRole == (int)UserRoleEnum.LEAD))
                 Cursor = Cursors.Hand;
         }
 

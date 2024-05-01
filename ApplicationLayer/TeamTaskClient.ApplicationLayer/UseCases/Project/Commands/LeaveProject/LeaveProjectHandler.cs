@@ -6,12 +6,11 @@ namespace TeamTaskClient.ApplicationLayer.UseCases.Project.Commands.LeaveProject
 {
     public class LeaveProjectHandler(IProjectRepository projectRepository) : IRequestHandler<LeaveProjectCommand>
     {
-        public Task Handle(LeaveProjectCommand request, CancellationToken cancellationToken)
+        public async Task Handle(LeaveProjectCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                projectRepository.LeaveFromProject(request.UserId, request.ProjectId);
-                return Task.CompletedTask;
+                await projectRepository.LeaveFromProject(request.ProjectId, request.UserId);
             }
             catch (Exception)
             {

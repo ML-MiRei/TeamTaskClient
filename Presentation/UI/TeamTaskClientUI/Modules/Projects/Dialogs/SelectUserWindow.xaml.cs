@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Modules.Projects.UserControls;
 using TeamTaskClient.UI.Modules.Projects.ViewModels;
@@ -24,11 +25,11 @@ namespace TeamTaskClient.UI.Modules.Projects.Dialogs
     {
 
 
-        public SelectUserWindow()
+        public SelectUserWindow(IProjectsCash projectsCash)
         {
             InitializeComponent();
 
-            DataContext = new SetExecutorWindowVM();
+            DataContext = new SetExecutorWindowVM(projectsCash);
 
             HorizontalAlignment = HorizontalAlignment.Center;
             VerticalAlignment = VerticalAlignment.Center;
@@ -42,7 +43,9 @@ namespace TeamTaskClient.UI.Modules.Projects.Dialogs
             return templates;
         }
 
-
-      
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+        }
     }
 }

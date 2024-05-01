@@ -15,21 +15,24 @@ using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Modules.Projects.Dialogs;
 using TeamTaskClient.UI.Storages;
 using TeamTaskClient.ApplicationLayer.Interfaces.ReplyEvents;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Messanger.ViewModels
 {
     public class UsersChatWindowVM : ViewModelBase
     {
         IMediator _mediator;
+        IMessengerCash _messengerCash;
         private int _chatId;
 
-        public UsersChatWindowVM(int chatId, IMediator mediator, IMessengerEvents messengerEvents)
+        public UsersChatWindowVM(int chatId, IMediator mediator, IMessengerEvents messengerEvents, IMessengerCash messengerCash)
         {
             _mediator = mediator;
+            _messengerCash = messengerCash;
             _chatId = chatId;
-            Users = new ObservableCollection<UserModel>(MessengerStorage.Chats.First(c => c.ChatId == chatId).Users);
+            Users = new ObservableCollection<UserModel>(_messengerCash.Chats.First(c => c.ChatId == chatId).Users);
 
-            messengerEvents.DeleteUserFromChat += OnDeleteUserFromChat;
+            messengerEvents.UserFromChatDeleted += OnDeleteUserFromChat;
             messengerEvents.AddNewUserChat += OnAddNewUserChat;
         }
 

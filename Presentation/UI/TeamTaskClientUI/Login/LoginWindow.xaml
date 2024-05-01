@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:TeamTaskClient.UI.Login"
         mc:Ignorable="d"
         WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         AllowsTransparency="True"
         Background="Transparent"
         BorderThickness="0"

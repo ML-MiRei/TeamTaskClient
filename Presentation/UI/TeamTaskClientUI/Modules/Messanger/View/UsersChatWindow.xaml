@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TeamTaskClient.UI.Modules.Messanger.View"
         xmlns:usercontrols1="clr-namespace:TeamTaskClient.UI.Modules.Teams.UserControls"
+        xmlns:usercontrols="clr-namespace:TeamTaskClient.UI.UserControls"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
@@ -72,7 +73,7 @@
 
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <usercontrols1:UserTemplate
+                            <usercontrols:UserTemplate
                                 MouseEnter="UserTemplate_MouseEnter"
                                 MouseLeave="UserTemplate_MouseLeave"
                                 MouseLeftButtonDown="UserTemplate_MouseLeftButtonDown"

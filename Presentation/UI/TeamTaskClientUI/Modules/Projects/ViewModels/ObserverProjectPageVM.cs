@@ -13,28 +13,39 @@ using TeamTaskClient.UI.Common.Base;
 using TeamTaskClient.UI.Dialogs.View;
 using TeamTaskClient.UI.Main;
 using TeamTaskClient.UI.Modules.Teams.ViewModels;
+using TeamTaskClient.ApplicationLayer.Interfaces.Cash;
 
 namespace TeamTaskClient.UI.Modules.Projects.ViewModels
 {
     internal class ObserverProjectPageVM : ViewModelBase
     {
         private static IMediator _mediator;
+        private static IProjectsCash _projectsCash;
         public string WatermarkText { get => "Project name.."; }
 
-        public ObserverProjectPageVM(IMediator mediator)
+        public ObserverProjectPageVM(IMediator mediator, IProjectsCash projectsCash)
         {
             _mediator = mediator;
+            _projectsCash = projectsCash;
+
             InputSearchString = WatermarkText;
 
-            ProjectsStorage.Projects = new ObservableCollection<ProjectModel>(mediator.Send(new GetProjectsByUserIdQuery { UserId = Properties.Settings.Default.userId }).Result);
+            _projectsCash.Projects = new ObservableCollection<ProjectModel>(mediator.Send(new GetProjectsByUserIdQuery { UserId = Properties.Settings.Default.userId }).Result);
 
             CreateProject = new NewProjectCommand(this);
 
+            _projectsCash.ProjectChanged += OnProjectChanged;
+
+        }
+
+        private void OnProjectChanged(object? sender, EventArgs e)
+        {
+            OnPropertyChanged(nameof(Projects));
         }
 
         public ObservableCollection<ProjectModel> Projects
         {
-            get { return ProjectsStorage.Projects; }
+            get { return _projectsCash.Projects; }
         }
 
 
@@ -84,7 +95,7 @@ namespace TeamTaskClient.UI.Modules.Projects.ViewModels
                     {
                         try
                         {
-                            await _mediator.Send(new LeaveProjectCommand { ProjectId = projectModel.ProjectId });
+                            await _mediator.Send(new LeaveProjectCommand { ProjectId = projectModel.ProjectId, UserId = Properties.Settings.Default.userId });
 
                         }
                         catch (Exception)

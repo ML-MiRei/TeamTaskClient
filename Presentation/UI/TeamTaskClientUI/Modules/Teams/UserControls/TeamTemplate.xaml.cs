@@ -3,8 +3,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using TeamTaskClient.ApplicationLayer.Models;
 using TeamTaskClient.UI.Modules.Profile.View;
-using TeamTaskClient.UI.Modules.Teams.View;
 using TeamTaskClient.UI.Modules.Teams.ViewModels;
+using TeamTaskClient.UI.UserControls;
 
 namespace TeamTaskClient.UI.Modules.Teams.UserControls
 {

@@ -20,7 +20,6 @@
 
 	<ItemGroup>
 		<Folder Include="Main\" />
-		<Folder Include="Common\Converters" />
 	</ItemGroup>
 
 	<ItemGroup>
